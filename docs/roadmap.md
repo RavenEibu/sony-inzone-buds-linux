@@ -26,7 +26,8 @@ control work.
 
 - [x] Add an optional GTK4 Game/Chat balance and volume control.
 - [x] Add StatusNotifierItem activation for KDE and compatible GNOME setups.
-- [ ] Add a tray context menu with quick presets.
+- [x] Add a tray context menu with Show Window and Quit actions.
+- [ ] Add Game/Chat quick presets to the tray context menu.
 - [ ] Add launch-at-login preference.
 - [ ] Add translated interface strings.
 - [ ] Add desktop notifications for connect/disconnect events.

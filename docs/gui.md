@@ -34,8 +34,18 @@ watcher is present, closing the window hides it and keeps the process running.
 Without a watcher, closing the window exits normally so the application cannot
 become inaccessible.
 
-The initial implementation intentionally has no separate tray context menu.
-Activation opens the full mixer, whose header contains the quit action.
+Right-clicking the indicator opens a desktop-native D-Bus menu containing
+**Show Window** and **Quit**. The menu is rendered by the StatusNotifierHost,
+rather than positioned by the application, which also works under Wayland.
+
+## Light and dark appearance
+
+The mixer watches GTK's desktop-wide color-scheme properties. On Wayland GTK
+receives these settings through the desktop settings portal; on X11 it can use
+XSettings. The application switches its window and header colors immediately
+when the desktop preference changes and keeps GTK controls on the matching
+theme variant. A theme-name fallback is retained for GTK versions older than
+the explicit color-scheme property.
 
 ## Architecture
 

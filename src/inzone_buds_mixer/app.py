@@ -11,7 +11,7 @@ import sys
 import gi
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gio, GLib, Gtk  # noqa: E402
+from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
 from audio import AudioBackend, AudioSnapshot, BackendError  # noqa: E402
 from tray import StatusNotifierItem  # noqa: E402
@@ -20,6 +20,19 @@ from tray import StatusNotifierItem  # noqa: E402
 APP_ID = "io.github.RavenEibu.InzoneBudsMixer"
 APP_NAME = "INZONE Buds Mixer"
 ICON_NAME = APP_ID
+APP_CSS = """
+window.inzone-light,
+window.inzone-light headerbar {
+  background-color: #f7f7f8;
+  color: #202124;
+}
+
+window.inzone-dark,
+window.inzone-dark headerbar {
+  background-color: #202124;
+  color: #f5f5f5;
+}
+"""
 
 
 def _margins(widget: Gtk.Widget, amount: int) -> None:
@@ -234,10 +247,15 @@ class MixerApplication(Gtk.Application):
         self._refresh_in_progress = False
         self._poll_id = 0
         self._held = False
+        self._gtk_settings = None
+        self._applying_color_scheme = False
+        self._css_provider = None
 
     def do_activate(self) -> None:
         if self.window is None:
+            self._install_css()
             self.window = MixerWindow(self, self.backend)
+            self._watch_color_scheme()
             self._start_tray()
             self._poll_id = GLib.timeout_add_seconds(2, self._poll)
         self.window.present()
@@ -254,6 +272,7 @@ class MixerApplication(Gtk.Application):
                 icon_name=ICON_NAME,
                 icon_theme_path=icon_theme_path,
                 on_activate=self.toggle_window,
+                on_quit=self.quit,
                 on_availability_changed=self._tray_changed,
             )
         except GLib.Error:
@@ -277,6 +296,90 @@ class MixerApplication(Gtk.Application):
             self.window.present()
             self.refresh()
         return GLib.SOURCE_REMOVE
+
+    def _watch_color_scheme(self) -> None:
+        self._gtk_settings = Gtk.Settings.get_default()
+        if not self._gtk_settings:
+            return
+        for property_name in (
+            "gtk-interface-color-scheme",
+            "gtk-application-prefer-dark-theme",
+            "gtk-theme-name",
+        ):
+            if self._gtk_settings.find_property(property_name):
+                self._gtk_settings.connect(
+                    f"notify::{property_name}",
+                    self._color_scheme_changed,
+                )
+        self._apply_detected_color_scheme()
+
+    def _install_css(self) -> None:
+        display = Gdk.Display.get_default()
+        if not display:
+            return
+        self._css_provider = Gtk.CssProvider()
+        self._css_provider.load_from_data(APP_CSS.encode("utf-8"))
+        Gtk.StyleContext.add_provider_for_display(
+            display,
+            self._css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+        )
+
+    def _color_scheme_changed(self, _settings, _parameter) -> None:
+        self._apply_detected_color_scheme()
+
+    def _detect_dark_mode(self) -> bool:
+        settings = self._gtk_settings
+        if not settings:
+            return False
+
+        if settings.find_property("gtk-interface-color-scheme"):
+            # GTK 4.20+: 2 is dark and 3 is light. Other values mean that the
+            # platform did not provide an explicit preference.
+            scheme = int(settings.get_property("gtk-interface-color-scheme"))
+            if scheme == 2:
+                return True
+            if scheme == 3:
+                return False
+
+        theme_name = str(settings.get_property("gtk-theme-name") or "").lower()
+        if "dark" in theme_name:
+            return True
+        if settings.find_property("gtk-application-prefer-dark-theme"):
+            return bool(settings.get_property("gtk-application-prefer-dark-theme"))
+        return False
+
+    def _apply_detected_color_scheme(self) -> None:
+        if self._applying_color_scheme or not self._gtk_settings:
+            return
+        self._applying_color_scheme = True
+        try:
+            dark = self._detect_dark_mode()
+            explicit_scheme = 0
+            if self._gtk_settings.find_property("gtk-interface-color-scheme"):
+                explicit_scheme = int(
+                    self._gtk_settings.get_property("gtk-interface-color-scheme")
+                )
+            if (
+                explicit_scheme in (2, 3)
+                and self._gtk_settings.find_property(
+                    "gtk-application-prefer-dark-theme"
+                )
+            ):
+                current = bool(
+                    self._gtk_settings.get_property("gtk-application-prefer-dark-theme")
+                )
+                if current != dark:
+                    self._gtk_settings.set_property(
+                        "gtk-application-prefer-dark-theme",
+                        dark,
+                    )
+            if self.window:
+                self.window.remove_css_class("inzone-dark")
+                self.window.remove_css_class("inzone-light")
+                self.window.add_css_class("inzone-dark" if dark else "inzone-light")
+        finally:
+            self._applying_color_scheme = False
 
     def _poll(self) -> bool:
         self.refresh()

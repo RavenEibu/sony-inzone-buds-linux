@@ -21,6 +21,8 @@ with `snd_usb_audio`.
 - Per-endpoint volume and a Game/Chat balance command
 - GTK4 mixer for Game/Chat balance, overall volume and microphone level
 - StatusNotifierItem tray icon for KDE and GNOME with AppIndicator support
+- Automatic light/dark appearance tracking while the application is running
+- Native tray menu actions to show the window or quit
 - User-level configuration, with rootless commands when `~/.local/bin` is
   already available in `PATH`
 
@@ -115,7 +117,11 @@ maximum level. The microphone slider is independent.
 KDE Plasma provides StatusNotifierItem support. GNOME requires an extension
 such as **AppIndicator and KStatusNotifierItem Support**. When tray support is
 available, closing the window hides it; use the quit button in the header to
-stop the application.
+stop the application. Right-click the indicator for **Show Window** and
+**Quit** actions.
+
+The application follows GTK's desktop-wide color-scheme setting and updates
+between its light and dark appearances without needing a restart.
 
 See [Graphical mixer](docs/gui.md) for the control model and current desktop
 integration limitations.

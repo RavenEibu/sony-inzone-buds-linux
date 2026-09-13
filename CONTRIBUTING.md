@@ -21,6 +21,7 @@ Run the current shell tests with:
 ./tests/test_inzonectl.sh
 ./tests/test_install_paths.sh
 python3 ./tests/test_gui_backend.py
+python3 ./tests/test_desktop_integration.py
 ```
 
 The GUI backend tests do not require GTK or physical hardware. Running the
