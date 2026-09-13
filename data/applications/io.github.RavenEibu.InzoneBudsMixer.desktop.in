@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=INZONE Buds Mixer
+Comment=Control Game, Chat and microphone levels for INZONE Buds
+Exec=@BINDIR@/inzone-buds-mixer
+Icon=io.github.RavenEibu.InzoneBudsMixer
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Settings;
+Keywords=INZONE;Buds;Game;Chat;Audio;Mixer;
+StartupNotify=true
+StartupWMClass=io.github.RavenEibu.InzoneBudsMixer

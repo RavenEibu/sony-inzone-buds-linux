@@ -1,0 +1,55 @@
+# Graphical mixer
+
+`inzone-buds-mixer` is a GTK4 front end for the verified `inzonectl` and
+PipeWire integration. It does not emulate Sony's Windows application or send
+undocumented commands to the earbuds.
+
+## Controls
+
+| Control | Result |
+| --- | --- |
+| Overall volume | Sets the maximum of the Game and Chat endpoints |
+| Game / Chat balance | Attenuates Game or Chat relative to the maximum |
+| Microphone volume | Sets the native microphone endpoint level |
+| Use Game output + INZONE microphone | Restores the recommended defaults |
+
+Balance `0` selects the Chat side, `50` gives both endpoints the same volume,
+and `100` selects the Game side. **Both endpoints are at maximum when balance
+is 50 and overall volume is 100%.** No virtual sink or software resampling is
+created; the dongle receives both native playback streams.
+
+The application refreshes device state periodically so unplugging and
+reconnecting the dongle updates the controls without restarting the GUI.
+Slider changes are briefly coalesced before invoking `inzonectl`, which avoids
+sending an unnecessary command for every pixel of pointer movement.
+
+## Tray integration
+
+The application exports `org.kde.StatusNotifierItem` over the session D-Bus.
+KDE Plasma supports this interface directly. GNOME Shell requires a compatible
+extension, such as **AppIndicator and KStatusNotifierItem Support**.
+
+Clicking the tray icon shows or hides the mixer. When a StatusNotifierItem
+watcher is present, closing the window hides it and keeps the process running.
+Without a watcher, closing the window exits normally so the application cannot
+become inaccessible.
+
+The initial implementation intentionally has no separate tray context menu.
+Activation opens the full mixer, whose header contains the quit action.
+
+## Architecture
+
+The GTK process does not duplicate device matching rules. Read operations use
+`pactl`; mutations use the adjacent `inzonectl` installation. This preserves a
+single tested implementation for profile activation, endpoint discovery and
+balance calculations.
+
+## Packaging names
+
+The source package and native distribution package are named
+`inzone-buds-mixer`. The planned precompiled AUR variant is named
+`inzone-buds-mixer-bin`. Both names explicitly identify the supported hardware.
+
+The application is unofficial and is not affiliated with or endorsed by Sony.
+The original project logo is deliberately abstract and contains no Sony or
+INZONE wordmark.

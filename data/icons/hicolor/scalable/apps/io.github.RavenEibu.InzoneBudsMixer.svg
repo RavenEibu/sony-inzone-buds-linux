@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>INZONE Buds Mixer</title>
+  <defs>
+    <mask id="diagonal-cut">
+      <rect width="1024" height="1024" fill="white"/>
+      <path d="M 205,765 L 815,285" stroke="black" stroke-width="34"/>
+    </mask>
+  </defs>
+  <circle cx="512" cy="512" r="470" fill="white" stroke="black" stroke-width="36"/>
+  <g mask="url(#diagonal-cut)" fill="none" stroke="black" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 278,248 C 183,261 137,358 169,458 L 266,716 C 292,784 377,807 424,758 C 468,712 443,661 399,617 C 351,570 359,519 417,480 C 477,440 492,375 462,318 C 428,254 351,238 278,248 Z" stroke-width="54"/>
+    <path d="M 278,248 C 183,261 137,358 169,458 L 266,716 C 292,784 377,807 424,758 C 468,712 443,661 399,617 C 351,570 359,519 417,480 C 477,440 492,375 462,318 C 428,254 351,238 278,248 Z" transform="translate(1024 0) scale(-1 1)" stroke-width="54"/>
+    <path d="M 365,548 H 659" stroke-width="38"/>
+    <circle cx="512" cy="548" r="47" fill="white" stroke-width="34"/>
+  </g>
+</svg>

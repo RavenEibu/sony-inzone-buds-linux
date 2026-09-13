@@ -24,7 +24,11 @@ control work.
 
 ## Version 0.3: desktop controls
 
-- [ ] Add an optional graphical Game/Chat balance control.
+- [x] Add an optional GTK4 Game/Chat balance and volume control.
+- [x] Add StatusNotifierItem activation for KDE and compatible GNOME setups.
+- [ ] Add a tray context menu with quick presets.
+- [ ] Add launch-at-login preference.
+- [ ] Add translated interface strings.
 - [ ] Add desktop notifications for connect/disconnect events.
 - [ ] Support configurable default behavior without editing scripts.
 - [ ] Add optional keyboard-shortcut examples.

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.RavenEibu.InzoneBudsMixer</id>
+  <name>INZONE Buds Mixer</name>
+  <summary>Control the native Game, Chat and microphone endpoints on Linux</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>
+      INZONE Buds Mixer is an unofficial open-source controller for the Sony
+      INZONE Buds USB dongle in PC mode. It adjusts the native Game and Chat
+      balance, overall playback level and microphone level through PipeWire.
+    </p>
+    <p>
+      This project is not affiliated with or endorsed by Sony. INZONE and Sony
+      are trademarks of their respective owner.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.RavenEibu.InzoneBudsMixer.desktop</launchable>
+  <provides>
+    <binary>inzone-buds-mixer</binary>
+  </provides>
+  <url type="homepage">https://github.com/RavenEibu/sony-inzone-buds-linux</url>
+  <url type="bugtracker">https://github.com/RavenEibu/sony-inzone-buds-linux/issues</url>
+  <developer id="io.github.RavenEibu">
+    <name>Sony INZONE Buds for Linux contributors</name>
+  </developer>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.2.0" date="2026-09-13">
+      <description>
+        <p>First GTK4 mixer preview with Game/Chat balance and tray support.</p>
+      </description>
+    </release>
+  </releases>
+</component>

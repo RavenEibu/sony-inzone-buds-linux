@@ -2,3 +2,5 @@
 *.log
 *.tar.gz
 *.zip
+__pycache__/
+*.py[cod]

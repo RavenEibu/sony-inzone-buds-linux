@@ -19,12 +19,18 @@ Run the current shell tests with:
 
 ```bash
 ./tests/test_inzonectl.sh
+./tests/test_install_paths.sh
+python3 ./tests/test_gui_backend.py
 ```
+
+The GUI backend tests do not require GTK or physical hardware. Running the
+application itself requires Python GObject bindings and GTK4.
 
 If ShellCheck is installed:
 
 ```bash
-shellcheck bin/inzonectl bin/inzone-autoswitch install.sh uninstall.sh \
+shellcheck bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
+  install.sh uninstall.sh \
   tests/test_inzonectl.sh
 ```
 

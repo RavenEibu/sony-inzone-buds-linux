@@ -4,9 +4,15 @@ set -euo pipefail
 PROJECT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 BIN_HOME=${XDG_BIN_HOME:-"$HOME/.local/bin"}
+DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 SYSTEM_BIN_DIR=${INZONE_SYSTEM_BIN_DIR:-/usr/local/bin}
 WIREPLUMBER_DIR="$CONFIG_HOME/wireplumber/wireplumber.conf.d"
 SYSTEMD_USER_DIR="$CONFIG_HOME/systemd/user"
+APP_DATA_DIR="$DATA_HOME/inzone-buds-mixer"
+APPLICATIONS_DIR="$DATA_HOME/applications"
+METAINFO_DIR="$DATA_HOME/metainfo"
+ICON_SCALABLE_DIR="$DATA_HOME/icons/hicolor/scalable/apps"
+ICON_SYMBOLIC_DIR="$DATA_HOME/icons/hicolor/symbolic/apps"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 SYSTEM_LINKS_INSTALLED=0
 
@@ -49,7 +55,7 @@ install_system_links_if_needed() {
 
   # Check every destination before writing either link. Never replace an
   # unrelated system command.
-  for name in inzonectl; do
+  for name in inzonectl inzone-buds-mixer; do
     source="$BIN_HOME/$name"
     destination="$SYSTEM_BIN_DIR/$name"
     if [[ -e $destination || -L $destination ]]; then
@@ -67,7 +73,7 @@ install_system_links_if_needed() {
   printf 'Installing command links in %s so they are available immediately.\n' \
     "$SYSTEM_BIN_DIR"
   sudo mkdir -p -- "$SYSTEM_BIN_DIR"
-  for name in inzonectl; do
+  for name in inzonectl inzone-buds-mixer; do
     source="$BIN_HOME/$name"
     destination="$SYSTEM_BIN_DIR/$name"
     if [[ ! -L $destination ]]; then
@@ -88,8 +94,32 @@ install_one "$PROJECT_DIR/config/wireplumber/51-inzone-buds.conf" \
   "$WIREPLUMBER_DIR/51-inzone-buds.conf" 0644
 install_one "$PROJECT_DIR/bin/inzonectl" "$BIN_HOME/inzonectl" 0755
 install_one "$PROJECT_DIR/bin/inzone-autoswitch" "$BIN_HOME/inzone-autoswitch" 0755
+install_one "$PROJECT_DIR/bin/inzone-buds-mixer" "$BIN_HOME/inzone-buds-mixer" 0755
 install_one "$PROJECT_DIR/systemd/user/inzone-buds-autoswitch.service" \
   "$SYSTEMD_USER_DIR/inzone-buds-autoswitch.service" 0644
+
+for python_file in audio.py app.py tray.py; do
+  install_one "$PROJECT_DIR/src/inzone_buds_mixer/$python_file" \
+    "$APP_DATA_DIR/$python_file" 0644
+done
+
+install_one \
+  "$PROJECT_DIR/data/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg" \
+  "$ICON_SCALABLE_DIR/io.github.RavenEibu.InzoneBudsMixer.svg" 0644
+install_one \
+  "$PROJECT_DIR/data/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg" \
+  "$ICON_SYMBOLIC_DIR/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg" 0644
+install_one \
+  "$PROJECT_DIR/data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" \
+  "$METAINFO_DIR/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" 0644
+
+DESKTOP_TMP=$(mktemp)
+trap 'rm -f -- "$DESKTOP_TMP"' EXIT
+sed "s|@BINDIR@|$BIN_HOME|g" \
+  "$PROJECT_DIR/data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in" \
+  > "$DESKTOP_TMP"
+install_one "$DESKTOP_TMP" \
+  "$APPLICATIONS_DIR/io.github.RavenEibu.InzoneBudsMixer.desktop" 0644
 
 install_system_links_if_needed
 
@@ -102,9 +132,16 @@ systemctl --user try-restart wireplumber.service || true
 sleep 1
 "$BIN_HOME/inzonectl" default || true
 
+if ! python3 -c 'import gi; gi.require_version("Gtk", "4.0"); from gi.repository import Gtk' \
+    >/dev/null 2>&1; then
+  printf '\nWarning: the command-line integration was installed, but the GTK4 app needs\n' >&2
+  printf 'Python GObject bindings and GTK4. See the README dependency table.\n' >&2
+fi
+
 printf '\nSony INZONE Buds Linux integration installed.\n'
 if (( SYSTEM_LINKS_INSTALLED == 1 )) || path_contains "$BIN_HOME"; then
   printf 'Run: inzonectl status\n'
+  printf 'Open: inzone-buds-mixer\n'
   printf 'If your shell cached an earlier failed lookup, run rehash (Zsh) or hash -r (Bash).\n'
 else
   printf 'Run: %s status\n' "$BIN_HOME/inzonectl"

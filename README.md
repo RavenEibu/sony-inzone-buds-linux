@@ -19,6 +19,8 @@ with `snd_usb_audio`.
   whenever the PC-mode dongle appears
 - Normal fallback to another audio device when the dongle is removed
 - Per-endpoint volume and a Game/Chat balance command
+- GTK4 mixer for Game/Chat balance, overall volume and microphone level
+- StatusNotifierItem tray icon for KDE and GNOME with AppIndicator support
 - User-level configuration, with rootless commands when `~/.local/bin` is
   already available in `PATH`
 
@@ -41,11 +43,25 @@ hard-coded and may change between computers or boots.
   `pipewire-pulse`
 - systemd user services for automatic hot-plug selection
 - Bash 4 or newer
+- Python 3.10 or newer, PyGObject and GTK4 for the graphical mixer
 
 On Arch Linux and CachyOS:
 
 ```bash
 sudo pacman -S pipewire pipewire-pulse wireplumber libpulse
+sudo pacman -S python-gobject gtk4
+```
+
+On Fedora:
+
+```bash
+sudo dnf install pipewire pipewire-pulseaudio wireplumber python3-gobject gtk4
+```
+
+On Debian or Ubuntu:
+
+```bash
+sudo apt install pipewire pipewire-pulse wireplumber python3-gi gir1.2-gtk-4.0
 ```
 
 ## Install
@@ -63,6 +79,9 @@ directory:
 - `~/.config/systemd/user/inzone-buds-autoswitch.service`
 - `~/.local/bin/inzonectl`
 - `~/.local/bin/inzone-autoswitch`
+- `~/.local/bin/inzone-buds-mixer`
+- `~/.local/share/inzone-buds-mixer/` (GTK application code)
+- application, AppStream and icon files under `~/.local/share`
 
 It restarts WirePlumber, so audio streams may pause briefly. The program files
 remain under `~/.local/bin`. If that directory is missing from the current
@@ -81,6 +100,27 @@ hash -r  # Bash
 ```
 
 ## Use
+
+Launch the graphical mixer from the desktop application menu or run:
+
+```bash
+inzone-buds-mixer
+```
+
+The **Overall volume** slider controls the louder Game/Chat endpoint. The
+**Game / Chat balance** slider attenuates the opposite endpoint. Set balance
+to `50` and overall volume to `100%` when both Game and Chat should be at their
+maximum level. The microphone slider is independent.
+
+KDE Plasma provides StatusNotifierItem support. GNOME requires an extension
+such as **AppIndicator and KStatusNotifierItem Support**. When tray support is
+available, closing the window hides it; use the quit button in the header to
+stop the application.
+
+See [Graphical mixer](docs/gui.md) for the control model and current desktop
+integration limitations.
+
+### Command line
 
 Inspect the integration:
 
@@ -136,7 +176,7 @@ backups, if any, are kept next to the original path.
 
 ## Scope and limitations
 
-Version 0.1 replaces the Game/Chat routing portion of Sony's Windows software.
+The project replaces the Game/Chat routing portion of Sony's Windows software.
 It does **not** currently configure firmware, EQ, noise cancellation, touch
 controls, spatial audio, battery reporting or other proprietary HID controls.
 Those features require separate protocol research and should not be claimed as
@@ -166,6 +206,7 @@ include personal data, account tokens or copyrighted Sony software.
 - [Verified hardware behavior](docs/hardware.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Roadmap](docs/roadmap.md)
+- [Graphical mixer](docs/gui.md)
 
 ## License
 

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add the first `inzone-buds-mixer` GTK4 preview.
+- Add overall Game/Chat volume, balance and microphone controls.
+- Add a StatusNotifierItem tray icon for KDE and compatible GNOME extensions.
+- Add an original circular monochrome application and symbolic icon.
+- Install desktop-entry and AppStream metadata for application menus.
+- Add GUI backend and expanded installer tests.
 - Make the hot-plug helper resolve `inzonectl` without relying on shell `PATH`.
 - Add safe `/usr/local/bin` command links when `~/.local/bin` is absent from
   `PATH`, without overwriting existing commands.

@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""Unit tests for the GUI's command backend; no GTK installation is required."""
+
+from pathlib import Path
+import subprocess
+import sys
+import unittest
+
+
+PROJECT_DIR = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_DIR / "src/inzone_buds_mixer"))
+
+from audio import AudioBackend, BackendError, derive_balance  # noqa: E402
+
+
+GAME = "alsa_output.usb-Sony_INZONE_Buds-00.pro-output-1"
+CHAT = "alsa_output.usb-Sony_INZONE_Buds-00.pro-output-0"
+MIC = "alsa_input.usb-Sony_INZONE_Buds-00.pro-input-0"
+
+
+class FakeRunner:
+    def __init__(self) -> None:
+        self.commands: list[tuple[str, ...]] = []
+
+    def __call__(self, command):
+        command = tuple(command)
+        self.commands.append(command)
+        responses = {
+            ("pactl", "list", "short", "sinks"): f"185\t{GAME}\tPipeWire\n191\t{CHAT}\tPipeWire\n",
+            ("pactl", "list", "short", "sources"): f"196\t{MIC}\tPipeWire\n",
+            ("pactl", "get-default-sink"): f"{GAME}\n",
+            ("pactl", "get-default-source"): f"{MIC}\n",
+            ("pactl", "get-sink-volume", GAME): "Volume: front-left: 39322 / 60% / -13.31 dB\n",
+            ("pactl", "get-sink-volume", CHAT): "Volume: front-left: 23593 / 36% / -26.55 dB\n",
+            ("pactl", "get-source-volume", MIC): "Volume: mono: 52428 / 80% / -5.81 dB\n",
+        }
+        if command in responses:
+            return subprocess.CompletedProcess(command, 0, responses[command], "")
+        if command[0] == "inzonectl":
+            return subprocess.CompletedProcess(command, 0, "ok\n", "")
+        return subprocess.CompletedProcess(command, 1, "", "unexpected command")
+
+
+class BalanceTests(unittest.TestCase):
+    def test_balance_derivation_matches_cli_model(self):
+        self.assertEqual(derive_balance(100, 100), 50)
+        self.assertEqual(derive_balance(100, 50), 75)
+        self.assertEqual(derive_balance(50, 100), 25)
+        self.assertEqual(derive_balance(100, 0), 100)
+        self.assertEqual(derive_balance(0, 100), 0)
+
+
+class BackendTests(unittest.TestCase):
+    def setUp(self):
+        self.runner = FakeRunner()
+        self.backend = AudioBackend(
+            pactl="pactl",
+            inzonectl="inzonectl",
+            runner=self.runner,
+        )
+
+    def test_snapshot_discovers_endpoints_and_volumes(self):
+        snapshot = self.backend.snapshot()
+        self.assertTrue(snapshot.connected)
+        self.assertEqual(snapshot.game, GAME)
+        self.assertEqual(snapshot.chat, CHAT)
+        self.assertEqual(snapshot.microphone, MIC)
+        self.assertEqual(snapshot.game_volume, 60)
+        self.assertEqual(snapshot.chat_volume, 36)
+        self.assertEqual(snapshot.microphone_volume, 80)
+        self.assertEqual(snapshot.overall_volume, 60)
+        self.assertEqual(snapshot.balance, 70)
+
+    def test_mutations_use_inzonectl(self):
+        self.backend.set_balance(70, 60)
+        self.backend.set_microphone_volume(85)
+        self.backend.select_defaults()
+        self.assertIn(("inzonectl", "balance", "70", "60"), self.runner.commands)
+        self.assertIn(("inzonectl", "volume", "mic", "85"), self.runner.commands)
+        self.assertIn(("inzonectl", "default"), self.runner.commands)
+
+    def test_failed_command_is_reported(self):
+        backend = AudioBackend(
+            runner=lambda command: subprocess.CompletedProcess(command, 1, "", "no PipeWire"),
+        )
+        with self.assertRaisesRegex(BackendError, "no PipeWire"):
+            backend.snapshot()
+
+
+if __name__ == "__main__":
+    unittest.main()

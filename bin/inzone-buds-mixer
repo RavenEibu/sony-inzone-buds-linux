@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
+
+candidates=(
+  "${INZONE_BUDS_MIXER_DATADIR:-}"
+  "$DATA_HOME/inzone-buds-mixer"
+  "$SCRIPT_DIR/../share/inzone-buds-mixer"
+  "$SCRIPT_DIR/../src/inzone_buds_mixer"
+  "/usr/share/inzone-buds-mixer"
+)
+
+for app_dir in "${candidates[@]}"; do
+  [[ -n $app_dir && -f $app_dir/app.py ]] || continue
+  export INZONE_BUDS_MIXER_DATADIR=$app_dir
+  exec python3 "$app_dir/app.py" "$@"
+done
+
+printf 'inzone-buds-mixer: application files were not found\n' >&2
+exit 1
