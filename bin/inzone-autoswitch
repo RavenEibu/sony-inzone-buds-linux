@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -u
+
+PACTL=${PACTL:-pactl}
+INZONECTL=${INZONECTL:-inzonectl}
+GAME_SUFFIX='.pro-output-1'
+PC_VENDOR_ID=054c
+PC_PRODUCT_ID=0ec2
+
+pc_dongle_present() {
+  local vendor_file product_file vendor product
+  for vendor_file in /sys/bus/usb/devices/*/idVendor; do
+    [[ -r $vendor_file ]] || continue
+    product_file=${vendor_file%/idVendor}/idProduct
+    [[ -r $product_file ]] || continue
+    read -r vendor < "$vendor_file"
+    read -r product < "$product_file"
+    if [[ ${vendor,,} == "$PC_VENDOR_ID" && ${product,,} == "$PC_PRODUCT_ID" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+game_is_available() {
+  "$PACTL" list short sinks 2>/dev/null |
+    awk -v suffix="$GAME_SUFFIX" '
+      index($2, suffix) == length($2) - length(suffix) + 1 { found=1 }
+      END { exit !found }
+    '
+}
+
+select_inzone() {
+  # A short delay lets PipeWire finish creating the card and its nodes.
+  sleep 0.25
+  "$INZONECTL" default >/dev/null 2>&1 || true
+}
+
+activate_profile() {
+  local attempt
+  pc_dongle_present || return 1
+  for attempt in {1..20}; do
+    if "$INZONECTL" profile >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.25
+  done
+  return 1
+}
+
+command -v "$PACTL" >/dev/null 2>&1 || exit 1
+command -v "$INZONECTL" >/dev/null 2>&1 || exit 1
+
+was_available=0
+if game_is_available; then
+  select_inzone
+  was_available=1
+else
+  # This is a no-op when the PC-mode dongle is not attached. If it is attached
+  # with the desktop profile active, switching profile will create Game/Chat.
+  activate_profile || true
+fi
+
+LC_ALL=C "$PACTL" subscribe 2>/dev/null | while IFS= read -r event; do
+  case "$event" in
+    *"'new' on card"*)
+      activate_profile || true
+      ;;
+    *"'new' on sink"*|*"'new' on source"*)
+      if (( was_available == 0 )) && game_is_available; then
+        select_inzone
+        was_available=1
+      fi
+      ;;
+    *"'remove' on sink"*)
+      if ! game_is_available; then
+        was_available=0
+      fi
+      ;;
+  esac
+done

@@ -1,0 +1,265 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PACTL=${PACTL:-pactl}
+WPCTL=${WPCTL:-wpctl}
+PC_VENDOR_ID=054c
+PC_PRODUCT_ID=0ec2
+CARD_PATTERN='^alsa_card[.]usb-Sony_INZONE_Buds'
+GAME_SUFFIX='.pro-output-1'
+CHAT_SUFFIX='.pro-output-0'
+MIC_SUFFIX='.pro-input-0'
+
+usage() {
+  cat <<'EOF'
+Usage: inzonectl COMMAND [ARGUMENTS]
+
+Commands:
+  status                       Show INZONE endpoints and defaults
+  doctor                       Show diagnostic information
+  profile                      Activate the Pro Audio profile
+  game                         Make Game the default output
+  chat                         Make Chat the default output
+  mic                          Make INZONE the default input
+  default                      Select Game output and INZONE microphone
+  volume game|chat|mic PERCENT Set one endpoint's volume (0-100)
+  balance POSITION [MAX]       Balance 0=Chat, 50=center, 100=Game
+                               MAX defaults to 50 percent
+  help                         Show this help
+EOF
+}
+
+die() {
+  printf 'inzonectl: %s\n' "$*" >&2
+  exit 1
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"
+}
+
+is_percent() {
+  [[ ${1:-} =~ ^[0-9]+$ ]] && (( 10#$1 >= 0 && 10#$1 <= 100 ))
+}
+
+pc_dongle_present() {
+  local vendor_file product_file vendor product
+  for vendor_file in /sys/bus/usb/devices/*/idVendor; do
+    [[ -r $vendor_file ]] || continue
+    product_file=${vendor_file%/idVendor}/idProduct
+    [[ -r $product_file ]] || continue
+    read -r vendor < "$vendor_file"
+    read -r product < "$product_file"
+    if [[ ${vendor,,} == "$PC_VENDOR_ID" && ${product,,} == "$PC_PRODUCT_ID" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+card_name() {
+  "$PACTL" list short cards 2>/dev/null |
+    awk -v pattern="$CARD_PATTERN" '$2 ~ pattern { print $2; exit }'
+}
+
+sink_by_suffix() {
+  local suffix=$1
+  "$PACTL" list short sinks 2>/dev/null |
+    awk -v suffix="$suffix" 'index($2, suffix) == length($2) - length(suffix) + 1 { print $2; exit }'
+}
+
+source_by_suffix() {
+  local suffix=$1
+  "$PACTL" list short sources 2>/dev/null |
+    awk -v suffix="$suffix" 'index($2, suffix) == length($2) - length(suffix) + 1 { print $2; exit }'
+}
+
+wait_for_endpoint() {
+  local kind=$1 suffix=$2 value='' attempt
+  for attempt in {1..30}; do
+    if [[ $kind == sink ]]; then
+      value=$(sink_by_suffix "$suffix")
+    else
+      value=$(source_by_suffix "$suffix")
+    fi
+    if [[ -n $value ]]; then
+      printf '%s\n' "$value"
+      return 0
+    fi
+    sleep 0.1
+  done
+  return 1
+}
+
+activate_profile() {
+  local card
+  pc_dongle_present || die 'PC-mode dongle 054c:0ec2 is not connected'
+  card=$(card_name)
+  [[ -n $card ]] || die 'INZONE PipeWire card was not found'
+  "$PACTL" set-card-profile "$card" pro-audio
+}
+
+game_sink() {
+  local sink
+  sink=$(sink_by_suffix "$GAME_SUFFIX")
+  if [[ -z $sink ]]; then
+    activate_profile
+    sink=$(wait_for_endpoint sink "$GAME_SUFFIX") || true
+  fi
+  [[ -n $sink ]] || die 'Game endpoint was not found'
+  printf '%s\n' "$sink"
+}
+
+chat_sink() {
+  local sink
+  sink=$(sink_by_suffix "$CHAT_SUFFIX")
+  if [[ -z $sink ]]; then
+    activate_profile
+    sink=$(wait_for_endpoint sink "$CHAT_SUFFIX") || true
+  fi
+  [[ -n $sink ]] || die 'Chat endpoint was not found'
+  printf '%s\n' "$sink"
+}
+
+mic_source() {
+  local source
+  source=$(source_by_suffix "$MIC_SUFFIX")
+  if [[ -z $source ]]; then
+    activate_profile
+    source=$(wait_for_endpoint source "$MIC_SUFFIX") || true
+  fi
+  [[ -n $source ]] || die 'Microphone endpoint was not found'
+  printf '%s\n' "$source"
+}
+
+set_game_default() {
+  local sink
+  sink=$(game_sink)
+  "$PACTL" set-default-sink "$sink"
+  printf 'Default output: Sony INZONE Buds - Game\n'
+}
+
+set_chat_default() {
+  local sink
+  sink=$(chat_sink)
+  "$PACTL" set-default-sink "$sink"
+  printf 'Default output: Sony INZONE Buds - Chat\n'
+}
+
+set_mic_default() {
+  local source
+  source=$(mic_source)
+  "$PACTL" set-default-source "$source"
+  printf 'Default input: Sony INZONE Buds - Microphone\n'
+}
+
+set_endpoint_volume() {
+  local endpoint=${1:-} percent=${2:-} target
+  is_percent "$percent" || die 'volume must be an integer from 0 to 100'
+  case "$endpoint" in
+    game)
+      target=$(game_sink)
+      "$PACTL" set-sink-volume "$target" "${percent}%"
+      ;;
+    chat)
+      target=$(chat_sink)
+      "$PACTL" set-sink-volume "$target" "${percent}%"
+      ;;
+    mic)
+      target=$(mic_source)
+      "$PACTL" set-source-volume "$target" "${percent}%"
+      ;;
+    *) die 'endpoint must be game, chat or mic' ;;
+  esac
+  printf '%s volume: %s%%\n' "$endpoint" "$percent"
+}
+
+set_balance() {
+  local position=${1:-} maximum=${2:-50}
+  local game_percent chat_percent game chat
+  is_percent "$position" || die 'balance position must be an integer from 0 to 100'
+  is_percent "$maximum" || die 'maximum volume must be an integer from 0 to 100'
+
+  if (( 10#$position >= 50 )); then
+    game_percent=$((10#$maximum))
+    chat_percent=$(( (100 - 10#$position) * 2 * 10#$maximum / 100 ))
+  else
+    chat_percent=$((10#$maximum))
+    game_percent=$(( 10#$position * 2 * 10#$maximum / 100 ))
+  fi
+
+  game=$(game_sink)
+  chat=$(chat_sink)
+  "$PACTL" set-sink-volume "$game" "${game_percent}%"
+  "$PACTL" set-sink-volume "$chat" "${chat_percent}%"
+  printf 'Balance %s: Game %s%%, Chat %s%%\n' "$position" "$game_percent" "$chat_percent"
+}
+
+show_status() {
+  local game chat mic default_sink default_source
+  game=$(sink_by_suffix "$GAME_SUFFIX")
+  chat=$(sink_by_suffix "$CHAT_SUFFIX")
+  mic=$(source_by_suffix "$MIC_SUFFIX")
+  default_sink=$("$PACTL" get-default-sink 2>/dev/null || true)
+  default_source=$("$PACTL" get-default-source 2>/dev/null || true)
+
+  if pc_dongle_present; then
+    printf 'Dongle mode: PC (054c:0ec2)\n'
+  else
+    printf 'Dongle mode: PC mode not detected\n'
+  fi
+  printf 'Game:       %s\n' "${game:-not available}"
+  printf 'Chat:       %s\n' "${chat:-not available}"
+  printf 'Microphone: %s\n' "${mic:-not available}"
+  printf 'Default output: %s\n' "${default_sink:-unknown}"
+  printf 'Default input:  %s\n' "${default_source:-unknown}"
+}
+
+show_doctor() {
+  printf 'inzonectl diagnostics\n'
+  printf 'Kernel: '
+  uname -sr
+  printf 'PipeWire/WirePlumber:\n'
+  "$WPCTL" status 2>&1 || true
+  printf '\nINZONE USB devices:\n'
+  if command -v lsusb >/dev/null 2>&1; then
+    lsusb -d 054c:0ec2 2>/dev/null || true
+    lsusb -d 054c:0ec3 2>/dev/null || true
+  else
+    printf 'lsusb is not installed\n'
+  fi
+  printf '\nINZONE cards:\n'
+  "$PACTL" list short cards 2>/dev/null | grep 'Sony_INZONE_Buds' || true
+  printf '\nINZONE sinks:\n'
+  "$PACTL" list short sinks 2>/dev/null | grep 'Sony_INZONE_Buds' || true
+  printf '\nINZONE sources:\n'
+  "$PACTL" list short sources 2>/dev/null | grep 'Sony_INZONE_Buds' || true
+}
+
+main() {
+  require_command "$PACTL"
+  case ${1:-help} in
+    help|-h|--help) usage ;;
+    status) show_status ;;
+    doctor)
+      require_command "$WPCTL"
+      show_doctor
+      ;;
+    profile)
+      activate_profile
+      printf 'Profile: pro-audio\n'
+      ;;
+    game) set_game_default ;;
+    chat) set_chat_default ;;
+    mic) set_mic_default ;;
+    default)
+      set_game_default
+      set_mic_default
+      ;;
+    volume) set_endpoint_volume "${2:-}" "${3:-}" ;;
+    balance) set_balance "${2:-}" "${3:-50}" ;;
+    *) usage >&2; die "unknown command: $1" ;;
+  esac
+}
+
+main "$@"

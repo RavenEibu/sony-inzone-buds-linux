@@ -1,0 +1,13 @@
+[Unit]
+Description=Prefer Sony INZONE Buds Game/Chat endpoints on hot-plug
+After=pipewire.service pipewire-pulse.service wireplumber.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/inzone-autoswitch
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
