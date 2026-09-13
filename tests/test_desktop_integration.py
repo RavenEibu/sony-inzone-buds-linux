@@ -34,6 +34,18 @@ class DesktopIntegrationTests(unittest.TestCase):
         self.assertIn('GLib.Variant("s", "Quit")', source)
         self.assertIn('MENU_PATH = "/MenuBar"', source)
 
+    def test_color_scheme_uses_portal_without_overriding_gtk(self):
+        source = (PROJECT_DIR / "src/inzone_buds_mixer/app.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('gi.require_version("Gdk", "4.0")', source)
+        self.assertIn(
+            'PORTAL_SETTINGS_INTERFACE = "org.freedesktop.portal.Settings"',
+            source,
+        )
+        self.assertIn("self._portal_color_scheme in (0, 1, 2)", source)
+        self.assertNotIn("self._gtk_settings.set_property(", source)
+
     def test_application_metadata_and_icons_are_valid_xml(self):
         paths = [
             PROJECT_DIR

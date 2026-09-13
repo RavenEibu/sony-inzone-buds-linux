@@ -40,12 +40,13 @@ rather than positioned by the application, which also works under Wayland.
 
 ## Light and dark appearance
 
-The mixer watches GTK's desktop-wide color-scheme properties. On Wayland GTK
-receives these settings through the desktop settings portal; on X11 it can use
-XSettings. The application switches its window and header colors immediately
-when the desktop preference changes and keeps GTK controls on the matching
-theme variant. A theme-name fallback is retained for GTK versions older than
-the explicit color-scheme property.
+The mixer reads `org.freedesktop.appearance color-scheme` from XDG Desktop
+Portal and watches its `SettingChanged` signal. The application switches its
+window and header colors immediately when the desktop preference changes. It
+does not write GTK's application theme preference, which prevents a dark mode
+selection from becoming sticky when the desktop returns to normal/light mode.
+GTK color-scheme and theme-name fallbacks are retained for desktops without a
+working settings portal.
 
 ## Architecture
 

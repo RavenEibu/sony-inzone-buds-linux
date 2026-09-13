@@ -11,6 +11,7 @@ import sys
 import gi
 
 gi.require_version("Gtk", "4.0")
+gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
 from audio import AudioBackend, AudioSnapshot, BackendError  # noqa: E402
@@ -20,6 +21,11 @@ from tray import StatusNotifierItem  # noqa: E402
 APP_ID = "io.github.RavenEibu.InzoneBudsMixer"
 APP_NAME = "INZONE Buds Mixer"
 ICON_NAME = APP_ID
+PORTAL_BUS_NAME = "org.freedesktop.portal.Desktop"
+PORTAL_OBJECT_PATH = "/org/freedesktop/portal/desktop"
+PORTAL_SETTINGS_INTERFACE = "org.freedesktop.portal.Settings"
+PORTAL_APPEARANCE_NAMESPACE = "org.freedesktop.appearance"
+PORTAL_COLOR_SCHEME_KEY = "color-scheme"
 APP_CSS = """
 window.inzone-light,
 window.inzone-light headerbar {
@@ -248,6 +254,8 @@ class MixerApplication(Gtk.Application):
         self._poll_id = 0
         self._held = False
         self._gtk_settings = None
+        self._portal_settings = None
+        self._portal_color_scheme: int | None = None
         self._applying_color_scheme = False
         self._css_provider = None
 
@@ -299,19 +307,86 @@ class MixerApplication(Gtk.Application):
 
     def _watch_color_scheme(self) -> None:
         self._gtk_settings = Gtk.Settings.get_default()
-        if not self._gtk_settings:
-            return
-        for property_name in (
-            "gtk-interface-color-scheme",
-            "gtk-application-prefer-dark-theme",
-            "gtk-theme-name",
-        ):
-            if self._gtk_settings.find_property(property_name):
-                self._gtk_settings.connect(
-                    f"notify::{property_name}",
-                    self._color_scheme_changed,
-                )
+        if self._gtk_settings:
+            for property_name in (
+                "gtk-interface-color-scheme",
+                "gtk-application-prefer-dark-theme",
+                "gtk-theme-name",
+            ):
+                if self._gtk_settings.find_property(property_name):
+                    self._gtk_settings.connect(
+                        f"notify::{property_name}",
+                        self._color_scheme_changed,
+                    )
+        self._watch_portal_color_scheme()
         self._apply_detected_color_scheme()
+
+    def _watch_portal_color_scheme(self) -> None:
+        try:
+            self._portal_settings = Gio.DBusProxy.new_for_bus_sync(
+                Gio.BusType.SESSION,
+                Gio.DBusProxyFlags.NONE,
+                None,
+                PORTAL_BUS_NAME,
+                PORTAL_OBJECT_PATH,
+                PORTAL_SETTINGS_INTERFACE,
+                None,
+            )
+            self._portal_settings.connect("g-signal", self._portal_setting_changed)
+            self._read_portal_color_scheme()
+        except GLib.Error:
+            self._portal_settings = None
+            self._portal_color_scheme = None
+
+    @staticmethod
+    def _unpack_portal_value(value):
+        while value.get_type_string() == "v":
+            value = value.get_variant()
+        return value.unpack()
+
+    def _read_portal_color_scheme(self) -> None:
+        if not self._portal_settings:
+            return
+        parameters = GLib.Variant(
+            "(ss)",
+            (PORTAL_APPEARANCE_NAMESPACE, PORTAL_COLOR_SCHEME_KEY),
+        )
+        for method_name in ("ReadOne", "Read"):
+            try:
+                result = self._portal_settings.call_sync(
+                    method_name,
+                    parameters,
+                    Gio.DBusCallFlags.NONE,
+                    2000,
+                    None,
+                )
+            except GLib.Error:
+                continue
+            value = self._unpack_portal_value(result.get_child_value(0))
+            if isinstance(value, int):
+                self._portal_color_scheme = value
+                return
+
+    def _portal_setting_changed(
+        self,
+        _proxy,
+        _sender_name,
+        signal_name: str,
+        parameters,
+    ) -> None:
+        if signal_name != "SettingChanged":
+            return
+        namespace = parameters.get_child_value(0).unpack()
+        key = parameters.get_child_value(1).unpack()
+        if (
+            namespace != PORTAL_APPEARANCE_NAMESPACE
+            or key != PORTAL_COLOR_SCHEME_KEY
+        ):
+            return
+        value = self._unpack_portal_value(parameters.get_child_value(2))
+        if isinstance(value, int):
+            self._portal_color_scheme = value
+            self._apply_detected_color_scheme()
 
     def _install_css(self) -> None:
         display = Gdk.Display.get_default()
@@ -329,6 +404,12 @@ class MixerApplication(Gtk.Application):
         self._apply_detected_color_scheme()
 
     def _detect_dark_mode(self) -> bool:
+        # XDG Desktop Portal uses 1 for dark, 2 for light and 0 for the normal
+        # desktop appearance. GNOME reports its light mode as 0, so it must be
+        # treated as light instead of falling back to a stale GTK preference.
+        if self._portal_color_scheme in (0, 1, 2):
+            return self._portal_color_scheme == 1
+
         settings = self._gtk_settings
         if not settings:
             return False
@@ -350,30 +431,11 @@ class MixerApplication(Gtk.Application):
         return False
 
     def _apply_detected_color_scheme(self) -> None:
-        if self._applying_color_scheme or not self._gtk_settings:
+        if self._applying_color_scheme:
             return
         self._applying_color_scheme = True
         try:
             dark = self._detect_dark_mode()
-            explicit_scheme = 0
-            if self._gtk_settings.find_property("gtk-interface-color-scheme"):
-                explicit_scheme = int(
-                    self._gtk_settings.get_property("gtk-interface-color-scheme")
-                )
-            if (
-                explicit_scheme in (2, 3)
-                and self._gtk_settings.find_property(
-                    "gtk-application-prefer-dark-theme"
-                )
-            ):
-                current = bool(
-                    self._gtk_settings.get_property("gtk-application-prefer-dark-theme")
-                )
-                if current != dark:
-                    self._gtk_settings.set_property(
-                        "gtk-application-prefer-dark-theme",
-                        dark,
-                    )
             if self.window:
                 self.window.remove_css_class("inzone-dark")
                 self.window.remove_css_class("inzone-light")
