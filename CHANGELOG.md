@@ -6,8 +6,10 @@
 - Add overall Game/Chat volume, balance and microphone controls.
 - Add a StatusNotifierItem tray icon for KDE and compatible GNOME extensions.
 - Follow desktop light/dark appearance changes at runtime.
-- Fix dark-to-light transitions by reading the XDG desktop appearance portal
-  without overriding GTK's application theme preference.
+- Fix dark-to-light transitions by using the XDG desktop appearance portal as
+  the independent color-scheme source.
+- Apply the portal-selected GTK variant before constructing the window, fixing
+  a light header bar when the mixer starts while the desktop is already dark.
 - Declare the GTK4 GDK binding explicitly to avoid PyGI version warnings.
 - Add Show Window and Quit actions through a native D-Bus tray menu.
 - Add an original circular monochrome application and symbolic icon.

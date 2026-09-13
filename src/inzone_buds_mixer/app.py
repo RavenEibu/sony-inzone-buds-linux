@@ -262,8 +262,11 @@ class MixerApplication(Gtk.Application):
     def do_activate(self) -> None:
         if self.window is None:
             self._install_css()
-            self.window = MixerWindow(self, self.backend)
             self._watch_color_scheme()
+            # Select GTK's application variant before constructing widgets so
+            # the header bar and controls do not start in the light variant.
+            self.window = MixerWindow(self, self.backend)
+            self._apply_detected_color_scheme()
             self._start_tray()
             self._poll_id = GLib.timeout_add_seconds(2, self._poll)
         self.window.present()
@@ -436,6 +439,26 @@ class MixerApplication(Gtk.Application):
         self._applying_color_scheme = True
         try:
             dark = self._detect_dark_mode()
+            # This is application-local GTK state. Only drive it from the
+            # independent portal value, never from the GTK fallback itself,
+            # so it cannot become a feedback loop or remain stuck on dark.
+            if (
+                self._portal_color_scheme in (0, 1, 2)
+                and self._gtk_settings
+                and self._gtk_settings.find_property(
+                    "gtk-application-prefer-dark-theme"
+                )
+                and bool(
+                    self._gtk_settings.get_property(
+                        "gtk-application-prefer-dark-theme"
+                    )
+                )
+                != dark
+            ):
+                self._gtk_settings.set_property(
+                    "gtk-application-prefer-dark-theme",
+                    dark,
+                )
             if self.window:
                 self.window.remove_css_class("inzone-dark")
                 self.window.remove_css_class("inzone-light")

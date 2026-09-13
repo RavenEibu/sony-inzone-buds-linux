@@ -42,10 +42,12 @@ rather than positioned by the application, which also works under Wayland.
 
 The mixer reads `org.freedesktop.appearance color-scheme` from XDG Desktop
 Portal and watches its `SettingChanged` signal. The application switches its
-window and header colors immediately when the desktop preference changes. It
-does not write GTK's application theme preference, which prevents a dark mode
-selection from becoming sticky when the desktop returns to normal/light mode.
-GTK color-scheme and theme-name fallbacks are retained for desktops without a
+window and header colors immediately when the desktop preference changes. The
+portal value selects GTK's application-local theme variant before the window is
+constructed, so controls and the header start with the correct appearance. The
+portal remains the independent source of truth, preventing that GTK preference
+from becoming sticky when the desktop returns to normal/light mode. GTK
+color-scheme and theme-name fallbacks are retained for desktops without a
 working settings portal.
 
 ## Architecture

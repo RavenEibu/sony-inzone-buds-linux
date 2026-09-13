@@ -34,7 +34,7 @@ class DesktopIntegrationTests(unittest.TestCase):
         self.assertIn('GLib.Variant("s", "Quit")', source)
         self.assertIn('MENU_PATH = "/MenuBar"', source)
 
-    def test_color_scheme_uses_portal_without_overriding_gtk(self):
+    def test_color_scheme_uses_portal_before_creating_window(self):
         source = (PROJECT_DIR / "src/inzone_buds_mixer/app.py").read_text(
             encoding="utf-8"
         )
@@ -44,7 +44,14 @@ class DesktopIntegrationTests(unittest.TestCase):
             source,
         )
         self.assertIn("self._portal_color_scheme in (0, 1, 2)", source)
-        self.assertNotIn("self._gtk_settings.set_property(", source)
+        activate = source[
+            source.index("    def do_activate") : source.index("    def _start_tray")
+        ]
+        self.assertLess(
+            activate.index("self._watch_color_scheme()"),
+            activate.index("self.window = MixerWindow"),
+        )
+        self.assertIn("self._apply_detected_color_scheme()", activate)
 
     def test_application_metadata_and_icons_are_valid_xml(self):
         paths = [
