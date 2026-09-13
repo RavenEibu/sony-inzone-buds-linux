@@ -19,7 +19,8 @@ with `snd_usb_audio`.
   whenever the PC-mode dongle appears
 - Normal fallback to another audio device when the dongle is removed
 - Per-endpoint volume and a Game/Chat balance command
-- User-level install and uninstall; no root privileges required
+- User-level configuration, with rootless commands when `~/.local/bin` is
+  already available in `PATH`
 
 Tested with the INZONE Buds dongle in PC mode:
 
@@ -55,15 +56,29 @@ Put the dongle switch in **PC**, clone this repository, then run:
 ./install.sh
 ```
 
-The installer places files only in your user configuration:
+The installer places its configuration and program files under your home
+directory:
 
 - `~/.config/wireplumber/wireplumber.conf.d/51-inzone-buds.conf`
 - `~/.config/systemd/user/inzone-buds-autoswitch.service`
 - `~/.local/bin/inzonectl`
 - `~/.local/bin/inzone-autoswitch`
 
-It restarts WirePlumber, so audio streams may pause briefly. Log out and back
-in if `~/.local/bin` was not already in your `PATH`.
+It restarts WirePlumber, so audio streams may pause briefly. The program files
+remain under `~/.local/bin`. If that directory is missing from the current
+`PATH`, the installer offers the normal `sudo` prompt and creates an
+`inzonectl` command link under `/usr/local/bin`, without overwriting an existing
+command. This makes
+`inzonectl` available in the same terminal. Systems that already include
+`~/.local/bin` remain fully rootless.
+
+If Zsh or Bash cached an unsuccessful lookup made before installation, refresh
+its command cache once:
+
+```bash
+rehash   # Zsh
+hash -r  # Bash
+```
 
 ## Use
 

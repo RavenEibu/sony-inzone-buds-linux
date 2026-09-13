@@ -2,7 +2,8 @@
 set -u
 
 PACTL=${PACTL:-pactl}
-INZONECTL=${INZONECTL:-inzonectl}
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+INZONECTL=${INZONECTL:-"$SCRIPT_DIR/inzonectl"}
 GAME_SUFFIX='.pro-output-1'
 PC_VENDOR_ID=054c
 PC_PRODUCT_ID=0ec2

@@ -36,6 +36,39 @@ posting its output publicly.
 Expected output includes node names ending in `pro-output-0`, `pro-output-1`
 and `pro-input-0`.
 
+## `inzonectl: command not found`
+
+The installer stores the scripts in `~/.local/bin`. When that directory is not
+in the current `PATH`, it creates an `inzonectl` link in `/usr/local/bin` after
+displaying a standard `sudo` prompt. It never replaces an existing command.
+
+First check whether the program itself works:
+
+```bash
+~/.local/bin/inzonectl status
+```
+
+Then check command resolution:
+
+```bash
+command -v inzonectl
+```
+
+If installation completed after the shell had already failed to find the
+command, clear the shell's command cache:
+
+```bash
+rehash   # Zsh
+hash -r  # Bash
+```
+
+Changing from Zsh to Bash does not repair a missing `PATH`; child shells inherit
+the parent's exported environment. Re-run `./install.sh` to let the updated
+installer create the safe `/usr/local/bin` links when necessary.
+
+The hot-plug service does not depend on the interactive shell's `PATH` because
+it resolves `inzonectl` relative to its own installed location.
+
 ## The names remain "INZONE Buds Pro"
 
 Check that the fragment exists:
