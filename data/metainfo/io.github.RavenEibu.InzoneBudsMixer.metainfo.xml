@@ -28,6 +28,18 @@
   <content_rating type="oars-1.1"/>
   <releases>
     <!-- Add each version here with its real date only when it is released. -->
+    <release version="0.3.0" date="2026-09-18">
+      <description>
+        <p>Adds a Boost Chat preset, desktop notifications, a user config file and CI.</p>
+        <ul>
+          <li>Boost Chat toggle: sets Game 30%/Chat 70%, restores the prior volumes on a second press</li>
+          <li>Desktop notification when the dongle connects or disconnects</li>
+          <li>User config file for optional behavior, without editing scripts</li>
+          <li>Start at login in the tray</li>
+          <li>Automated tests, ShellCheck and metadata validation on every change</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.0" date="2026-09-17">
       <description>
         <p>First release of INZONE Buds Mixer.</p>

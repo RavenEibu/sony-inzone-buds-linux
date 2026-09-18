@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.3.0 - 2026-09-18
+
+Adds a config file, desktop notifications, a Boost Chat preset, CI and
+launch-at-login. Verified with the dongle on CachyOS with GNOME on Wayland.
+
 ### Added
 
 - **Boost Chat** toggle in the mixer window and tray menu: sets Game 30% /
