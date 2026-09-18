@@ -12,11 +12,18 @@ candidates=(
   "/usr/share/inzone-buds-mixer"
 )
 
+found=''
 for app_dir in "${candidates[@]}"; do
-  [[ -n $app_dir && -f $app_dir/app.py ]] || continue
-  export INZONE_BUDS_MIXER_DATADIR=$app_dir
-  exec python3 "$app_dir/app.py" "$@"
+  if [[ -n $app_dir && -f $app_dir/app.py ]]; then
+    found=$app_dir
+    break
+  fi
 done
 
-printf 'inzone-buds-mixer: application files were not found\n' >&2
-exit 1
+if [[ -z $found ]]; then
+  printf 'inzone-buds-mixer: application files were not found\n' >&2
+  exit 1
+fi
+
+export INZONE_BUDS_MIXER_DATADIR=$found
+exec python3 "$found/app.py" "$@"
