@@ -14,7 +14,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
-from audio import AudioBackend, AudioSnapshot, BackendError  # noqa: E402
+from audio import AudioBackend, AudioSnapshot, BackendError, is_endpoint_event  # noqa: E402
 from tray import StatusNotifierItem  # noqa: E402
 
 
@@ -26,6 +26,10 @@ PORTAL_OBJECT_PATH = "/org/freedesktop/portal/desktop"
 PORTAL_SETTINGS_INTERFACE = "org.freedesktop.portal.Settings"
 PORTAL_APPEARANCE_NAMESPACE = "org.freedesktop.appearance"
 PORTAL_COLOR_SCHEME_KEY = "color-scheme"
+# Coalesce the burst of events a single volume key press or profile change
+# produces into one refresh.
+EVENT_REFRESH_DELAY_MS = 60
+EVENT_WATCH_RETRY_SECONDS = 2
 APP_CSS = """
 window.inzone-light,
 window.inzone-light headerbar {
@@ -254,6 +258,10 @@ class MixerApplication(Gtk.Application):
         self.tray_available = False
         self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="inzone-audio")
         self._refresh_in_progress = False
+        self._refresh_again = False
+        self._event_process: Gio.Subprocess | None = None
+        self._event_cancellable: Gio.Cancellable | None = None
+        self._event_refresh_id = 0
         self._actions_in_flight = 0
         self._action_serial = 0
         self._poll_id = 0
@@ -273,6 +281,8 @@ class MixerApplication(Gtk.Application):
             self.window = MixerWindow(self, self.backend)
             self._apply_detected_color_scheme()
             self._start_tray()
+            self._watch_audio_events()
+            # Events give immediate updates; polling remains a safety net.
             self._poll_id = GLib.timeout_add_seconds(2, self._poll)
         self.window.present()
         self.refresh()
@@ -471,12 +481,71 @@ class MixerApplication(Gtk.Application):
         finally:
             self._applying_color_scheme = False
 
+    def _watch_audio_events(self) -> bool:
+        """Refresh as soon as PipeWire reports an endpoint or default change.
+
+        Volume keys, the desktop sound panel and other mixers change the
+        endpoints without going through this application.
+        """
+        self._event_cancellable = Gio.Cancellable()
+        try:
+            self._event_process = Gio.Subprocess.new(
+                [self.backend.pactl, "subscribe"],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE,
+            )
+        except GLib.Error:
+            self._event_process = None
+            GLib.timeout_add_seconds(EVENT_WATCH_RETRY_SECONDS, self._watch_audio_events)
+            return GLib.SOURCE_REMOVE
+        stream = Gio.DataInputStream.new(self._event_process.get_stdout_pipe())
+        self._read_audio_event(stream, self._event_cancellable)
+        return GLib.SOURCE_REMOVE
+
+    def _read_audio_event(self, stream, cancellable) -> None:
+        stream.read_line_async(
+            GLib.PRIORITY_DEFAULT,
+            cancellable,
+            self._audio_event_read,
+            cancellable,
+        )
+
+    def _audio_event_read(self, stream, result, cancellable) -> None:
+        if cancellable.is_cancelled():
+            return
+        try:
+            line, _length = stream.read_line_finish_utf8(result)
+        except GLib.Error:
+            line = None
+        if line is None:
+            # pactl exited, for example because pipewire-pulse restarted.
+            self._event_process = None
+            GLib.timeout_add_seconds(EVENT_WATCH_RETRY_SECONDS, self._watch_audio_events)
+            self.refresh()
+            return
+        if is_endpoint_event(line):
+            self._schedule_event_refresh()
+        self._read_audio_event(stream, cancellable)
+
+    def _schedule_event_refresh(self) -> None:
+        if not self._event_refresh_id:
+            self._event_refresh_id = GLib.timeout_add(
+                EVENT_REFRESH_DELAY_MS, self._event_refresh
+            )
+
+    def _event_refresh(self) -> bool:
+        self._event_refresh_id = 0
+        self.refresh()
+        return GLib.SOURCE_REMOVE
+
     def _poll(self) -> bool:
         self.refresh()
         return GLib.SOURCE_CONTINUE
 
     def refresh(self) -> None:
         if self._refresh_in_progress:
+            # The running read may predate the change that requested this
+            # refresh, so read again once it finishes instead of dropping it.
+            self._refresh_again = True
             return
         self._refresh_in_progress = True
         serial = self._action_serial
@@ -498,15 +567,17 @@ class MixerApplication(Gtk.Application):
 
     def _finish_refresh(self, future, serial: int) -> bool:
         self._refresh_in_progress = False
-        if not self.window:
-            return GLib.SOURCE_REMOVE
-        try:
-            snapshot = future.result()
-        except (BackendError, OSError) as error:
-            self.window.show_error(str(error))
-        else:
-            if not self._snapshot_is_stale(serial):
-                self.window.apply_snapshot(snapshot)
+        if self.window:
+            try:
+                snapshot = future.result()
+            except (BackendError, OSError) as error:
+                self.window.show_error(str(error))
+            else:
+                if not self._snapshot_is_stale(serial):
+                    self.window.apply_snapshot(snapshot)
+        if self._refresh_again:
+            self._refresh_again = False
+            self.refresh()
         return GLib.SOURCE_REMOVE
 
     def run_audio_action(self, operation, *arguments) -> None:
@@ -529,6 +600,14 @@ class MixerApplication(Gtk.Application):
         if self._poll_id:
             GLib.source_remove(self._poll_id)
             self._poll_id = 0
+        if self._event_refresh_id:
+            GLib.source_remove(self._event_refresh_id)
+            self._event_refresh_id = 0
+        if self._event_cancellable:
+            self._event_cancellable.cancel()
+        if self._event_process:
+            self._event_process.force_exit()
+            self._event_process = None
         if self.tray:
             self.tray.close()
         self._executor.shutdown(wait=False, cancel_futures=True)

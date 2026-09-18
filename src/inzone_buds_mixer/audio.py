@@ -21,6 +21,15 @@ GAME_SUFFIX = ".pro-output-1"
 CHAT_SUFFIX = ".pro-output-0"
 MIC_SUFFIX = ".pro-input-0"
 PERCENT_RE = re.compile(r"\b(\d{1,3})%")
+# Only endpoint, card and default-device changes matter. Client events are
+# excluded because every pactl call, including the mixer's own reads, emits
+# them; sink-input and source-output events are per-application streams.
+AUDIO_EVENT_RE = re.compile(r"^Event '(new|change|remove)' on (sink|source|card|server) #")
+
+
+def is_endpoint_event(line: str) -> bool:
+    """Return whether a ``pactl subscribe`` line can change the mixer state."""
+    return AUDIO_EVENT_RE.match(line) is not None
 
 
 class BackendError(RuntimeError):

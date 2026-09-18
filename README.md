@@ -19,7 +19,8 @@ with `snd_usb_audio`.
   whenever the PC-mode dongle appears
 - Normal fallback to another audio device when the dongle is removed
 - Per-endpoint volume and a Game/Chat balance command
-- GTK4 mixer for Game/Chat balance, overall volume and microphone level
+- GTK4 mixer for Game/Chat balance, overall volume and microphone level,
+  immediately reflecting changes made with volume keys or other mixers
 - StatusNotifierItem tray icon, tested on GNOME with AppIndicator support
 - Automatic light/dark appearance tracking while the application is running
 - Native tray menu actions to show the window or quit

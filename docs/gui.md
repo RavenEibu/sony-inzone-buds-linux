@@ -18,8 +18,13 @@ and `100` selects the Game side. **Both endpoints are at maximum when balance
 is 50 and overall volume is 100%.** No virtual sink or software resampling is
 created; the dongle receives both native playback streams.
 
-The application refreshes device state periodically so unplugging and
-reconnecting the dongle updates the controls without restarting the GUI.
+The application follows `pactl subscribe` and refreshes as soon as PipeWire
+reports a sink, source, card or default-device change. Volume keys, the desktop
+sound panel and other mixers are therefore reflected immediately, as are
+unplugging and reconnecting the dongle. Client and per-application stream
+events are ignored, since every `pactl` call, including the mixer's own reads,
+produces them. If the event stream ends, for example when `pipewire-pulse`
+restarts, it is started again; a two-second poll remains as a fallback.
 Slider changes are briefly coalesced before invoking `inzonectl`, which avoids
 sending an unnecessary command for every pixel of pointer movement. A periodic
 refresh that was read before, or while, a slider change is pending or being

@@ -20,6 +20,11 @@
   `PATH`, without overwriting existing commands.
 - Remove only project-owned system links during uninstall.
 - Document shell command-cache and `PATH` troubleshooting.
+- Reflect volume changes made outside the mixer, such as volume keys or the
+  desktop sound panel, immediately by following PipeWire events instead of
+  waiting for the two-second poll.
+- Read the audio state again when a refresh is requested while another one is
+  still running, instead of dropping the request.
 
 ### Fixes from the 2026-09-17 repository review
 

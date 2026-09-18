@@ -10,7 +10,7 @@ import unittest
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR / "src/inzone_buds_mixer"))
 
-from audio import AudioBackend, BackendError, derive_balance  # noqa: E402
+from audio import AudioBackend, BackendError, derive_balance, is_endpoint_event  # noqa: E402
 
 
 GAME = "alsa_output.usb-Sony_INZONE_Buds-00.pro-output-1"
@@ -48,6 +48,31 @@ class BalanceTests(unittest.TestCase):
         self.assertEqual(derive_balance(50, 100), 25)
         self.assertEqual(derive_balance(100, 0), 100)
         self.assertEqual(derive_balance(0, 100), 0)
+
+
+class EventFilterTests(unittest.TestCase):
+    def test_endpoint_and_default_changes_trigger_refresh(self):
+        for line in (
+            "Event 'change' on sink #3153",
+            "Event 'change' on source #52",
+            "Event 'new' on card #3087",
+            "Event 'remove' on sink #72",
+            "Event 'change' on server #4294967295",
+        ):
+            self.assertTrue(is_endpoint_event(line), line)
+
+    def test_client_and_stream_events_are_ignored(self):
+        # Every pactl call emits client events, including the mixer's own
+        # reads; reacting to them would make the mixer refresh itself forever.
+        for line in (
+            "Event 'new' on client #4323",
+            "Event 'change' on client #4323",
+            "Event 'remove' on client #4323",
+            "Event 'change' on sink-input #512",
+            "Event 'new' on source-output #77",
+            "",
+        ):
+            self.assertFalse(is_endpoint_event(line), line)
 
 
 class BackendTests(unittest.TestCase):

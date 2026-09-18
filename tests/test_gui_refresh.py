@@ -99,6 +99,19 @@ class RefreshOrderingTests(unittest.TestCase):
         self.executor.finish_next()
         self.assertEqual(self.window.applied, [])
 
+    def test_change_during_a_refresh_is_read_again(self):
+        # A volume key press arrives while an earlier read is still running.
+        self.application.refresh()
+        self.backend.state = "volume key change"
+        self.application.refresh()
+        self.assertEqual(len(self.executor.jobs), 1)
+        # A real read may have run before the change, so a second one follows.
+        self.executor.finish_next()
+        self.assertEqual(len(self.executor.jobs), 1)
+        self.executor.finish_next()
+        self.assertEqual(self.window.applied[-1], "volume key change")
+        self.assertEqual(self.executor.jobs, [])
+
     def test_idle_poll_is_applied(self):
         self.application.refresh()
         self.executor.finish_next()
