@@ -58,6 +58,30 @@ class AudioSnapshot:
         return derive_balance(self.game_volume, self.chat_volume)
 
 
+def chat_boost_plan(
+    active: bool,
+    saved: tuple[int, int] | None,
+    game: int | None,
+    chat: int | None,
+) -> tuple[int, int, tuple[int, int] | None]:
+    """Decide the Boost Chat toggle's target volumes and new saved state.
+
+    ``active`` is the toggle button's new state. Turning it on saves the
+    current volumes (defaulting to the target itself when unknown) and
+    targets Game 30% / Chat 70%; turning it off restores the saved volumes,
+    or the same default if none were saved.
+    """
+    if active:
+        target = (30, 70)
+        saved = (
+            game if game is not None else target[0],
+            chat if chat is not None else target[1],
+        )
+        return (*target, saved)
+    game, chat = saved or (30, 70)
+    return (game, chat, None)
+
+
 def derive_balance(game: int | None, chat: int | None) -> int:
     """Return the 0=Chat, 50=center, 100=Game position for two volumes."""
     if game is None or chat is None or (game == 0 and chat == 0):
@@ -169,6 +193,10 @@ class AudioBackend:
 
     def set_balance(self, position: int, maximum: int) -> None:
         self._run(self.inzonectl, "balance", str(position), str(maximum))
+
+    def set_volumes(self, game: int, chat: int) -> None:
+        self._run(self.inzonectl, "volume", "game", str(game))
+        self._run(self.inzonectl, "volume", "chat", str(chat))
 
     def set_microphone_volume(self, volume: int) -> None:
         self._run(self.inzonectl, "volume", "mic", str(volume))

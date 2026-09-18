@@ -11,6 +11,7 @@ undocumented commands to the earbuds.
 | Overall volume | Sets the maximum of the Game and Chat endpoints |
 | Game / Chat balance | Attenuates Game or Chat relative to the maximum |
 | Center | Sets the balance to 50 so Game and Chat share the overall volume |
+| Boost Chat | Toggle: sets Game 30% / Chat 70%, or restores the volumes from before |
 | Microphone volume | Sets the native microphone endpoint level |
 | Use Game output + INZONE microphone | Restores the recommended defaults |
 
@@ -18,6 +19,12 @@ Balance `0` selects the Chat side, `50` gives both endpoints the same volume,
 and `100` selects the Game side. **Both endpoints are at maximum when balance
 is 50 and overall volume is 100%.** No virtual sink or software resampling is
 created; the dongle receives both native playback streams.
+
+**Boost Chat** is a single toggle for the common case of a game louder than
+voice chat: pressing it sets Game to 30% and Chat to 70%, and pressing it
+again restores the exact Game/Chat volumes from just before, not a second
+fixed preset. It remembers only one prior state; adjusting the sliders while
+it is active does not change what pressing it again restores.
 
 The application follows `pactl subscribe` and refreshes as soon as PipeWire
 reports a sink, source, card or default-device change. Volume keys, the desktop
@@ -60,9 +67,11 @@ Without a watcher, closing the window exits normally so the application cannot
 become inaccessible.
 
 Right-clicking the indicator opens a desktop-native D-Bus menu containing
-**Show Window**, **Center Game/Chat** and **Quit**. **Center Game/Chat** does
-the same as the window's **Center** button, even while the window is hidden. The menu is rendered by the StatusNotifierHost,
-rather than positioned by the application, which also works under Wayland.
+**Show Window**, **Center Game/Chat**, **Boost Chat 70%** and **Quit**.
+**Center Game/Chat** and **Boost Chat 70%** do the same as the window's
+**Center** and **Boost Chat** controls, even while the window is hidden. The
+menu is rendered by the StatusNotifierHost, rather than positioned by the
+application, which also works under Wayland.
 
 ## Light and dark appearance
 

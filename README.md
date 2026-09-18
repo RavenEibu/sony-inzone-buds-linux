@@ -134,14 +134,16 @@ The **Overall volume** slider controls the louder Game/Chat endpoint. The
 **Game / Chat balance** slider attenuates the opposite endpoint. **Center**
 sets the balance to `50`, giving Game and Chat the same volume without
 changing the overall level. Set balance to `50` and overall volume to `100%`
-when both Game and Chat should be at their maximum level. The microphone
-slider is independent.
+when both Game and Chat should be at their maximum level. **Boost Chat**
+toggles Game 30%/Chat 70% for when a game is louder than voice chat, and
+restores the previous volumes on a second press. The microphone slider is
+independent.
 
 KDE Plasma provides StatusNotifierItem support. GNOME requires an extension
 such as **AppIndicator and KStatusNotifierItem Support**. When tray support is
 available, closing the window hides it; use the quit button in the header to
 stop the application. Right-click the indicator for **Show Window**,
-**Center Game/Chat** and **Quit** actions.
+**Center Game/Chat**, **Boost Chat 70%** and **Quit** actions.
 
 The application follows GTK's desktop-wide color-scheme setting and updates
 between its light and dark appearances without needing a restart.

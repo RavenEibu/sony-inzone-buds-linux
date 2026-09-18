@@ -32,8 +32,9 @@ class DesktopIntegrationTests(unittest.TestCase):
         )
         self.assertIn('GLib.Variant("s", "Show Window")', source)
         self.assertIn('GLib.Variant("s", "Center Game/Chat")', source)
+        self.assertIn('GLib.Variant("s", "Boost Chat 70%")', source)
         self.assertIn('GLib.Variant("s", "Quit")', source)
-        self.assertIn("for child_id in (1, 4, 2, 3)", source)
+        self.assertIn("for child_id in (1, 4, 5, 2, 3)", source)
         self.assertIn('MENU_PATH = "/MenuBar"', source)
 
     def test_wireplumber_creates_pc_mode_card_in_pro_audio(self):

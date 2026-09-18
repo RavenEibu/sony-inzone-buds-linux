@@ -37,7 +37,7 @@ control work.
 
 ## Version 0.4: desktop controls
 
-- [ ] Add more Game/Chat presets to the tray context menu.
+- [x] Add more Game/Chat presets to the tray context menu (Boost Chat 70%).
 - [x] Add launch-at-login preference, starting hidden in the tray.
 - [ ] Add translated interface strings.
 - [x] Add desktop notifications for connect/disconnect events.

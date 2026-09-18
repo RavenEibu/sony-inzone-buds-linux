@@ -15,7 +15,13 @@ gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
 import autostart  # noqa: E402
-from audio import AudioBackend, AudioSnapshot, BackendError, is_endpoint_event  # noqa: E402
+from audio import (  # noqa: E402
+    AudioBackend,
+    AudioSnapshot,
+    BackendError,
+    chat_boost_plan,
+    is_endpoint_event,
+)
 from tray import StatusNotifierItem  # noqa: E402
 
 
@@ -64,6 +70,8 @@ class MixerWindow(Gtk.ApplicationWindow):
         self._updating = False
         self._balance_timer = 0
         self._mic_timer = 0
+        self._snapshot: AudioSnapshot | None = None
+        self._chat_boost_saved: tuple[int, int] | None = None
         self.set_default_size(520, 540)
         self.set_resizable(False)
         self.connect("close-request", self._close_requested)
@@ -107,12 +115,24 @@ class MixerWindow(Gtk.ApplicationWindow):
             "Set Game and Chat to the same volume (balance 50)"
         )
         self.center_button.connect("clicked", lambda _button: self.center_balance())
+
+        self.boost_chat_button = Gtk.ToggleButton(label="Boost Chat")
+        self.boost_chat_button.add_css_class("flat")
+        self.boost_chat_button.set_tooltip_text(
+            "Set Chat to 70% and Game to 30%; press again to restore the "
+            "volumes from before"
+        )
+        self.boost_chat_button.connect("toggled", self._boost_chat_toggled)
+
+        balance_extra = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        balance_extra.append(self.center_button)
+        balance_extra.append(self.boost_chat_button)
         self.balance_scale, self.balance_value = self._add_scale(
             root,
             "Game / Chat balance",
             "0 = Chat, 50 = both equally, 100 = Game",
             self._balance_changed,
-            extra=self.center_button,
+            extra=balance_extra,
         )
         self.balance_scale.add_mark(0, Gtk.PositionType.BOTTOM, "Chat")
         self.balance_scale.add_mark(50, Gtk.PositionType.BOTTOM, "Both")
@@ -202,6 +222,7 @@ class MixerWindow(Gtk.ApplicationWindow):
         self.status.add_css_class("error")
 
     def apply_snapshot(self, snapshot: AudioSnapshot) -> None:
+        self._snapshot = snapshot
         self._updating = True
         self.status.remove_css_class("error")
         if snapshot.connected:
@@ -223,6 +244,7 @@ class MixerWindow(Gtk.ApplicationWindow):
             self.overall_scale,
             self.balance_scale,
             self.center_button,
+            self.boost_chat_button,
             self.mic_scale,
             self.defaults_button,
         )
@@ -272,6 +294,16 @@ class MixerWindow(Gtk.ApplicationWindow):
         if self._balance_timer:
             GLib.source_remove(self._balance_timer)
         self._commit_balance()
+
+    def _boost_chat_toggled(self, button: Gtk.ToggleButton) -> None:
+        if self._updating:
+            return
+        game_volume = self._snapshot.game_volume if self._snapshot else None
+        chat_volume = self._snapshot.chat_volume if self._snapshot else None
+        game, chat, self._chat_boost_saved = chat_boost_plan(
+            button.get_active(), self._chat_boost_saved, game_volume, chat_volume
+        )
+        self.application.run_audio_action(self.backend.set_volumes, game, chat)
 
     def _microphone_changed(self, _scale) -> None:
         self._update_value_labels()
@@ -377,6 +409,7 @@ class MixerApplication(Gtk.Application):
                 on_activate=self.toggle_window,
                 on_quit=self.quit,
                 on_center=self._center_from_tray,
+                on_boost_chat=self._boost_chat_from_tray,
                 on_availability_changed=self._tray_changed,
             )
         except GLib.Error:
@@ -400,6 +433,13 @@ class MixerApplication(Gtk.Application):
     def _center_from_tray(self) -> bool:
         if self.window:
             self.window.center_balance()
+        return GLib.SOURCE_REMOVE
+
+    def _boost_chat_from_tray(self) -> bool:
+        if self.window:
+            self.window.boost_chat_button.set_active(
+                not self.window.boost_chat_button.get_active()
+            )
         return GLib.SOURCE_REMOVE
 
     def toggle_window(self) -> bool:

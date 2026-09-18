@@ -10,7 +10,13 @@ import unittest
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_DIR / "src/inzone_buds_mixer"))
 
-from audio import AudioBackend, BackendError, derive_balance, is_endpoint_event  # noqa: E402
+from audio import (  # noqa: E402
+    AudioBackend,
+    BackendError,
+    chat_boost_plan,
+    derive_balance,
+    is_endpoint_event,
+)
 
 
 GAME = "alsa_output.usb-Sony_INZONE_Buds-00.pro-output-1"
@@ -48,6 +54,28 @@ class BalanceTests(unittest.TestCase):
         self.assertEqual(derive_balance(50, 100), 25)
         self.assertEqual(derive_balance(100, 0), 100)
         self.assertEqual(derive_balance(0, 100), 0)
+
+
+class ChatBoostPlanTests(unittest.TestCase):
+    def test_activating_saves_current_volumes_and_targets_30_70(self):
+        game, chat, saved = chat_boost_plan(True, None, 55, 40)
+        self.assertEqual((game, chat), (30, 70))
+        self.assertEqual(saved, (55, 40))
+
+    def test_deactivating_restores_the_saved_volumes(self):
+        game, chat, saved = chat_boost_plan(False, (55, 40), 30, 70)
+        self.assertEqual((game, chat), (55, 40))
+        self.assertIsNone(saved)
+
+    def test_activating_with_unknown_volumes_saves_the_target_itself(self):
+        game, chat, saved = chat_boost_plan(True, None, None, None)
+        self.assertEqual((game, chat), (30, 70))
+        self.assertEqual(saved, (30, 70))
+
+    def test_deactivating_without_a_saved_state_falls_back_to_default(self):
+        game, chat, saved = chat_boost_plan(False, None, 30, 70)
+        self.assertEqual((game, chat), (30, 70))
+        self.assertIsNone(saved)
 
 
 class EventFilterTests(unittest.TestCase):
@@ -100,9 +128,12 @@ class BackendTests(unittest.TestCase):
         self.backend.set_balance(70, 60)
         self.backend.set_microphone_volume(85)
         self.backend.select_defaults()
+        self.backend.set_volumes(30, 70)
         self.assertIn(("inzonectl", "balance", "70", "60"), self.runner.commands)
         self.assertIn(("inzonectl", "volume", "mic", "85"), self.runner.commands)
         self.assertIn(("inzonectl", "default"), self.runner.commands)
+        self.assertIn(("inzonectl", "volume", "game", "30"), self.runner.commands)
+        self.assertIn(("inzonectl", "volume", "chat", "70"), self.runner.commands)
 
     def test_failed_command_is_reported(self):
         backend = AudioBackend(

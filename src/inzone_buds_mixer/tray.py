@@ -117,6 +117,7 @@ class StatusNotifierItem:
         on_activate: Callable[[], None],
         on_quit: Callable[[], None],
         on_center: Callable[[], None] | None = None,
+        on_boost_chat: Callable[[], None] | None = None,
         on_availability_changed: Callable[[bool], None] | None = None,
     ) -> None:
         self.icon_name = icon_name
@@ -124,6 +125,7 @@ class StatusNotifierItem:
         self.on_activate = on_activate
         self.on_quit = on_quit
         self.on_center = on_center
+        self.on_boost_chat = on_boost_chat
         self.on_availability_changed = on_availability_changed
         self.available = False
         self._name_acquired = False
@@ -260,6 +262,12 @@ class StatusNotifierItem:
                 "enabled": GLib.Variant("b", True),
                 "visible": GLib.Variant("b", True),
             }
+        if item_id == 5:
+            return {
+                "label": GLib.Variant("s", "Boost Chat 70%"),
+                "enabled": GLib.Variant("b", True),
+                "visible": GLib.Variant("b", True),
+            }
         if item_id == 2:
             return {
                 "type": GLib.Variant("s", "separator"),
@@ -294,7 +302,7 @@ class StatusNotifierItem:
                     (child_id, cls._menu_properties(child_id, requested), []),
                 )
                 # Item IDs are stable; this tuple sets the display order.
-                for child_id in (1, 4, 2, 3)
+                for child_id in (1, 4, 5, 2, 3)
             ]
         return (item_id, cls._menu_properties(item_id, requested), children)
 
@@ -307,6 +315,8 @@ class StatusNotifierItem:
             GLib.idle_add(self.on_quit)
         elif item_id == 4 and self.on_center:
             GLib.idle_add(self.on_center)
+        elif item_id == 5 and self.on_boost_chat:
+            GLib.idle_add(self.on_boost_chat)
 
     def _handle_menu_method(
         self,
