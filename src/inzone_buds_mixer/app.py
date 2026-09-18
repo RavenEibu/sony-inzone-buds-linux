@@ -241,6 +241,9 @@ class MixerWindow(Gtk.ApplicationWindow):
     def _select_defaults(self, _button) -> None:
         self.application.run_audio_action(self.backend.select_defaults)
 
+    def has_pending_edits(self) -> bool:
+        return bool(self._balance_timer or self._mic_timer)
+
 
 class MixerApplication(Gtk.Application):
     def __init__(self) -> None:
@@ -251,6 +254,8 @@ class MixerApplication(Gtk.Application):
         self.tray_available = False
         self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="inzone-audio")
         self._refresh_in_progress = False
+        self._actions_in_flight = 0
+        self._action_serial = 0
         self._poll_id = 0
         self._held = False
         self._gtk_settings = None
@@ -474,10 +479,24 @@ class MixerApplication(Gtk.Application):
         if self._refresh_in_progress:
             return
         self._refresh_in_progress = True
+        serial = self._action_serial
         future = self._executor.submit(self.backend.snapshot)
-        future.add_done_callback(lambda result: GLib.idle_add(self._finish_refresh, result))
+        future.add_done_callback(
+            lambda result: GLib.idle_add(self._finish_refresh, result, serial)
+        )
 
-    def _finish_refresh(self, future) -> bool:
+    def _snapshot_is_stale(self, serial: int) -> bool:
+        # A snapshot read before or during a user change still holds the old
+        # volumes. Applying it would move the sliders back and, while a
+        # debounce timer is pending, commit the old value instead of the new
+        # one. The refresh queued after each action shows the final state.
+        return (
+            serial != self._action_serial
+            or self._actions_in_flight > 0
+            or (self.window is not None and self.window.has_pending_edits())
+        )
+
+    def _finish_refresh(self, future, serial: int) -> bool:
         self._refresh_in_progress = False
         if not self.window:
             return GLib.SOURCE_REMOVE
@@ -486,14 +505,18 @@ class MixerApplication(Gtk.Application):
         except (BackendError, OSError) as error:
             self.window.show_error(str(error))
         else:
-            self.window.apply_snapshot(snapshot)
+            if not self._snapshot_is_stale(serial):
+                self.window.apply_snapshot(snapshot)
         return GLib.SOURCE_REMOVE
 
     def run_audio_action(self, operation, *arguments) -> None:
+        self._action_serial += 1
+        self._actions_in_flight += 1
         future = self._executor.submit(operation, *arguments)
         future.add_done_callback(lambda result: GLib.idle_add(self._finish_action, result))
 
     def _finish_action(self, future) -> bool:
+        self._actions_in_flight -= 1
         try:
             future.result()
         except (BackendError, OSError) as error:

@@ -21,7 +21,10 @@ created; the dongle receives both native playback streams.
 The application refreshes device state periodically so unplugging and
 reconnecting the dongle updates the controls without restarting the GUI.
 Slider changes are briefly coalesced before invoking `inzonectl`, which avoids
-sending an unnecessary command for every pixel of pointer movement.
+sending an unnecessary command for every pixel of pointer movement. A periodic
+refresh that was read before, or while, a slider change is pending or being
+applied is discarded, so it cannot move the slider back to the old level; a
+new refresh runs after every applied change.
 
 ## Tray integration
 
