@@ -158,14 +158,42 @@ The descriptor names no usages, so the purpose of every vendor report is
 unknown. Only the structure above is established. The following are working
 hypotheses to test, not supported features:
 
-- reports `0x06`/`0x07` and report `0x02` look like request/response command
-  channels;
-- report `0xB0`, seven separate one-byte values sent by the device, is a
-  plausible candidate for status such as battery levels;
-- feature reports `0xA0`/`0xA1` may carry device information or settings;
+- reports `0x06`/`0x07` look like a request/response command channel;
+- feature reports `0xA0`/`0xA1` returned all-zero data through `GET_FEATURE` in
+  one read-only check; this may mean they are empty until a specific request
+  is sent, or that they need different preconditions;
+- report `0xB0` has not been observed in captures so far, despite the
+  descriptor declaring it;
 - if the earbuds' touch controls are assigned to volume, the Consumer Control
   report would reach the desktop as ordinary volume keys. This has not been
   observed.
+
+Input report `0x02` carries a nested, TLV-like framing: `02` (report ID),
+one length byte, `04 ff`, a second length byte, a 2-byte little-endian
+sequence/session value, then a 2-byte sub-message tag and its payload. Several
+sub-message tags have been observed by passive capture:
+
+- `12 01`: short, sent frequently even at rest; looks like a periodic
+  handshake or link-quality poll.
+- `14 41`: a byte that pulses `0 → 1/2 → 0` within seconds of tapping a touch
+  control, with an adjacent byte that tracks it (looks like a simple additive
+  checksum); most likely a touch/gesture indicator, not battery.
+- `14 02`: carries three ASCII-looking serial-like strings (7 digits each).
+- `14 03`: three 4-byte numeric fields, one per apparent channel.
+- `14 04`: two bytes that read `64 64` (100/100 decimal) while both earbuds
+  are seated and connected, followed by a byte that reads `ff`.
+
+On one controlled test, removing the right earbud from the case changed the
+**second** `64` in the `14 04` sub-message to `ff` within the same burst that
+also zeroed the corresponding serial in `14 02` and set the corresponding
+field in `14 03` to `ff ff ff ff`; the first `64` (presumably the left
+earbud) did not change. This is a plausible battery-percentage field per
+earbud, with `0xff` as an "unavailable/disconnected" sentinel, but it is
+**not yet verified** under this project's contribution standard: it was
+observed only once, a matching test on the left earbud did not reproduce a
+`14 04` burst within a 10-second removal window, and no independent
+battery-level reading was cross-checked. Do not treat this as a supported
+feature until it is repeated and cross-checked.
 
 ### Passive capture
 
@@ -194,8 +222,8 @@ tools/inzone-hid-capture
 Each line has a timestamp, the report ID, its length and its bytes in hex.
 Compare reports before and after each change to see which report ID and which
 bytes moved. `--out FILE` also appends every line to a file, and `--seconds N`
-stops the capture automatically. Report `0xB0` (see above) is the first one to
-watch for a battery-level change.
+stops the capture automatically. Report `0x02`'s `14 04` sub-message (see
+above) is the current candidate to watch for a battery-level change.
 
 No output or feature report is to be sent until its effect is documented on a
 controlled test system.

@@ -52,13 +52,17 @@ The following work requires protocol research and real-device verification:
 - [x] Enumerate HID interfaces and report descriptors.
 - [x] Build a udev rule and a read-only capture tool
   (`tools/inzone-hid-capture`) for recording input reports without root.
-- [ ] Record input reports while changing one device state at a time (remove
+- [x] Record input reports while changing one device state at a time (remove
   an earbud from the case, connect a charger, touch a control) and document
-  which report changes, starting with report `0xB0`.
+  which report changes.
 - [ ] Capture one setting change at a time on a controlled Windows test system.
 - [ ] Document request/response framing and checksums.
 - [ ] Build a read-only device-status prototype.
-- [ ] Investigate battery reporting.
+- [ ] Investigate battery reporting: report `0x02`'s `14 04` sub-message
+  changed on one right-earbud removal test (see
+  `docs/hardware.md#hypotheses-not-verified`), but is not yet verified —
+  repeat the test, reproduce it on the left earbud, and cross-check against
+  an independent battery reading before treating it as supported.
 - [ ] Investigate EQ, noise control and sidetone.
 - [ ] Investigate touch-control and power settings.
 

@@ -20,6 +20,9 @@
   through systemd-logind (no group membership, no world-accessible device),
   and `tools/inzone-hid-capture`, a read-only tool that prints its HID input
   reports for hardware research. Neither is installed by `install.sh`.
+- Document the nested framing of HID input report `0x02` and a candidate,
+  not-yet-verified battery-percentage field in its `14 04` sub-message; see
+  `docs/hardware.md#hypotheses-not-verified`.
 
 ## 0.2.0 - 2026-09-17
 
