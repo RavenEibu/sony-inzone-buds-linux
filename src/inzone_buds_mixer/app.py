@@ -110,14 +110,14 @@ class MixerWindow(Gtk.ApplicationWindow):
         )
 
         self.center_button = Gtk.Button(label="Center")
-        self.center_button.add_css_class("flat")
+        self.center_button.add_css_class("suggested-action")
         self.center_button.set_tooltip_text(
             "Set Game and Chat to the same volume (balance 50)"
         )
         self.center_button.connect("clicked", lambda _button: self.center_balance())
 
         self.boost_chat_button = Gtk.ToggleButton(label="Boost Chat")
-        self.boost_chat_button.add_css_class("flat")
+        self.boost_chat_button.add_css_class("suggested-action")
         self.boost_chat_button.set_tooltip_text(
             "Set Chat to 70% and Game to 30%; press again to restore the "
             "volumes from before"
