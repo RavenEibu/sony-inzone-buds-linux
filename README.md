@@ -144,6 +144,7 @@ Inspect the integration:
 ```bash
 inzonectl status
 inzonectl doctor
+inzonectl --version
 ```
 
 Choose defaults:

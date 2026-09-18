@@ -102,4 +102,15 @@ done
 PACTL="$FAILING_PACTL" "$PROJECT_DIR/bin/inzonectl" help >/dev/null ||
   fail 'help required an audio server'
 
+# The version must match the newest CHANGELOG entry and AppStream release.
+version=$("$PROJECT_DIR/bin/inzonectl" --version)
+version=${version#inzonectl }
+changelog_version=$(sed -n 's/^## \([0-9][0-9.]*\) - .*/\1/p' "$PROJECT_DIR/CHANGELOG.md" | head -1)
+metainfo_version=$(sed -n 's/.*<release version="\([^"]*\)".*/\1/p' \
+  "$PROJECT_DIR/data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" | head -1)
+[[ $version == "$changelog_version" ]] ||
+  fail "inzonectl $version does not match CHANGELOG $changelog_version"
+[[ $version == "$metainfo_version" ]] ||
+  fail "inzonectl $version does not match metainfo $metainfo_version"
+
 printf 'All tests passed.\n'

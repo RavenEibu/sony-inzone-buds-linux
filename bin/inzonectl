@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Keep in sync with CHANGELOG.md and the AppStream metainfo;
+# tests/test_inzonectl.sh checks all three.
+VERSION=0.2.0
 PACTL=${PACTL:-pactl}
 WPCTL=${WPCTL:-wpctl}
 PC_VENDOR_ID=054c
@@ -26,6 +29,7 @@ Commands:
   volume game|chat|mic PERCENT Set one endpoint's volume (0-100)
   balance POSITION [MAX]       Balance 0=Chat, 50=center, 100=Game
                                MAX defaults to 50 percent
+  version, --version           Show the version
   help                         Show this help
 EOF
 }
@@ -239,7 +243,7 @@ show_status() {
 }
 
 show_doctor() {
-  printf 'inzonectl diagnostics\n'
+  printf 'inzonectl %s diagnostics\n' "$VERSION"
   printf 'Kernel: '
   uname -sr
   printf 'PipeWire/WirePlumber:\n'
@@ -260,6 +264,12 @@ show_doctor() {
 }
 
 main() {
+  case ${1:-} in
+    version|--version|-V)
+      printf 'inzonectl %s\n' "$VERSION"
+      return 0
+      ;;
+  esac
   require_command "$PACTL"
   # doctor must still report what it can when the audio server is down.
   case ${1:-help} in

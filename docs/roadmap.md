@@ -13,25 +13,36 @@ control work.
 - [x] Add endpoint volume and Game/Chat balance controls.
 - [x] Provide reversible user-level installation.
 
-## Version 0.2: compatibility and packaging
-
-- [ ] Test current Fedora, Ubuntu, Debian, Arch Linux and openSUSE releases.
-- [ ] Add automated configuration validation with WirePlumber available in CI.
-- [ ] Add Arch Linux packaging.
-- [ ] Add Debian packaging.
-- [ ] Test KDE Plasma and additional desktop audio panels.
-- [ ] Add release artifacts and checksums through GitHub Actions.
-
-## Version 0.3: desktop controls
+## Version 0.2: desktop mixer (released 2026-09-17)
 
 - [x] Add an optional GTK4 Game/Chat balance and volume control.
 - [x] Add StatusNotifierItem activation for KDE and compatible GNOME setups.
-- [x] Add a tray context menu with Show Window and Quit actions.
-- [ ] Add Game/Chat quick presets to the tray context menu.
+- [x] Add a tray context menu with Show Window, Center Game/Chat and Quit
+  actions.
+- [x] Reflect volume changes made outside the mixer immediately.
+- [x] Move Game and Chat together with the desktop volume and mute keys.
+- [x] Create the PC-mode card directly in Pro Audio.
+- [x] Report the version with `inzonectl --version`.
+
+## Version 0.3: compatibility and packaging
+
+- [ ] Test current Fedora, Ubuntu, Debian, Arch Linux and openSUSE releases.
+- [ ] Test KDE Plasma and additional desktop audio panels.
+- [ ] Test GNOME without a StatusNotifierItem extension.
+- [ ] Run the tests, ShellCheck and metadata validation in GitHub Actions.
+- [ ] Add automated configuration validation with WirePlumber available in CI.
+- [ ] Add Arch Linux packaging.
+- [ ] Add Debian packaging.
+- [ ] Add release artifacts and checksums through GitHub Actions.
+
+## Version 0.4: desktop controls
+
+- [ ] Add more Game/Chat presets to the tray context menu.
 - [ ] Add launch-at-login preference.
 - [ ] Add translated interface strings.
 - [ ] Add desktop notifications for connect/disconnect events.
-- [ ] Support configurable default behavior without editing scripts.
+- [ ] Support configurable default behavior without editing scripts or service
+  files, including volume-key linking.
 - [ ] Add optional keyboard-shortcut examples.
 
 ## Experimental: proprietary controls

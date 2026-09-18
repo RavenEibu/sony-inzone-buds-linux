@@ -1,59 +1,52 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-09-17
 
-- Add the first `inzone-buds-mixer` GTK4 preview.
-- Add overall Game/Chat volume, balance and microphone controls.
-- Add a StatusNotifierItem tray icon for KDE and compatible GNOME extensions.
-- Follow desktop light/dark appearance changes at runtime.
-- Fix dark-to-light transitions by using the XDG desktop appearance portal as
-  the independent color-scheme source.
-- Apply the portal-selected GTK variant before constructing the window, fixing
-  a light header bar when the mixer starts while the desktop is already dark.
-- Declare the GTK4 GDK binding explicitly to avoid PyGI version warnings.
-- Add Show Window and Quit actions through a native D-Bus tray menu.
-- Add an original circular monochrome application and symbolic icon.
-- Install desktop-entry and AppStream metadata for application menus.
-- Add GUI backend and expanded installer tests.
-- Make the hot-plug helper resolve `inzonectl` without relying on shell `PATH`.
-- Add safe `/usr/local/bin` command links when `~/.local/bin` is absent from
-  `PATH`, without overwriting existing commands.
-- Remove only project-owned system links during uninstall.
-- Document shell command-cache and `PATH` troubleshooting.
-- Reflect volume changes made outside the mixer, such as volume keys or the
-  desktop sound panel, immediately by following PipeWire events instead of
-  waiting for the two-second poll.
-- Read the audio state again when a refresh is requested while another one is
-  still running, instead of dropping the request.
-- Add a Center button that sets the Game/Chat balance to 50 without changing
-  the overall volume.
-- Add **Center Game/Chat** to the tray menu.
-- Back up only edited configuration during installation; program and data
-  files are replaced without leaving `*.backup-*` copies in `~/.local/bin`.
-- Make desktop volume and mute keys move Game and Chat together, keeping their
-  balance. `inzonectl` and mixer changes stay independent; set
-  `INZONE_LINK_VOLUMES=0` on the service to disable.
+Adds the INZONE Buds Mixer and makes the desktop volume keys control Game and
+Chat together. Verified with the dongle on CachyOS with GNOME on Wayland. KDE
+Plasma is expected to work but has not been tested.
 
-### Fixes from the 2026-09-17 repository review
+### Added
 
-- Keep the mixer's periodic refresh from moving sliders back, or committing
-  the previous value, while a user change is pending or being applied.
-- Report an unreachable PulseAudio-compatible server instead of exiting
-  silently from `inzonectl status` and other commands.
-- Generate the systemd user service from a template so it follows
-  `XDG_BIN_HOME` instead of assuming `~/.local/bin`.
-- Drop the service's `graphical-session.target` binding, which could leave it
-  stopped after logging out and back in.
-- Register the tray icon only after its D-Bus name is owned.
-- Keep the AppStream release list to published versions and fix the developer
-  ID reported by `appstreamcli validate`.
-- Use a single main desktop menu category so the mixer is not listed twice.
-- Describe KDE Plasma as expected to work but not yet tested.
-- Create the PC-mode card directly in Pro Audio through a WirePlumber
-  `device.profile.priority.rules` entry, avoiding a profile switch that once
-  left generic analog nodes behind.
-- Document the generic Analog/S/PDIF profile names, verified channel order and
-  the 2026-09-17 hardware test results.
+- `inzone-buds-mixer`, a GTK4 application with overall volume, Game/Chat
+  balance and microphone controls, and a **Center** button that sets the
+  balance to 50 without changing the overall volume.
+- A StatusNotifierItem tray icon with **Show Window**, **Center Game/Chat** and
+  **Quit** actions, for KDE Plasma and for GNOME with AppIndicator support.
+- The mixer reflects changes made elsewhere, such as volume keys, the desktop
+  sound panel or other mixers, immediately, and follows the desktop light/dark
+  appearance.
+- Desktop entry, AppStream metadata and an original application icon.
+- `inzonectl --version`; `inzonectl doctor` also reports the version.
+- `/usr/local/bin` command links when `~/.local/bin` is not in `PATH`, without
+  overwriting existing commands. The uninstaller removes only links it created.
+- Documentation of the generic Analog and S/PDIF profile names, the verified
+  channel order and the hardware test results.
+
+### Changed
+
+- **Volume and mute keys move Game and Chat together**, keeping their balance.
+  The hot-plug service mirrors a change that affected only one endpoint; changes
+  made with `inzonectl` or the mixer stay independent. Set
+  `INZONE_LINK_VOLUMES=0` on the service to restore the previous behavior.
+- WirePlumber creates the PC-mode card directly in Pro Audio through a
+  `device.profile.priority.rules` entry instead of starting the analog profile
+  first. A profile the user saved explicitly still takes precedence.
+- The installer backs up only edited configuration, the WirePlumber rule and
+  the systemd service. Program and data files are replaced without
+  `*.backup-*` copies.
+
+### Fixed
+
+- `inzonectl status` and other commands exited silently when the
+  PulseAudio-compatible server was unreachable. They now explain the error, and
+  `doctor` still runs.
+- The systemd service assumed `~/.local/bin` and failed when `XDG_BIN_HOME`
+  pointed elsewhere; it is now generated from a template.
+- The service could stay stopped after logging out and back in.
+- The hot-plug helper found `inzonectl` only through the shell `PATH`.
+- Switching the card to Pro Audio once left generic analog nodes behind, and
+  their mono input outranked the INZONE microphone.
 
 ## 0.1.0 - 2026-09-13
 

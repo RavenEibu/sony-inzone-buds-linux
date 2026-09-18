@@ -28,6 +28,17 @@
   <content_rating type="oars-1.1"/>
   <releases>
     <!-- Add each version here with its real date only when it is released. -->
+    <release version="0.2.0" date="2026-09-17">
+      <description>
+        <p>First release of INZONE Buds Mixer.</p>
+        <ul>
+          <li>Overall volume, Game/Chat balance and microphone controls, with a Center button</li>
+          <li>Tray icon with Show Window, Center Game/Chat and Quit</li>
+          <li>Volume and mute keys move Game and Chat together, keeping their balance</li>
+          <li>Immediate updates when volumes change outside the mixer</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-09-13">
       <description>
         <p>Command-line and WirePlumber integration for the native Game, Chat and microphone endpoints.</p>

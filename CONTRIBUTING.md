@@ -6,7 +6,8 @@ welcome.
 ## Before opening an issue
 
 1. Confirm that the dongle switch is in PC mode.
-2. Run `inzonectl doctor` and include the relevant output.
+2. Run `inzonectl doctor` and include the relevant output. Its first line shows
+   the installed version.
 3. Describe the Linux distribution and desktop environment.
 4. State the PipeWire and WirePlumber versions.
 
@@ -42,3 +43,18 @@ shellcheck bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
 Keep hardware claims tied to reproducible evidence. In particular, do not
 label a proprietary control as supported based only on a guessed USB packet.
 Do not redistribute Sony binaries, firmware or extracted copyrighted assets.
+
+## Releasing
+
+Versions follow semantic versioning within 0.x: a minor release for new
+features or behavior changes, a patch release for fixes only.
+
+1. Set `VERSION` in `bin/inzonectl`.
+2. Add a `## X.Y.Z - YYYY-MM-DD` section at the top of `CHANGELOG.md`, with
+   Added, Changed and Fixed entries relative to the previous release.
+3. Add the same version and date as the first `<release>` in
+   `data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml`.
+4. Update `docs/roadmap.md`.
+5. Run every test; `tests/test_inzonectl.sh` fails if the three versions differ.
+6. Create an annotated `vX.Y.Z` tag and a GitHub release whose notes are the
+   CHANGELOG section.
