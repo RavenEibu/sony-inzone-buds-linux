@@ -66,4 +66,25 @@ if "$PROJECT_DIR/bin/inzonectl" balance 101 >/dev/null 2>&1; then
   fail 'invalid balance was accepted'
 fi
 
+# An unreachable audio server must produce an explanation, not a silent exit.
+FAILING_PACTL="$TEST_TMP/pactl-down"
+cat > "$FAILING_PACTL" <<'EOF'
+#!/usr/bin/env bash
+printf 'Connection failure: Connection refused\n' >&2
+exit 1
+EOF
+chmod +x "$FAILING_PACTL"
+
+for command in status 'volume game 40'; do
+  # shellcheck disable=SC2086 # split the command into its arguments
+  if error_output=$(PACTL="$FAILING_PACTL" "$PROJECT_DIR/bin/inzonectl" $command 2>&1); then
+    fail "$command succeeded without an audio server"
+  fi
+  [[ $error_output == *'pipewire-pulse'* ]] ||
+    fail "$command did not explain the audio server failure: ${error_output:-<empty>}"
+done
+
+PACTL="$FAILING_PACTL" "$PROJECT_DIR/bin/inzonectl" help >/dev/null ||
+  fail 'help required an audio server'
+
 printf 'All tests passed.\n'

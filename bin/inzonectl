@@ -57,21 +57,32 @@ pc_dongle_present() {
   return 1
 }
 
+require_audio_server() {
+  "$PACTL" info >/dev/null 2>&1 ||
+    die 'cannot connect to the PulseAudio-compatible server; check that pipewire-pulse is running'
+}
+
+# Read pactl output before filtering it. A pipeline into awk could fail under
+# pipefail (pactl error or SIGPIPE) and silently abort the script via set -e.
 card_name() {
-  "$PACTL" list short cards 2>/dev/null |
-    awk -v pattern="$CARD_PATTERN" '$2 ~ pattern { print $2; exit }'
+  local cards
+  cards=$("$PACTL" list short cards 2>/dev/null) || return 0
+  awk -v pattern="$CARD_PATTERN" '$2 ~ pattern { print $2; exit }' <<< "$cards"
+}
+
+endpoint_by_suffix() {
+  local kind=$1 suffix=$2 endpoints
+  endpoints=$("$PACTL" list short "$kind" 2>/dev/null) || return 0
+  awk -v suffix="$suffix" \
+    'index($2, suffix) == length($2) - length(suffix) + 1 { print $2; exit }' <<< "$endpoints"
 }
 
 sink_by_suffix() {
-  local suffix=$1
-  "$PACTL" list short sinks 2>/dev/null |
-    awk -v suffix="$suffix" 'index($2, suffix) == length($2) - length(suffix) + 1 { print $2; exit }'
+  endpoint_by_suffix sinks "$1"
 }
 
 source_by_suffix() {
-  local suffix=$1
-  "$PACTL" list short sources 2>/dev/null |
-    awk -v suffix="$suffix" 'index($2, suffix) == length($2) - length(suffix) + 1 { print $2; exit }'
+  endpoint_by_suffix sources "$1"
 }
 
 wait_for_endpoint() {
@@ -238,6 +249,10 @@ show_doctor() {
 
 main() {
   require_command "$PACTL"
+  # doctor must still report what it can when the audio server is down.
+  case ${1:-help} in
+    status|profile|game|chat|mic|default|volume|balance) require_audio_server ;;
+  esac
   case ${1:-help} in
     help|-h|--help) usage ;;
     status) show_status ;;

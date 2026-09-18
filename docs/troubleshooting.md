@@ -12,6 +12,23 @@ The command prints local USB and PipeWire topology. It does not upload or send
 the information anywhere. Review and remove unrelated personal details before
 posting its output publicly.
 
+## `cannot connect to the PulseAudio-compatible server`
+
+`inzonectl` uses `pactl`, which talks to PipeWire through `pipewire-pulse`.
+Check the user services:
+
+```bash
+systemctl --user status pipewire.service pipewire-pulse.service wireplumber.service
+```
+
+Restart them if one has failed:
+
+```bash
+systemctl --user restart pipewire.service pipewire-pulse.service wireplumber.service
+```
+
+`inzonectl doctor` still runs in this state and shows what WirePlumber reports.
+
 ## Game and Chat do not both appear
 
 1. Confirm that the dongle's physical switch is in **PC** mode.
