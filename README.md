@@ -1,5 +1,7 @@
 # Sony INZONE Buds for Linux
 
+[![CI](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/ci.yml)
+
 Open-source Linux integration for the Sony INZONE Buds USB dongle in **PC
 mode** (`054c:0ec2`). It exposes and labels the dongle's native Game, Chat and
 Microphone endpoints and makes Game the preferred output when the dongle is

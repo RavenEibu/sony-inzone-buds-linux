@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- GitHub Actions CI on Ubuntu 24.04 runs every test, ShellCheck, AppStream and
+  desktop-entry validation for each push and pull request. `tests/run-all.sh`
+  and `tests/lint.sh` run the same checks locally.
+
 ## 0.2.0 - 2026-09-17
 
 Adds the INZONE Buds Mixer and makes the desktop volume keys control Game and

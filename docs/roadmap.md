@@ -29,7 +29,7 @@ control work.
 - [ ] Test current Fedora, Ubuntu, Debian, Arch Linux and openSUSE releases.
 - [ ] Test KDE Plasma and additional desktop audio panels.
 - [ ] Test GNOME without a StatusNotifierItem extension.
-- [ ] Run the tests, ShellCheck and metadata validation in GitHub Actions.
+- [x] Run the tests, ShellCheck and metadata validation in GitHub Actions.
 - [ ] Add automated configuration validation with WirePlumber available in CI.
 - [ ] Add Arch Linux packaging.
 - [ ] Add Debian packaging.

@@ -16,28 +16,21 @@ posting diagnostics publicly.
 
 ## Development
 
-Run the current shell tests with:
+Run every test, and the static checks, with:
 
 ```bash
-./tests/test_inzonectl.sh
-./tests/test_install_paths.sh
-./tests/test_autoswitch.sh
-python3 ./tests/test_gui_backend.py
-python3 ./tests/test_desktop_integration.py
-python3 ./tests/test_gui_refresh.py
+./tests/run-all.sh
+./tests/lint.sh
 ```
 
-The GUI backend tests do not require GTK or physical hardware.
-`test_gui_refresh.py` needs Python GObject bindings and GTK4 but no display; it
-is skipped when they are missing. Running the application itself requires
-Python GObject bindings and GTK4.
+GitHub Actions runs both scripts on Ubuntu 24.04 for every push and pull
+request, so they are the same commands locally and in CI.
 
-If ShellCheck is installed:
-
-```bash
-shellcheck -x bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
-  install.sh uninstall.sh tests/*.sh
-```
+No test requires physical hardware. `test_gui_refresh.py` needs Python GObject
+bindings and GTK4 but no display; it is skipped when they are missing, except
+in CI, where `INZONE_REQUIRE_GTK_TESTS=1` makes a missing GTK a failure.
+`lint.sh` needs ShellCheck, `appstreamcli` and `desktop-file-validate`. Running
+the application itself requires Python GObject bindings and GTK4.
 
 Keep hardware claims tied to reproducible evidence. In particular, do not
 label a proprietary control as supported based only on a guessed USB packet.
@@ -54,6 +47,7 @@ features or behavior changes, a patch release for fixes only.
 3. Add the same version and date as the first `<release>` in
    `data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml`.
 4. Update `docs/roadmap.md`.
-5. Run every test; `tests/test_inzonectl.sh` fails if the three versions differ.
+5. Run `tests/run-all.sh` and `tests/lint.sh`, and check that CI passes;
+   `tests/test_inzonectl.sh` fails if the three versions differ.
 6. Create an annotated `vX.Y.Z` tag and a GitHub release whose notes are the
    CHANGELOG section.

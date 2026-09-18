@@ -5,6 +5,7 @@ Skipped when PyGObject or GTK4 is not installed.
 """
 
 from concurrent.futures import Future
+import os
 from pathlib import Path
 import sys
 import unittest
@@ -16,6 +17,10 @@ sys.path.insert(0, str(PROJECT_DIR / "src/inzone_buds_mixer"))
 try:
     import app  # noqa: E402
 except (ImportError, ValueError) as error:  # ValueError: GTK 4 typelib missing
+    # CI installs GTK and sets this so a broken installation fails loudly
+    # instead of silently skipping these tests.
+    if os.environ.get("INZONE_REQUIRE_GTK_TESTS") == "1":
+        raise
     app = None
     SKIP_REASON = f"PyGObject/GTK4 unavailable: {error}"
 else:

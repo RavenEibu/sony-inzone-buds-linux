@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            shellcheck appstream desktop-file-utils python3-gi gir1.2-gtk-4.0
+
+      - name: Lint
+        run: tests/lint.sh
+
+      - name: Tests
+        env:
+          INZONE_REQUIRE_GTK_TESTS: "1"
+        run: tests/run-all.sh
