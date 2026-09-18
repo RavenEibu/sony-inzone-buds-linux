@@ -7,6 +7,11 @@
 - GitHub Actions CI on Ubuntu 24.04 runs every test, ShellCheck, AppStream and
   desktop-entry validation for each push and pull request. `tests/run-all.sh`
   and `tests/lint.sh` run the same checks locally.
+- **Start at login in the tray** in the mixer writes an XDG autostart entry
+  that starts it hidden. `inzone-buds-mixer --hidden` starts it with only its
+  tray icon; without a tray the window appears after 10 seconds. The
+  uninstaller removes the entry.
+- The mixer window reappears if the tray host disappears while it is hidden.
 
 ## 0.2.0 - 2026-09-17
 

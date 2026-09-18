@@ -32,6 +32,22 @@ refresh that was read before, or while, a slider change is pending or being
 applied is discarded, so it cannot move the slider back to the old level; a
 new refresh runs after every applied change.
 
+## Launch at login
+
+**Start at login in the tray** writes an XDG autostart entry,
+`~/.config/autostart/io.github.RavenEibu.InzoneBudsMixer.desktop`, whose
+command is the launcher's absolute path plus `--hidden`. The absolute path
+matters because the session can start autostart entries before `~/.local/bin`
+is in `PATH`. Turning the switch off deletes the entry, and so does
+`uninstall.sh`. A session manager that disables the entry with `Hidden=true` or
+`X-GNOME-Autostart-enabled=false` is shown as off.
+
+With `--hidden`, the mixer shows no window once its tray icon is registered.
+At login the tray host may start after the mixer, so it waits up to
+10 seconds for one before showing the window instead. Opening the mixer from
+the application menu while it is hidden shows the existing window. If the tray
+host disappears while the window is hidden, the window is shown.
+
 ## Tray integration
 
 The application exports `org.kde.StatusNotifierItem` over the session D-Bus.

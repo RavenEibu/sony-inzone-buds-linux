@@ -114,7 +114,7 @@ install_one "$PROJECT_DIR/bin/inzone-buds-mixer" "$BIN_HOME/inzone-buds-mixer" 0
 install_template "$PROJECT_DIR/systemd/user/inzone-buds-autoswitch.service.in" \
   "$SYSTEMD_USER_DIR/inzone-buds-autoswitch.service" backup
 
-for python_file in audio.py app.py tray.py; do
+for python_file in audio.py app.py autostart.py tray.py; do
   install_one "$PROJECT_DIR/src/inzone_buds_mixer/$python_file" \
     "$APP_DATA_DIR/$python_file" 0644
 done

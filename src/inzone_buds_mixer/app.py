@@ -14,6 +14,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
+import autostart  # noqa: E402
 from audio import AudioBackend, AudioSnapshot, BackendError, is_endpoint_event  # noqa: E402
 from tray import StatusNotifierItem  # noqa: E402
 
@@ -30,6 +31,9 @@ PORTAL_COLOR_SCHEME_KEY = "color-scheme"
 # produces into one refresh.
 EVENT_REFRESH_DELAY_MS = 60
 EVENT_WATCH_RETRY_SECONDS = 2
+# With --hidden, wait this long for a tray before showing the window. At login
+# the desktop's tray host may start after the mixer.
+HIDDEN_START_TIMEOUT_SECONDS = 10
 APP_CSS = """
 window.inzone-light,
 window.inzone-light headerbar {
@@ -131,6 +135,21 @@ class MixerWindow(Gtk.ApplicationWindow):
         self.endpoint_status.set_wrap(True)
         self.endpoint_status.add_css_class("dim-label")
         root.append(self.endpoint_status)
+
+        login_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+        login_label = Gtk.Label(label="Start at login in the tray")
+        login_label.set_xalign(0)
+        login_label.set_hexpand(True)
+        self.autostart_switch = Gtk.Switch()
+        self.autostart_switch.set_valign(Gtk.Align.CENTER)
+        self.autostart_switch.set_active(autostart.is_enabled())
+        self.autostart_switch.update_property(
+            [Gtk.AccessibleProperty.LABEL], ["Start at login in the tray"]
+        )
+        self.autostart_switch.connect("notify::active", self._autostart_toggled)
+        login_row.append(login_label)
+        login_row.append(self.autostart_switch)
+        root.append(login_row)
 
         self.tray_status = Gtk.Label(label="Tray integration: checking…")
         self.tray_status.set_xalign(0)
@@ -271,13 +290,25 @@ class MixerWindow(Gtk.ApplicationWindow):
     def _select_defaults(self, _button) -> None:
         self.application.run_audio_action(self.backend.select_defaults)
 
+    def _autostart_toggled(self, switch, _parameter) -> None:
+        enabled = switch.get_active()
+        try:
+            autostart.set_enabled(enabled)
+        except OSError as error:
+            self.show_error(f"could not change the login setting: {error}")
+            switch.handler_block_by_func(self._autostart_toggled)
+            switch.set_active(not enabled)
+            switch.handler_unblock_by_func(self._autostart_toggled)
+
     def has_pending_edits(self) -> bool:
         return bool(self._balance_timer or self._mic_timer)
 
 
 class MixerApplication(Gtk.Application):
-    def __init__(self) -> None:
+    def __init__(self, *, start_hidden: bool = False) -> None:
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.FLAGS_NONE)
+        self.start_hidden = start_hidden
+        self._hidden_start_pending = False
         self.backend = AudioBackend()
         self.window: MixerWindow | None = None
         self.tray: StatusNotifierItem | None = None
@@ -306,12 +337,32 @@ class MixerApplication(Gtk.Application):
             # the header bar and controls do not start in the light variant.
             self.window = MixerWindow(self, self.backend)
             self._apply_detected_color_scheme()
+            if self.start_hidden:
+                self._begin_hidden_start()
             self._start_tray()
             self._watch_audio_events()
             # Events give immediate updates; polling remains a safety net.
             self._poll_id = GLib.timeout_add_seconds(2, self._poll)
-        self.window.present()
+        else:
+            # A later launch, for example from the application menu, shows it.
+            self._hidden_start_pending = False
+        if not self._hidden_start_pending:
+            self.window.present()
         self.refresh()
+
+    def _begin_hidden_start(self) -> None:
+        self._hidden_start_pending = True
+        GLib.timeout_add_seconds(
+            HIDDEN_START_TIMEOUT_SECONDS, self._finish_hidden_start, False
+        )
+
+    def _finish_hidden_start(self, tray_available: bool) -> bool:
+        if self._hidden_start_pending:
+            self._hidden_start_pending = False
+            if not tray_available and self.window:
+                # Without a tray icon a hidden window could not be reached.
+                self.window.present()
+        return GLib.SOURCE_REMOVE
 
     def _start_tray(self) -> None:
         xdg_data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
@@ -338,6 +389,12 @@ class MixerApplication(Gtk.Application):
             self._held = True
         if self.window:
             self.window.set_tray_available(available)
+        if available and self._hidden_start_pending:
+            self._finish_hidden_start(True)
+        elif not available and self.window and not self._hidden_start_pending:
+            if not self.window.get_visible():
+                # The tray icon was the only way back to the hidden window.
+                self.window.present()
         return GLib.SOURCE_REMOVE
 
     def _center_from_tray(self) -> bool:
@@ -647,8 +704,10 @@ class MixerApplication(Gtk.Application):
 
 
 def main() -> int:
-    application = MixerApplication()
-    return application.run(sys.argv)
+    start_hidden = autostart.HIDDEN_OPTION in sys.argv[1:]
+    arguments = [argument for argument in sys.argv if argument != autostart.HIDDEN_OPTION]
+    application = MixerApplication(start_hidden=start_hidden)
+    return application.run(arguments)
 
 
 if __name__ == "__main__":

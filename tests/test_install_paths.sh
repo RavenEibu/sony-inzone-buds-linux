@@ -50,6 +50,7 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 [[ $(readlink "$SYSTEM_BIN/inzone-buds-mixer") == "$USER_BIN/inzone-buds-mixer" ]]
 [[ $(PATH="$TEST_PATH" command -v inzonectl) == "$SYSTEM_BIN/inzonectl" ]]
 [[ -f $DATA_HOME/inzone-buds-mixer/app.py ]]
+[[ -f $DATA_HOME/inzone-buds-mixer/autostart.py ]]
 [[ -f $DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop ]]
 grep -F "Exec=$USER_BIN/inzone-buds-mixer" \
   "$DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop" >/dev/null
@@ -82,6 +83,11 @@ cmp -s "$PROJECT_DIR/bin/inzonectl" "$USER_BIN/inzonectl"
 cmp -s "$PROJECT_DIR/src/inzone_buds_mixer/app.py" "$DATA_HOME/inzone-buds-mixer/app.py"
 cmp -s "$PROJECT_DIR/config/wireplumber/51-inzone-buds.conf" "$WIREPLUMBER_CONF"
 
+# The mixer's launch-at-login entry is removed on uninstall.
+AUTOSTART_FILE="$CONFIG_HOME/autostart/io.github.RavenEibu.InzoneBudsMixer.desktop"
+mkdir -p "$(dirname "$AUTOSTART_FILE")"
+printf '[Desktop Entry]\nType=Application\n' > "$AUTOSTART_FILE"
+
 PATH="$TEST_PATH" \
 XDG_CONFIG_HOME="$CONFIG_HOME" \
 XDG_BIN_HOME="$USER_BIN" \
@@ -94,5 +100,7 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 [[ ! -e $USER_BIN/inzonectl ]]
 [[ ! -e $USER_BIN/inzone-buds-mixer ]]
 [[ ! -e $DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop ]]
+[[ ! -e $AUTOSTART_FILE ]]
+[[ ! -e $DATA_HOME/inzone-buds-mixer ]]
 
 printf 'Install PATH tests passed.\n'

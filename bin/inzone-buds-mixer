@@ -26,4 +26,7 @@ if [[ -z $found ]]; then
 fi
 
 export INZONE_BUDS_MIXER_DATADIR=$found
+# The launch-at-login entry needs an absolute command: the session may start it
+# before ~/.local/bin is in PATH.
+export INZONE_BUDS_MIXER_COMMAND="$SCRIPT_DIR/${BASH_SOURCE[0]##*/}"
 exec python3 "$found/app.py" "$@"

@@ -120,6 +120,11 @@ Launch the graphical mixer from the desktop application menu or run:
 inzone-buds-mixer
 ```
 
+Turn on **Start at login in the tray** in the mixer to start it hidden, with
+only its tray icon, when you log in. `inzone-buds-mixer --hidden` does the same
+from a terminal. Without a tray the window is shown after 10 seconds, so the
+mixer never becomes unreachable.
+
 The **Overall volume** slider controls the louder Game/Chat endpoint. The
 **Game / Chat balance** slider attenuates the opposite endpoint. **Center**
 sets the balance to `50`, giving Game and Chat the same volume without
