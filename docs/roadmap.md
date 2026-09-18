@@ -59,11 +59,12 @@ The following work requires protocol research and real-device verification:
 - [ ] Document request/response framing and checksums.
 - [ ] Build a read-only device-status prototype.
 - [ ] Investigate battery reporting: report `0x02`'s `14 04` sub-message is a
-  candidate, but the burst carrying it looks like an irregular, unrelated
-  heartbeat rather than something removing an earbud triggers (see
-  `docs/hardware.md#hypotheses-not-verified`) — capture across a full
-  heartbeat cycle, reproduce on both earbuds, and cross-check against an
-  independent battery reading before treating it as supported.
+  candidate, but three short, timed removal tests failed to reproduce the one
+  change seen so far (see `docs/hardware.md#hypotheses-not-verified`) — try a
+  long, untimed passive capture during normal use, reproduce on both
+  earbuds, and cross-check against an independent battery reading before
+  treating it as supported. Once verified, implement it on its own branch
+  (do not build on top of unverified proprietary-control findings on `main`).
 - [ ] Investigate EQ, noise control and sidetone.
 - [ ] Investigate touch-control and power settings.
 

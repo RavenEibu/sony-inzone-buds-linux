@@ -200,10 +200,16 @@ battery-percentage field per earbud, with `0xff` as an "unavailable" or
 contribution standard: it was observed only once, a matching test on the left
 earbud did not reproduce the burst within a 10-second removal window, and a
 one-minute removal test produced no burst at all, so the coincidence with the
-right-earbud test may not be causal. No independent battery-level reading has
-been cross-checked either. Do not treat this as a supported feature; the next
-step is to capture across a full heartbeat cycle (whatever its real period
-is) rather than a short, timed action.
+right-earbud test may not be causal. A third test, removing both earbuds,
+closing the case, waiting a minute, then reinserting and closing again,
+produced no `14 02`/`14 04` burst either, only the unrelated `14 41` touch
+pulses and `12 01` heartbeats. Three timed, short removal tests in a row
+failed to reproduce the original change; whatever triggers it, it is not a
+straightforward "earbud removed/inserted" event. No independent
+battery-level reading has been cross-checked either. Do not treat this as a
+supported feature. The next useful step is a long, untimed passive capture
+during normal use (hours, not a scripted sequence) to see whether `14 04`
+ever changes on its own, rather than more short timed tests.
 
 ### Passive capture
 
