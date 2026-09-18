@@ -14,7 +14,7 @@ ICON_FILE="$DATA_HOME/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBuds
 SYMBOLIC_ICON_FILE="$DATA_HOME/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg"
 
 remove_owned_system_link() {
-  local name=$1 destination="$SYSTEM_BIN_DIR/$1" expected="$BIN_HOME/$1"
+  local destination="$SYSTEM_BIN_DIR/$1" expected="$BIN_HOME/$1"
   local existing_target
   [[ -L $destination ]] || return 0
   existing_target=$(readlink -- "$destination" 2>/dev/null || true)

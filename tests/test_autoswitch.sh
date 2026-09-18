@@ -8,9 +8,6 @@ trap 'rm -rf -- "$TEST_TMP"' EXIT
 STATE="$TEST_TMP/state"
 mkdir -p "$STATE" "$TEST_TMP/run"
 
-GAME=alsa_output.usb-Sony_INZONE_Buds-00.pro-output-1
-CHAT=alsa_output.usb-Sony_INZONE_Buds-00.pro-output-0
-
 cat > "$TEST_TMP/pactl" <<'EOF'
 #!/usr/bin/env bash
 set -eu
@@ -49,7 +46,7 @@ export MOCK_STATE="$STATE"
 export PACTL="$TEST_TMP/pactl"
 export INZONE_RUNTIME_DIR="$TEST_TMP/run"
 
-# shellcheck source=../bin/inzone-autoswitch
+# shellcheck source-path=SCRIPTDIR source=../bin/inzone-autoswitch
 source "$PROJECT_DIR/bin/inzone-autoswitch"
 set -euo pipefail  # the sourced script only sets -u
 

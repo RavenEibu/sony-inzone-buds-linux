@@ -99,8 +99,8 @@ source_by_suffix() {
 }
 
 wait_for_endpoint() {
-  local kind=$1 suffix=$2 value='' attempt
-  for attempt in {1..30}; do
+  local kind=$1 suffix=$2 value=''
+  for _ in {1..30}; do
     if [[ $kind == sink ]]; then
       value=$(sink_by_suffix "$suffix")
     else
