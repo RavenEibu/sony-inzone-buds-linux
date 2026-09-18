@@ -4,6 +4,9 @@
 
 ### Added
 
+- Desktop notifications when the dongle's Game/Chat endpoints appear or
+  disappear while `inzone-autoswitch` is running, through `notify-send`. Set
+  `INZONE_NOTIFY=0` on the service to disable them.
 - GitHub Actions CI on Ubuntu 24.04 runs every test, ShellCheck, AppStream and
   desktop-entry validation for each push and pull request. `tests/run-all.sh`
   and `tests/lint.sh` run the same checks locally.

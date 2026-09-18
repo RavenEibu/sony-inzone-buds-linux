@@ -81,6 +81,13 @@ a change that affected only Game or only Chat onto the other endpoint:
 
 Set `INZONE_LINK_VOLUMES=0` in the service environment to disable linking.
 
+#### Connect/disconnect notifications
+
+`inzone-autoswitch` calls `notify-send` when the Game/Chat endpoints appear or
+disappear while it is running, not on its own startup. Missing `notify-send`
+is silently ignored. Set `INZONE_NOTIFY=0` in the service environment to
+disable notifications.
+
 ### Command-line controller
 
 `inzonectl` resolves endpoints by stable PipeWire node suffix rather than by

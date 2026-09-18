@@ -13,6 +13,10 @@ PC_PRODUCT_ID=0ec2
 # only Chat (volume keys, the desktop sound panel), scale the other endpoint so
 # the Game/Chat balance is kept. Set INZONE_LINK_VOLUMES=0 to disable.
 LINK_VOLUMES=${INZONE_LINK_VOLUMES:-1}
+# Desktop notification when the dongle's Game/Chat endpoints appear or
+# disappear while the service is running. Set INZONE_NOTIFY=0 to disable.
+NOTIFY=${INZONE_NOTIFY:-1}
+NOTIFY_SEND=${NOTIFY_SEND:-notify-send}
 RUNTIME_DIR=${INZONE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-}}
 MANUAL_MARKER=${RUNTIME_DIR:+$RUNTIME_DIR/inzone-buds-manual-change}
 # One key press or inzonectl command produces a burst of events; act once the
@@ -71,6 +75,15 @@ activate_profile() {
 
 now_ns() {
   date +%s%N
+}
+
+# Print a desktop notification. Silently does nothing without notify-send or
+# with INZONE_NOTIFY=0.
+notify() {  # TITLE BODY
+  (( NOTIFY )) || return 0
+  command -v "$NOTIFY_SEND" >/dev/null 2>&1 || return 0
+  "$NOTIFY_SEND" --app-name='INZONE Buds' --icon=audio-headset -- "$1" "$2" \
+    >/dev/null 2>&1 || true
 }
 
 # Print "RAW_VOLUME MUTE" for a sink, with MUTE as 0 or 1.
@@ -223,12 +236,14 @@ main() {
           select_inzone
           was_available=1
           (( LINK_VOLUMES )) && link_volumes
+          notify 'INZONE Buds connected' 'Game and Chat are ready.'
         fi
         ;;
       *"'remove' on sink"*)
-        if ! game_is_available; then
+        if (( was_available == 1 )) && ! game_is_available; then
           was_available=0
           link_reset
+          notify 'INZONE Buds disconnected' ''
         fi
         ;;
       *"'change' on sink #"*)

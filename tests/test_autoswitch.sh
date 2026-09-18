@@ -150,4 +150,28 @@ link_volumes
 [[ $(link_plan 0 100 0 100 50 100 0) == reference ]] || fail 'zero Game reference'
 [[ $(link_plan 100 0 100 0 100 50 0) == reference ]] || fail 'zero Chat reference'
 
+# notify() calls notify-send with the given title and body.
+cat > "$TEST_TMP/notify-send" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$*" >> "$MOCK_STATE/notify.log"
+EOF
+chmod +x "$TEST_TMP/notify-send"
+NOTIFY_SEND="$TEST_TMP/notify-send"
+
+: > "$STATE/notify.log"
+notify 'Title' 'Body text'
+grep -q -- '--app-name=INZONE Buds --icon=audio-headset -- Title Body text' "$STATE/notify.log" \
+  || fail 'notify did not call notify-send with the expected arguments'
+
+# INZONE_NOTIFY=0 disables notifications.
+NOTIFY=0
+: > "$STATE/notify.log"
+notify 'Title' 'Body text'
+[[ ! -s $STATE/notify.log ]] || fail 'notify ran with NOTIFY=0'
+NOTIFY=1
+
+# A missing notify-send is silently ignored.
+NOTIFY_SEND="$TEST_TMP/does-not-exist"
+notify 'Title' 'Body text' || fail 'notify failed with a missing notify-send'
+
 printf 'Autoswitch volume-link tests passed.\n'

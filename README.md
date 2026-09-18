@@ -20,6 +20,7 @@ with `snd_usb_audio`.
 - Game as the default output and the INZONE microphone as the default input
   whenever the PC-mode dongle appears
 - Normal fallback to another audio device when the dongle is removed
+- Desktop notification when the dongle connects or disconnects
 - Per-endpoint volume and a Game/Chat balance command
 - Volume and mute keys move Game and Chat together, keeping their balance
 - GTK4 mixer for Game/Chat balance, overall volume and microphone level,

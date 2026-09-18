@@ -40,7 +40,7 @@ control work.
 - [ ] Add more Game/Chat presets to the tray context menu.
 - [x] Add launch-at-login preference, starting hidden in the tray.
 - [ ] Add translated interface strings.
-- [ ] Add desktop notifications for connect/disconnect events.
+- [x] Add desktop notifications for connect/disconnect events.
 - [ ] Support configurable default behavior without editing scripts or service
   files, including volume-key linking.
 - [ ] Add optional keyboard-shortcut examples.
