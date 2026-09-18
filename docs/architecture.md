@@ -38,12 +38,17 @@ The configuration fragment in
 `USB054c:0ec2` and the Pro Audio node suffixes. It assigns friendly endpoint
 descriptions and selection priorities without changing stable node names.
 
+The same fragment adds a `device.profile.priority.rules` entry for USB ID
+`054c:0ec2`, so WirePlumber creates the card directly in `pro-audio` instead of
+starting the analog profile first. A profile the user saved explicitly still
+takes precedence. WirePlumber releases without this section ignore it.
+
 ### Hot-plug service
 
 `inzone-autoswitch` subscribes to PulseAudio-compatible PipeWire events. When
 the PC-mode dongle appears, it:
 
-1. activates `pro-audio`;
+1. activates `pro-audio` if WirePlumber has not already selected it;
 2. waits for the Game, Chat and Microphone nodes;
 3. selects Game as the default output;
 4. selects the INZONE microphone as the default input.

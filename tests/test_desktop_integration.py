@@ -34,6 +34,19 @@ class DesktopIntegrationTests(unittest.TestCase):
         self.assertIn('GLib.Variant("s", "Quit")', source)
         self.assertIn('MENU_PATH = "/MenuBar"', source)
 
+    def test_wireplumber_creates_pc_mode_card_in_pro_audio(self):
+        source = (PROJECT_DIR / "config/wireplumber/51-inzone-buds.conf").read_text(
+            encoding="utf-8"
+        )
+        rules = source[
+            source.index("device.profile.priority.rules") : source.index(
+                "monitor.alsa.rules"
+            )
+        ]
+        self.assertIn('device.vendor.id = "0x054c"', rules)
+        self.assertIn('device.product.id = "0x0ec2"', rules)
+        self.assertIn('priorities = [ "pro-audio" ]', rules)
+
     def test_tray_registers_only_after_owning_its_bus_name(self):
         source = (PROJECT_DIR / "src/inzone_buds_mixer/tray.py").read_text(
             encoding="utf-8"
