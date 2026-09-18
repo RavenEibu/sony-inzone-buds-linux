@@ -22,14 +22,15 @@
   </provides>
   <url type="homepage">https://github.com/RavenEibu/sony-inzone-buds-linux</url>
   <url type="bugtracker">https://github.com/RavenEibu/sony-inzone-buds-linux/issues</url>
-  <developer id="io.github.RavenEibu">
+  <developer id="io.github.raveneibu">
     <name>Sony INZONE Buds for Linux contributors</name>
   </developer>
   <content_rating type="oars-1.1"/>
   <releases>
-    <release version="0.2.0" date="2026-09-13">
+    <!-- Add each version here with its real date only when it is released. -->
+    <release version="0.1.0" date="2026-09-13">
       <description>
-        <p>First GTK4 mixer preview with Game/Chat balance and tray support.</p>
+        <p>Command-line and WirePlumber integration for the native Game, Chat and microphone endpoints.</p>
       </description>
     </release>
   </releases>
