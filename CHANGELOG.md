@@ -28,6 +28,8 @@
 - Add a Center button that sets the Game/Chat balance to 50 without changing
   the overall volume.
 - Add **Center Game/Chat** to the tray menu.
+- Back up only edited configuration during installation; program and data
+  files are replaced without leaving `*.backup-*` copies in `~/.local/bin`.
 - Make desktop volume and mute keys move Game and Chat together, keeping their
   balance. `inzonectl` and mixer changes stay independent; set
   `INZONE_LINK_VOLUMES=0` on the service to disable.

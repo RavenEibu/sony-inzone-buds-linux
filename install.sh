@@ -16,10 +16,15 @@ ICON_SYMBOLIC_DIR="$DATA_HOME/icons/hicolor/symbolic/apps"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 SYSTEM_LINKS_INSTALLED=0
 
+# Install SOURCE as DESTINATION. Pass "backup" as the fourth argument for
+# configuration a user may have edited: a differing existing file is then kept
+# as a timestamped backup. Program and data files belong to this project and are
+# replaced without backups, so upgrades do not litter ~/.local/bin.
 install_one() {
-  local source=$1 destination=$2 mode=$3
+  local source=$1 destination=$2 mode=$3 backup=${4:-}
   mkdir -p "$(dirname "$destination")"
-  if [[ -e $destination ]] && ! cmp -s "$source" "$destination"; then
+  if [[ $backup == backup && -e $destination ]] &&
+      ! cmp -s "$source" "$destination"; then
     cp -a "$destination" "${destination}.backup-${TIMESTAMP}"
     printf 'Backed up %s\n' "$destination"
   fi
@@ -28,12 +33,12 @@ install_one() {
 
 # Install a *.in file after replacing @BINDIR@ with the real command directory.
 install_template() {
-  local source=$1 destination=$2 rendered bindir
+  local source=$1 destination=$2 backup=${3:-} rendered bindir
   rendered=$(mktemp)
   # Escape sed replacement metacharacters so any directory name is literal.
   bindir=$(printf '%s' "$BIN_HOME" | sed 's/[\\|&]/\\&/g')
   sed "s|@BINDIR@|$bindir|g" "$source" > "$rendered"
-  install_one "$rendered" "$destination" 0644
+  install_one "$rendered" "$destination" 0644 "$backup"
   rm -f -- "$rendered"
 }
 
@@ -102,12 +107,12 @@ for command_name in pactl systemctl; do
 done
 
 install_one "$PROJECT_DIR/config/wireplumber/51-inzone-buds.conf" \
-  "$WIREPLUMBER_DIR/51-inzone-buds.conf" 0644
+  "$WIREPLUMBER_DIR/51-inzone-buds.conf" 0644 backup
 install_one "$PROJECT_DIR/bin/inzonectl" "$BIN_HOME/inzonectl" 0755
 install_one "$PROJECT_DIR/bin/inzone-autoswitch" "$BIN_HOME/inzone-autoswitch" 0755
 install_one "$PROJECT_DIR/bin/inzone-buds-mixer" "$BIN_HOME/inzone-buds-mixer" 0755
 install_template "$PROJECT_DIR/systemd/user/inzone-buds-autoswitch.service.in" \
-  "$SYSTEMD_USER_DIR/inzone-buds-autoswitch.service"
+  "$SYSTEMD_USER_DIR/inzone-buds-autoswitch.service" backup
 
 for python_file in audio.py app.py tray.py; do
   install_one "$PROJECT_DIR/src/inzone_buds_mixer/$python_file" \

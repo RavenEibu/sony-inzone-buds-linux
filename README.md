@@ -202,8 +202,8 @@ ALSA's generic names, one at a time; see
 ./uninstall.sh
 ```
 
-The uninstaller removes only files owned by this project. Installer-created
-backups, if any, are kept next to the original path.
+The uninstaller removes only files owned by this project. Configuration
+backups created by the installer, if any, are kept next to the original path.
 
 ## Scope and limitations
 
@@ -223,8 +223,11 @@ playback endpoint. This project intentionally activates only for PC mode
 your volume before putting the earbuds in. Run `inzonectl doctor` when filing
 an issue; it reports audio topology and versions but does not upload anything.
 
-If an existing file would be replaced during installation, the installer first
-creates a timestamped backup in the same directory.
+If the WirePlumber rule or the systemd user service under `~/.config` differs
+from the version being installed, for example because it was edited by hand,
+the installer first keeps a timestamped backup next to it. Program and data
+files owned by the project are replaced without backups, so upgrades do not
+leave extra files in `~/.local/bin`.
 
 ## Contributing
 

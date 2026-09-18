@@ -219,4 +219,4 @@ From a checkout of this repository, run:
 ```
 
 The uninstaller removes only the files installed by this project. Timestamped
-backups created during installation are preserved.
+configuration backups created during installation are preserved.

@@ -58,6 +58,30 @@ grep -F "Exec=$USER_BIN/inzone-buds-mixer" \
 grep -Fx "ExecStart=\"$USER_BIN/inzone-autoswitch\"" \
   "$CONFIG_HOME/systemd/user/inzone-buds-autoswitch.service" >/dev/null
 
+# Reinstalling over an older version backs up only edited configuration.
+WIREPLUMBER_CONF="$CONFIG_HOME/wireplumber/wireplumber.conf.d/51-inzone-buds.conf"
+SERVICE="$CONFIG_HOME/systemd/user/inzone-buds-autoswitch.service"
+echo '# edited by the user' >> "$WIREPLUMBER_CONF"
+echo '# edited by the user' >> "$SERVICE"
+echo '# older version' >> "$USER_BIN/inzonectl"
+echo '# older version' >> "$DATA_HOME/inzone-buds-mixer/app.py"
+
+PATH="$TEST_PATH" \
+XDG_CONFIG_HOME="$CONFIG_HOME" \
+XDG_BIN_HOME="$USER_BIN" \
+XDG_DATA_HOME="$DATA_HOME" \
+INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
+  "$PROJECT_DIR/install.sh" >/dev/null 2>&1
+
+backups() { compgen -G "$1.backup-*" | wc -l; }
+(( $(backups "$WIREPLUMBER_CONF") == 1 )) || { echo 'FAIL: WirePlumber config not backed up' >&2; exit 1; }
+(( $(backups "$SERVICE") == 1 )) || { echo 'FAIL: service not backed up' >&2; exit 1; }
+(( $(backups "$USER_BIN/inzonectl") == 0 )) || { echo 'FAIL: program was backed up' >&2; exit 1; }
+(( $(backups "$DATA_HOME/inzone-buds-mixer/app.py") == 0 )) || { echo 'FAIL: app.py was backed up' >&2; exit 1; }
+cmp -s "$PROJECT_DIR/bin/inzonectl" "$USER_BIN/inzonectl"
+cmp -s "$PROJECT_DIR/src/inzone_buds_mixer/app.py" "$DATA_HOME/inzone-buds-mixer/app.py"
+cmp -s "$PROJECT_DIR/config/wireplumber/51-inzone-buds.conf" "$WIREPLUMBER_CONF"
+
 PATH="$TEST_PATH" \
 XDG_CONFIG_HOME="$CONFIG_HOME" \
 XDG_BIN_HOME="$USER_BIN" \
