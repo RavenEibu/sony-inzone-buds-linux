@@ -34,6 +34,15 @@ class DesktopIntegrationTests(unittest.TestCase):
         self.assertIn('GLib.Variant("s", "Quit")', source)
         self.assertIn('MENU_PATH = "/MenuBar"', source)
 
+    def test_tray_registers_only_after_owning_its_bus_name(self):
+        source = (PROJECT_DIR / "src/inzone_buds_mixer/tray.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("self._name_acquired_cb,", source)
+        self.assertIn(
+            "if not (self._name_acquired and self._watcher_present):", source
+        )
+
     def test_color_scheme_uses_portal_before_creating_window(self):
         source = (PROJECT_DIR / "src/inzone_buds_mixer/app.py").read_text(
             encoding="utf-8"

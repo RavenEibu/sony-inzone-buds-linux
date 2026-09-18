@@ -124,6 +124,8 @@ class StatusNotifierItem:
         self.on_quit = on_quit
         self.on_availability_changed = on_availability_changed
         self.available = False
+        self._name_acquired = False
+        self._watcher_present = False
         self.connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         self.bus_name = f"org.kde.StatusNotifierItem-{os.getpid()}-1"
         self._node_info = Gio.DBusNodeInfo.new_for_xml(SNI_XML)
@@ -146,8 +148,8 @@ class StatusNotifierItem:
             self.connection,
             self.bus_name,
             Gio.BusNameOwnerFlags.NONE,
-            None,
-            None,
+            self._name_acquired_cb,
+            self._name_lost_cb,
         )
         self._watch_id = Gio.bus_watch_name(
             Gio.BusType.SESSION,
@@ -164,7 +166,24 @@ class StatusNotifierItem:
         if self.on_availability_changed:
             GLib.idle_add(self.on_availability_changed, value)
 
+    def _name_acquired_cb(self, _connection, _name) -> None:
+        self._name_acquired = True
+        self._register_with_watcher()
+
+    def _name_lost_cb(self, _connection, _name) -> None:
+        self._name_acquired = False
+        self._set_available(False)
+
     def _watcher_appeared(self, _connection, _name, _owner) -> None:
+        self._watcher_present = True
+        self._register_with_watcher()
+
+    def _register_with_watcher(self) -> None:
+        # Name ownership is asynchronous. A watcher may reject or immediately
+        # drop an item whose bus name has no owner yet, so register only once
+        # the name is ours and a watcher exists, whichever happens last.
+        if not (self._name_acquired and self._watcher_present):
+            return
         try:
             self.connection.call_sync(
                 self.WATCHER_NAME,
@@ -183,6 +202,7 @@ class StatusNotifierItem:
             self._set_available(True)
 
     def _watcher_vanished(self, _connection, _name) -> None:
+        self._watcher_present = False
         self._set_available(False)
 
     def _handle_method(
