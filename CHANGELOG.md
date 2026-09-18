@@ -12,6 +12,9 @@
   tray icon; without a tray the window appears after 10 seconds. The
   uninstaller removes the entry.
 - The mixer window reappears if the tray host disappears while it is hidden.
+- Document the dongle's USB interfaces, including the device-provided Chat and
+  Game function names, its HID report descriptor and the input devices the
+  kernel creates from it.
 
 ## 0.2.0 - 2026-09-17
 

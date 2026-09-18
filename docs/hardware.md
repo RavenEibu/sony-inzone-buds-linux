@@ -27,6 +27,10 @@ The following mapping was confirmed using ALSA enumeration and `wpctl inspect`:
 The `7` in the example ALSA paths was the card number on one test system. It is
 not stable and is not used by the implementation.
 
+The dongle's own USB descriptors confirm the mapping: it names its first audio
+function "INZONE Buds - Chat" and its second "INZONE Buds - Game" (see
+[USB interfaces](#usb-interfaces)).
+
 ## Formats
 
 Both PC-mode playback endpoints reported:
@@ -96,6 +100,77 @@ WirePlumber 0.5.17, GNOME on Wayland) confirmed:
   balance model;
 - the card being created directly in Pro Audio by the WirePlumber profile rule,
   with no saved profile and without `inzone-autoswitch` running.
+
+## USB interfaces
+
+Read with `lsusb -v -d 054c:0ec2` and sysfs on 2026-09-18. The PC-mode dongle
+is a USB 2.0 device (`bcdDevice` 1.00, no serial number) with one configuration
+and six interfaces forming two USB Audio Class functions and one HID interface:
+
+| Interface | Class | Device-provided name | Endpoint | Purpose |
+| --- | --- | --- | --- | --- |
+| 0 | Audio control | INZONE Buds - Chat | — | Chat function |
+| 1 | Audio streaming | — | `0x01` OUT, 192 bytes/ms | Chat playback (48 kHz, 2 × 16-bit) |
+| 2 | Audio streaming | — | `0x81` IN, 96 bytes/ms | Microphone (48 kHz, 1 × 16-bit) |
+| 3 | Audio control | INZONE Buds - Game | — | Game function |
+| 4 | Audio streaming | — | `0x02` OUT, 192 bytes/ms | Game playback (48 kHz, 2 × 16-bit) |
+| 5 | HID | Hid Interface | `0x83` IN, interrupt, 64 bytes, 3 ms | Proprietary controls and media keys |
+
+The microphone belongs to the Chat function: the Chat audio-control header
+lists interfaces 1 and 2 as its streaming interfaces (`baInterfaceNr`), while
+the Game header lists only interface 4. The dongle has no Interface
+Association Descriptors. `snd_usb_audio` drives interfaces 0–4 and
+`hid-generic` drives interface 5.
+
+## HID interface
+
+The HID interface has only an interrupt IN endpoint. Output and feature reports
+must therefore travel as control transfers (`SET_REPORT`/`GET_REPORT`) on
+endpoint 0.
+
+The 158-byte report descriptor can be read without root from
+`/sys/class/hidraw/hidrawN/device/report_descriptor` and decoded with
+`hid-decode` from `hid-tools`. It declares five top-level collections:
+
+| Collection | Report ID | Direction | Payload | Notes |
+| --- | --- | --- | --- | --- |
+| Vendor page `0xFF13`, usage `0x01` | `0x06` | Output | 61 bytes | Paired with report `0x07` |
+| | `0x07` | Input | 61 bytes | |
+| Consumer Control | `0x0C` | Input | 6 bits + 2 padding | Volume Up, Volume Down, Mute, Play/Pause, Next, Previous |
+| Vendor page `0xFF04`, usage `0x01` | `0x02` | Input and Output | 63 bytes | Same report ID in both directions |
+| Vendor page `0xFF03`, usage `0x20` | `0xA0` | Feature | 34 bytes | |
+| | `0xA1` | Feature | 22 bytes | |
+| Vendor page `0xFF01`, usage `0x20` | `0xB0` | Input | 7 × 1 byte | Seven separate usages, `0x25`–`0x2B` |
+
+`hid-generic` creates four input devices from these collections. One of them,
+"Sony INZONE Buds Consumer Control", reports `KEY_VOLUMEUP`, `KEY_VOLUMEDOWN`,
+`KEY_MUTE`, `KEY_PLAYPAUSE`, `KEY_NEXTSONG` and `KEY_PREVIOUSSONG`. The others
+expose the vendor collections as `ABS_MISC` axes, which do not carry their
+content in a usable form.
+
+Access on a default system: the report descriptor is world-readable,
+`/dev/hidrawN` is `root:root 0600`, and the `/dev/input/eventN` nodes are
+`root:input 0660`.
+
+### Hypotheses, not verified
+
+The descriptor names no usages, so the purpose of every vendor report is
+unknown. Only the structure above is established. The following are working
+hypotheses to test, not supported features:
+
+- reports `0x06`/`0x07` and report `0x02` look like request/response command
+  channels;
+- report `0xB0`, seven separate one-byte values sent by the device, is a
+  plausible candidate for status such as battery levels;
+- feature reports `0xA0`/`0xA1` may carry device information or settings;
+- if the earbuds' touch controls are assigned to volume, the Consumer Control
+  report would reach the desktop as ordinary volume keys. This has not been
+  observed.
+
+The next step is passive: grant the logged-in user read access to the dongle's
+hidraw node only, then record input reports while changing one thing at a time,
+such as removing an earbud from the case or connecting a charger. No output or
+feature report is to be sent until its effect is documented.
 
 ## Not yet verified
 

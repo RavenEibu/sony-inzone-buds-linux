@@ -49,7 +49,9 @@ control work.
 
 The following work requires protocol research and real-device verification:
 
-- [ ] Enumerate HID interfaces and report descriptors.
+- [x] Enumerate HID interfaces and report descriptors.
+- [ ] Record input reports passively while changing one device state at a
+  time.
 - [ ] Capture one setting change at a time on a controlled Windows test system.
 - [ ] Document request/response framing and checksums.
 - [ ] Build a read-only device-status prototype.
