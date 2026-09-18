@@ -1,0 +1,17 @@
+# User configuration for inzone-autoswitch, sourced as shell on every start.
+# Installed once as ~/.config/inzone-buds-mixer/config; edit that file, not
+# this one, so a future reinstall does not overwrite your changes (it backs
+# up a differing file instead of replacing it silently).
+#
+# Uncomment a line to change its default. Use ":" default-assignment
+# (${VAR:=value}) rather than plain "VAR=value" so an environment variable
+# already set for this run, such as Environment= in the systemd unit, still
+# takes precedence over this file.
+
+# Keep Game and Chat volume linked, so the volume and mute keys move both
+# together and a change to one scales the other by the same factor.
+# : "${INZONE_LINK_VOLUMES:=1}"
+
+# Show a desktop notification when the dongle's Game/Chat endpoints appear or
+# disappear while the service is already running.
+# : "${INZONE_NOTIFY:=1}"

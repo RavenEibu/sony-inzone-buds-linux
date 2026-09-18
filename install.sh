@@ -108,6 +108,8 @@ done
 
 install_one "$PROJECT_DIR/config/wireplumber/51-inzone-buds.conf" \
   "$WIREPLUMBER_DIR/51-inzone-buds.conf" 0644 backup
+install_one "$PROJECT_DIR/config/inzone-buds-mixer/config.example" \
+  "$CONFIG_HOME/inzone-buds-mixer/config" 0644 backup
 install_one "$PROJECT_DIR/bin/inzonectl" "$BIN_HOME/inzonectl" 0755
 install_one "$PROJECT_DIR/bin/inzone-autoswitch" "$BIN_HOME/inzone-autoswitch" 0755
 install_one "$PROJECT_DIR/bin/inzone-buds-mixer" "$BIN_HOME/inzone-buds-mixer" 0755

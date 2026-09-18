@@ -23,6 +23,8 @@ with `snd_usb_audio`.
 - Desktop notification when the dongle connects or disconnects
 - Per-endpoint volume and a Game/Chat balance command
 - Volume and mute keys move Game and Chat together, keeping their balance
+- Optional behavior (volume-key linking, notifications) configurable in
+  `~/.config/inzone-buds-mixer/config`, no script editing needed
 - GTK4 mixer for Game/Chat balance, overall volume and microphone level,
   immediately reflecting changes made with volume keys or other mixers
 - StatusNotifierItem tray icon, tested on GNOME with AppIndicator support
@@ -87,6 +89,8 @@ directory:
 
 - `~/.config/wireplumber/wireplumber.conf.d/51-inzone-buds.conf`
 - `~/.config/systemd/user/inzone-buds-autoswitch.service`
+- `~/.config/inzone-buds-mixer/config` (optional settings, commented out by
+  default; see [Architecture](docs/architecture.md#user-configuration))
 - `~/.local/bin/inzonectl`
 - `~/.local/bin/inzone-autoswitch`
 - `~/.local/bin/inzone-buds-mixer`

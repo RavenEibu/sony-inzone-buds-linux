@@ -6,6 +6,7 @@ BIN_HOME=${XDG_BIN_HOME:-"$HOME/.local/bin"}
 DATA_HOME=${XDG_DATA_HOME:-"$HOME/.local/share"}
 SYSTEM_BIN_DIR=${INZONE_SYSTEM_BIN_DIR:-/usr/local/bin}
 WIREPLUMBER_FILE="$CONFIG_HOME/wireplumber/wireplumber.conf.d/51-inzone-buds.conf"
+USER_CONFIG_FILE="$CONFIG_HOME/inzone-buds-mixer/config"
 SERVICE_FILE="$CONFIG_HOME/systemd/user/inzone-buds-autoswitch.service"
 APP_DATA_DIR="$DATA_HOME/inzone-buds-mixer"
 DESKTOP_FILE="$DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop"
@@ -33,6 +34,8 @@ remove_owned_system_link inzonectl
 remove_owned_system_link inzone-buds-mixer
 
 rm -f -- "$WIREPLUMBER_FILE"
+rm -f -- "$USER_CONFIG_FILE"
+rmdir -- "$(dirname -- "$USER_CONFIG_FILE")" 2>/dev/null || true
 rm -f -- "$SERVICE_FILE"
 rm -f -- "$BIN_HOME/inzonectl"
 rm -f -- "$BIN_HOME/inzone-autoswitch"

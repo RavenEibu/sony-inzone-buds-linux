@@ -4,6 +4,10 @@
 
 ### Added
 
+- `~/.config/inzone-buds-mixer/config`, an optional, commented shell file for
+  `inzone-autoswitch` settings (volume-key linking, notifications) that does
+  not require editing a script or the systemd unit. An `Environment=` line on
+  the unit still takes precedence over it.
 - Desktop notifications when the dongle's Game/Chat endpoints appear or
   disappear while `inzone-autoswitch` is running, through `notify-send`. Set
   `INZONE_NOTIFY=0` on the service to disable them.

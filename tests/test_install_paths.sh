@@ -55,6 +55,9 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 grep -F "Exec=$USER_BIN/inzone-buds-mixer" \
   "$DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop" >/dev/null
 [[ -f $DATA_HOME/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg ]]
+[[ -f $CONFIG_HOME/inzone-buds-mixer/config ]]
+cmp -s "$PROJECT_DIR/config/inzone-buds-mixer/config.example" \
+  "$CONFIG_HOME/inzone-buds-mixer/config"
 # The service must follow XDG_BIN_HOME instead of assuming ~/.local/bin.
 grep -Fx "ExecStart=\"$USER_BIN/inzone-autoswitch\"" \
   "$CONFIG_HOME/systemd/user/inzone-buds-autoswitch.service" >/dev/null
@@ -62,8 +65,10 @@ grep -Fx "ExecStart=\"$USER_BIN/inzone-autoswitch\"" \
 # Reinstalling over an older version backs up only edited configuration.
 WIREPLUMBER_CONF="$CONFIG_HOME/wireplumber/wireplumber.conf.d/51-inzone-buds.conf"
 SERVICE="$CONFIG_HOME/systemd/user/inzone-buds-autoswitch.service"
+USER_CONFIG="$CONFIG_HOME/inzone-buds-mixer/config"
 echo '# edited by the user' >> "$WIREPLUMBER_CONF"
 echo '# edited by the user' >> "$SERVICE"
+echo '# edited by the user' >> "$USER_CONFIG"
 echo '# older version' >> "$USER_BIN/inzonectl"
 echo '# older version' >> "$DATA_HOME/inzone-buds-mixer/app.py"
 
@@ -77,6 +82,7 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 backups() { compgen -G "$1.backup-*" | wc -l; }
 (( $(backups "$WIREPLUMBER_CONF") == 1 )) || { echo 'FAIL: WirePlumber config not backed up' >&2; exit 1; }
 (( $(backups "$SERVICE") == 1 )) || { echo 'FAIL: service not backed up' >&2; exit 1; }
+(( $(backups "$USER_CONFIG") == 1 )) || { echo 'FAIL: user config not backed up' >&2; exit 1; }
 (( $(backups "$USER_BIN/inzonectl") == 0 )) || { echo 'FAIL: program was backed up' >&2; exit 1; }
 (( $(backups "$DATA_HOME/inzone-buds-mixer/app.py") == 0 )) || { echo 'FAIL: app.py was backed up' >&2; exit 1; }
 cmp -s "$PROJECT_DIR/bin/inzonectl" "$USER_BIN/inzonectl"
@@ -102,5 +108,6 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 [[ ! -e $DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop ]]
 [[ ! -e $AUTOSTART_FILE ]]
 [[ ! -e $DATA_HOME/inzone-buds-mixer ]]
+[[ ! -e $USER_CONFIG ]]
 
 printf 'Install PATH tests passed.\n'

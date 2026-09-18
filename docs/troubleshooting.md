@@ -157,17 +157,11 @@ This is intended: the keys change only the default output, and the hot-plug
 service mirrors the change on the other endpoint to keep the Game/Chat balance.
 Adjust one endpoint alone with the mixer or `inzonectl volume game|chat`.
 
-To turn linking off:
+To turn linking off, edit `~/.config/inzone-buds-mixer/config` (installed from
+`config/inzone-buds-mixer/config.example`) and uncomment:
 
 ```bash
-systemctl --user edit inzone-buds-autoswitch.service
-```
-
-Add:
-
-```ini
-[Service]
-Environment=INZONE_LINK_VOLUMES=0
+: "${INZONE_LINK_VOLUMES:=0}"
 ```
 
 Then restart the service:
@@ -175,6 +169,11 @@ Then restart the service:
 ```bash
 systemctl --user restart inzone-buds-autoswitch.service
 ```
+
+The same file also has a setting for connect/disconnect notifications. An
+`Environment=` line in `systemctl --user edit inzone-buds-autoswitch.service`
+still works too and takes precedence over the config file, for a change that
+should not depend on that file being present.
 
 ## Discord uses Game instead of Chat
 

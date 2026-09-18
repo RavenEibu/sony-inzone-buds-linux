@@ -9,6 +9,16 @@ CHAT_SUFFIX='.pro-output-0'
 PC_VENDOR_ID=054c
 PC_PRODUCT_ID=0ec2
 
+# User configuration file: shell, sourced as-is. See
+# config/inzone-buds-mixer/config.example for the format and the available
+# settings. Sourced before the defaults below, so its default-assignments
+# apply only to a variable the environment did not already set.
+CONFIG_FILE=${INZONE_CONFIG_FILE:-"${XDG_CONFIG_HOME:-$HOME/.config}/inzone-buds-mixer/config"}
+if [[ -r $CONFIG_FILE ]]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG_FILE"
+fi
+
 # Volume linking: when something outside this project changes only Game or
 # only Chat (volume keys, the desktop sound panel), scale the other endpoint so
 # the Game/Chat balance is kept. Set INZONE_LINK_VOLUMES=0 to disable.

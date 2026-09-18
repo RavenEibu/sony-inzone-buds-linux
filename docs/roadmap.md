@@ -41,7 +41,7 @@ control work.
 - [x] Add launch-at-login preference, starting hidden in the tray.
 - [ ] Add translated interface strings.
 - [x] Add desktop notifications for connect/disconnect events.
-- [ ] Support configurable default behavior without editing scripts or service
+- [x] Support configurable default behavior without editing scripts or service
   files, including volume-key linking.
 - [ ] Add optional keyboard-shortcut examples.
 

@@ -79,14 +79,25 @@ a change that affected only Game or only Chat onto the other endpoint:
 - for two seconds after the dongle appears, volumes restored by WirePlumber are
   adopted as the reference instead of being mirrored.
 
-Set `INZONE_LINK_VOLUMES=0` in the service environment to disable linking.
+Set `INZONE_LINK_VOLUMES=0` (see "User configuration" below) to disable
+linking.
 
 #### Connect/disconnect notifications
 
 `inzone-autoswitch` calls `notify-send` when the Game/Chat endpoints appear or
 disappear while it is running, not on its own startup. Missing `notify-send`
-is silently ignored. Set `INZONE_NOTIFY=0` in the service environment to
-disable notifications.
+is silently ignored. Set `INZONE_NOTIFY=0` to disable notifications.
+
+#### User configuration
+
+`inzone-autoswitch` sources `~/.config/inzone-buds-mixer/config` as shell,
+before resolving its defaults, if the file exists. `install.sh` installs it
+from `config/inzone-buds-mixer/config.example`, commented out; uncommenting a
+line changes that default. The file uses default-assignment
+(`: "${VAR:=value}"`) rather than plain assignment, so an environment
+variable already set for the run — such as `Environment=` in the systemd
+unit — still takes precedence over it. `INZONE_CONFIG_FILE` overrides the
+file's location, mainly for tests.
 
 ### Command-line controller
 

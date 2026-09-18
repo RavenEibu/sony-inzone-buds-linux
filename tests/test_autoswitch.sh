@@ -45,6 +45,7 @@ chmod +x "$TEST_TMP/pactl"
 export MOCK_STATE="$STATE"
 export PACTL="$TEST_TMP/pactl"
 export INZONE_RUNTIME_DIR="$TEST_TMP/run"
+export INZONE_CONFIG_FILE="$TEST_TMP/no-such-config"  # do not read the real user config
 
 # shellcheck source-path=SCRIPTDIR source=../bin/inzone-autoswitch
 source "$PROJECT_DIR/bin/inzone-autoswitch"
@@ -173,5 +174,23 @@ NOTIFY=1
 # A missing notify-send is silently ignored.
 NOTIFY_SEND="$TEST_TMP/does-not-exist"
 notify 'Title' 'Body text' || fail 'notify failed with a missing notify-send'
+
+# The user config file sets a default, but an already-set environment
+# variable still takes precedence over it.
+CONFIG="$TEST_TMP/config"
+# shellcheck disable=SC2016  # literal text for the config file, not this script
+printf ': "${INZONE_LINK_VOLUMES:=0}"\n' > "$CONFIG"
+value=$(INZONE_CONFIG_FILE="$CONFIG" PACTL="$TEST_TMP/pactl" \
+  bash -c 'source "$1"; echo "$LINK_VOLUMES"' _ "$PROJECT_DIR/bin/inzone-autoswitch")
+[[ $value == 0 ]] || fail "config file default did not apply: LINK_VOLUMES=$value"
+
+value=$(INZONE_CONFIG_FILE="$CONFIG" INZONE_LINK_VOLUMES=1 PACTL="$TEST_TMP/pactl" \
+  bash -c 'source "$1"; echo "$LINK_VOLUMES"' _ "$PROJECT_DIR/bin/inzone-autoswitch")
+[[ $value == 1 ]] || fail "environment did not override the config file: LINK_VOLUMES=$value"
+
+# A missing config file is not an error.
+value=$(INZONE_CONFIG_FILE="$TEST_TMP/does-not-exist" PACTL="$TEST_TMP/pactl" \
+  bash -c 'source "$1"; echo "$LINK_VOLUMES"' _ "$PROJECT_DIR/bin/inzone-autoswitch")
+[[ $value == 1 ]] || fail "missing config file changed the hardcoded default: LINK_VOLUMES=$value"
 
 printf 'Autoswitch volume-link tests passed.\n'
