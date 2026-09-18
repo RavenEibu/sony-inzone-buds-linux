@@ -58,24 +58,43 @@ class BalanceTests(unittest.TestCase):
 
 class ChatBoostPlanTests(unittest.TestCase):
     def test_activating_saves_current_volumes_and_targets_30_70(self):
-        game, chat, saved = chat_boost_plan(True, None, 55, 40)
+        game, chat, saved, target = chat_boost_plan(True, None, None, 55, 40)
         self.assertEqual((game, chat), (30, 70))
         self.assertEqual(saved, (55, 40))
+        self.assertEqual(target, (30, 70))
 
-    def test_deactivating_restores_the_saved_volumes(self):
-        game, chat, saved = chat_boost_plan(False, (55, 40), 30, 70)
+    def test_deactivating_restores_the_saved_volumes_when_untouched(self):
+        game, chat, saved, target = chat_boost_plan(False, (55, 40), (30, 70), 30, 70)
         self.assertEqual((game, chat), (55, 40))
         self.assertIsNone(saved)
+        self.assertIsNone(target)
+
+    def test_deactivating_tolerates_small_rounding_drift(self):
+        game, chat, saved, target = chat_boost_plan(False, (55, 40), (30, 70), 29, 71)
+        self.assertEqual((game, chat), (55, 40))
+        self.assertIsNone(saved)
+        self.assertIsNone(target)
 
     def test_activating_with_unknown_volumes_saves_the_target_itself(self):
-        game, chat, saved = chat_boost_plan(True, None, None, None)
+        game, chat, saved, target = chat_boost_plan(True, None, None, None, None)
         self.assertEqual((game, chat), (30, 70))
         self.assertEqual(saved, (30, 70))
+        self.assertEqual(target, (30, 70))
 
     def test_deactivating_without_a_saved_state_falls_back_to_default(self):
-        game, chat, saved = chat_boost_plan(False, None, 30, 70)
+        game, chat, saved, target = chat_boost_plan(False, None, (30, 70), 30, 70)
         self.assertEqual((game, chat), (30, 70))
         self.assertIsNone(saved)
+        self.assertIsNone(target)
+
+    def test_deactivating_after_a_manual_change_sends_no_command(self):
+        # The user moved the balance slider while boosted: leave it alone
+        # instead of overwriting their choice with the pre-boost volumes.
+        game, chat, saved, target = chat_boost_plan(False, (55, 40), (30, 70), 60, 60)
+        self.assertIsNone(game)
+        self.assertIsNone(chat)
+        self.assertIsNone(saved)
+        self.assertIsNone(target)
 
 
 class EventFilterTests(unittest.TestCase):

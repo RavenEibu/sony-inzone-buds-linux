@@ -58,28 +58,48 @@ class AudioSnapshot:
         return derive_balance(self.game_volume, self.chat_volume)
 
 
+CHAT_BOOST_TARGET = (30, 70)
+# Reads back from pactl can be off by a rounding step from what was requested.
+CHAT_BOOST_TOLERANCE = 1
+
+
 def chat_boost_plan(
     active: bool,
     saved: tuple[int, int] | None,
+    target: tuple[int, int] | None,
     game: int | None,
     chat: int | None,
-) -> tuple[int, int, tuple[int, int] | None]:
-    """Decide the Boost Chat toggle's target volumes and new saved state.
+) -> tuple[int | None, int | None, tuple[int, int] | None, tuple[int, int] | None]:
+    """Decide the Boost Chat toggle's target volumes and new saved/target state.
 
-    ``active`` is the toggle button's new state. Turning it on saves the
-    current volumes (defaulting to the target itself when unknown) and
-    targets Game 30% / Chat 70%; turning it off restores the saved volumes,
-    or the same default if none were saved.
+    ``active`` is the toggle button's new state, ``saved`` the volumes to
+    restore on deactivation, and ``target`` the volumes this toggle set the
+    last time it activated (used to detect a manual change since). ``game``
+    and ``chat`` are the current actual volumes.
+
+    Turning it on saves the current volumes (defaulting to the boost target
+    itself when unknown) and targets Game 30% / Chat 70%. Turning it off
+    restores the saved volumes only if the current volumes still match what
+    boost set; if the user changed them since, they are left alone (a ``None``
+    pair, meaning: send no command).
     """
     if active:
-        target = (30, 70)
         saved = (
-            game if game is not None else target[0],
-            chat if chat is not None else target[1],
+            game if game is not None else CHAT_BOOST_TARGET[0],
+            chat if chat is not None else CHAT_BOOST_TARGET[1],
         )
-        return (*target, saved)
-    game, chat = saved or (30, 70)
-    return (game, chat, None)
+        return (*CHAT_BOOST_TARGET, saved, CHAT_BOOST_TARGET)
+
+    if (
+        target is not None
+        and game is not None
+        and chat is not None
+        and abs(game - target[0]) <= CHAT_BOOST_TOLERANCE
+        and abs(chat - target[1]) <= CHAT_BOOST_TOLERANCE
+    ):
+        game, chat = saved or CHAT_BOOST_TARGET
+        return (game, chat, None, None)
+    return (None, None, None, None)
 
 
 def derive_balance(game: int | None, chat: int | None) -> int:

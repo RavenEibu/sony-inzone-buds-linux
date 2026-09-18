@@ -20,6 +20,7 @@ from audio import (  # noqa: E402
     AudioSnapshot,
     BackendError,
     chat_boost_plan,
+    derive_balance,
     is_endpoint_event,
 )
 from tray import StatusNotifierItem  # noqa: E402
@@ -72,6 +73,7 @@ class MixerWindow(Gtk.ApplicationWindow):
         self._mic_timer = 0
         self._snapshot: AudioSnapshot | None = None
         self._chat_boost_saved: tuple[int, int] | None = None
+        self._chat_boost_target: tuple[int, int] | None = None
         self.set_default_size(520, 540)
         self.set_resizable(False)
         self.connect("close-request", self._close_requested)
@@ -298,11 +300,29 @@ class MixerWindow(Gtk.ApplicationWindow):
     def _boost_chat_toggled(self, button: Gtk.ToggleButton) -> None:
         if self._updating:
             return
+        # A pending debounced balance commit (started by brushing the balance
+        # slider just before this click) would otherwise fire afterwards and
+        # overwrite the boost with the balance scale's stale, unrelated value.
+        if self._balance_timer:
+            GLib.source_remove(self._balance_timer)
+            self._balance_timer = 0
         game_volume = self._snapshot.game_volume if self._snapshot else None
         chat_volume = self._snapshot.chat_volume if self._snapshot else None
-        game, chat, self._chat_boost_saved = chat_boost_plan(
-            button.get_active(), self._chat_boost_saved, game_volume, chat_volume
+        game, chat, self._chat_boost_saved, self._chat_boost_target = chat_boost_plan(
+            button.get_active(),
+            self._chat_boost_saved,
+            self._chat_boost_target,
+            game_volume,
+            chat_volume,
         )
+        if game is None or chat is None:
+            # The user changed the balance while boosted: leave it as is.
+            return
+        self._updating = True
+        self.overall_scale.set_value(max(game, chat))
+        self.balance_scale.set_value(derive_balance(game, chat))
+        self._updating = False
+        self._update_value_labels()
         self.application.run_audio_action(self.backend.set_volumes, game, chat)
 
     def _microphone_changed(self, _scale) -> None:

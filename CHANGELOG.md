@@ -7,6 +7,16 @@
 - `packaging/arch/PKGBUILD`, building `inzone-buds-mixer` for Arch Linux from
   the GitHub release tarball. Not yet submitted to the AUR.
 
+### Fixed
+
+- **Boost Chat** could set Game to 100% instead of 30% on activation: a
+  balance-slider commit left pending from just before the click fired
+  afterwards and overwrote the boost with the slider's stale value. The
+  pending commit is now cancelled before boosting.
+- **Boost Chat** no longer restores the pre-boost volumes on deactivation if
+  the balance was changed manually while it was active; it leaves the manual
+  change alone instead.
+
 ## 0.3.0 - 2026-09-18
 
 Adds a config file, desktop notifications, a Boost Chat preset, CI and
