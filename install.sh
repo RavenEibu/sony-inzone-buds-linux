@@ -26,6 +26,17 @@ install_one() {
   install -m "$mode" "$source" "$destination"
 }
 
+# Install a *.in file after replacing @BINDIR@ with the real command directory.
+install_template() {
+  local source=$1 destination=$2 rendered bindir
+  rendered=$(mktemp)
+  # Escape sed replacement metacharacters so any directory name is literal.
+  bindir=$(printf '%s' "$BIN_HOME" | sed 's/[\\|&]/\\&/g')
+  sed "s|@BINDIR@|$bindir|g" "$source" > "$rendered"
+  install_one "$rendered" "$destination" 0644
+  rm -f -- "$rendered"
+}
+
 path_contains() {
   case ":${PATH:-}:" in
     *":$1:"*) return 0 ;;
@@ -95,8 +106,8 @@ install_one "$PROJECT_DIR/config/wireplumber/51-inzone-buds.conf" \
 install_one "$PROJECT_DIR/bin/inzonectl" "$BIN_HOME/inzonectl" 0755
 install_one "$PROJECT_DIR/bin/inzone-autoswitch" "$BIN_HOME/inzone-autoswitch" 0755
 install_one "$PROJECT_DIR/bin/inzone-buds-mixer" "$BIN_HOME/inzone-buds-mixer" 0755
-install_one "$PROJECT_DIR/systemd/user/inzone-buds-autoswitch.service" \
-  "$SYSTEMD_USER_DIR/inzone-buds-autoswitch.service" 0644
+install_template "$PROJECT_DIR/systemd/user/inzone-buds-autoswitch.service.in" \
+  "$SYSTEMD_USER_DIR/inzone-buds-autoswitch.service"
 
 for python_file in audio.py app.py tray.py; do
   install_one "$PROJECT_DIR/src/inzone_buds_mixer/$python_file" \
@@ -113,13 +124,9 @@ install_one \
   "$PROJECT_DIR/data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" \
   "$METAINFO_DIR/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" 0644
 
-DESKTOP_TMP=$(mktemp)
-trap 'rm -f -- "$DESKTOP_TMP"' EXIT
-sed "s|@BINDIR@|$BIN_HOME|g" \
+install_template \
   "$PROJECT_DIR/data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in" \
-  > "$DESKTOP_TMP"
-install_one "$DESKTOP_TMP" \
-  "$APPLICATIONS_DIR/io.github.RavenEibu.InzoneBudsMixer.desktop" 0644
+  "$APPLICATIONS_DIR/io.github.RavenEibu.InzoneBudsMixer.desktop"
 
 install_system_links_if_needed
 

@@ -54,6 +54,9 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 grep -F "Exec=$USER_BIN/inzone-buds-mixer" \
   "$DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop" >/dev/null
 [[ -f $DATA_HOME/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg ]]
+# The service must follow XDG_BIN_HOME instead of assuming ~/.local/bin.
+grep -Fx "ExecStart=\"$USER_BIN/inzone-autoswitch\"" \
+  "$CONFIG_HOME/systemd/user/inzone-buds-autoswitch.service" >/dev/null
 
 PATH="$TEST_PATH" \
 XDG_CONFIG_HOME="$CONFIG_HOME" \
