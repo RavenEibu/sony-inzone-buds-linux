@@ -28,6 +28,16 @@
   <content_rating type="oars-1.1"/>
   <releases>
     <!-- Add each version here with its real date only when it is released. -->
+    <release version="0.3.1" date="2026-09-18">
+      <description>
+        <p>Adds Arch Linux packaging and fixes a Boost Chat bug.</p>
+        <ul>
+          <li>Arch Linux packaging (packaging/arch/PKGBUILD)</li>
+          <li>Fix Boost Chat sometimes setting Game to 100% instead of 30%</li>
+          <li>Boost Chat no longer overwrites a manual balance change on deactivation</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.0" date="2026-09-18">
       <description>
         <p>Adds a Boost Chat preset, desktop notifications, a user config file and CI.</p>

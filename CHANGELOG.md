@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.3.1 - 2026-09-18
+
+Adds Arch Linux packaging and fixes a Boost Chat bug found right after the
+0.3.0 release. Verified with the dongle on CachyOS with GNOME on Wayland.
+
 ### Added
 
 - `packaging/arch/PKGBUILD`, building `inzone-buds-mixer` for Arch Linux from
