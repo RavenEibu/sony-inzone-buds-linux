@@ -31,7 +31,8 @@ control work.
 - [ ] Test GNOME without a StatusNotifierItem extension.
 - [x] Run the tests, ShellCheck and metadata validation in GitHub Actions.
 - [ ] Add automated configuration validation with WirePlumber available in CI.
-- [ ] Add Arch Linux packaging.
+- [x] Add Arch Linux packaging (`packaging/arch/`, not yet submitted to the
+  AUR).
 - [ ] Add Debian packaging.
 - [ ] Add release artifacts and checksums through GitHub Actions.
 

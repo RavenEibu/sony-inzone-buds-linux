@@ -1,0 +1,26 @@
+post_install() {
+  cat <<'EOF'
+==> inzone-buds-mixer installed.
+==> Put the dongle switch in PC mode, then enable the hot-plug service:
+==>   systemctl --user daemon-reload
+==>   systemctl --user enable --now inzone-buds-autoswitch.service
+==> Optional settings (volume-key linking, notifications) are documented in
+==>   /usr/share/doc/inzone-buds-mixer/config.example; copy it to
+==>   ~/.config/inzone-buds-mixer/config to use it.
+EOF
+}
+
+post_upgrade() {
+  cat <<'EOF'
+==> inzone-buds-mixer upgraded. Restart the hot-plug service to pick up changes:
+==>   systemctl --user restart inzone-buds-autoswitch.service
+EOF
+}
+
+post_remove() {
+  cat <<'EOF'
+==> inzone-buds-mixer removed. Disable the leftover user service if you had
+==>   enabled it:
+==>   systemctl --user disable --now inzone-buds-autoswitch.service
+EOF
+}

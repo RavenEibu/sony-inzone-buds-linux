@@ -1,0 +1,56 @@
+# Maintainer: Agustin Arce Martinez <arcemartinez.agustin@gmail.com>
+pkgname=inzone-buds-mixer
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="Linux integration for the Sony INZONE Buds USB dongle: Game/Chat audio routing and a GTK4 mixer"
+arch=('any')
+url="https://github.com/RavenEibu/sony-inzone-buds-linux"
+license=('MIT')
+# libpulse (pactl) and wireplumber (wpctl, the PipeWire session manager) are
+# called from the bash scripts, not imported by the Python code, so namcap
+# cannot see the reference; they are required regardless.
+depends=('bash' 'libpulse' 'wireplumber' 'python' 'python-gobject' 'gtk4'
+         'glib2' 'hicolor-icon-theme')
+optdepends=('libnotify: desktop notification when the dongle connects or disconnects')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/RavenEibu/sony-inzone-buds-linux/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('05eb1775ef633a5c2020d30d030e3859345cccd3465333832ce2b394c4361e22')
+install=inzone-buds-mixer.install
+backup=('usr/share/wireplumber/wireplumber.conf.d/51-inzone-buds.conf')
+
+package() {
+  cd "sony-inzone-buds-linux-$pkgver"
+
+  install -Dm755 bin/inzonectl "$pkgdir/usr/bin/inzonectl"
+  install -Dm755 bin/inzone-autoswitch "$pkgdir/usr/bin/inzone-autoswitch"
+  install -Dm755 bin/inzone-buds-mixer "$pkgdir/usr/bin/inzone-buds-mixer"
+
+  install -d "$pkgdir/usr/share/inzone-buds-mixer"
+  install -m644 src/inzone_buds_mixer/*.py "$pkgdir/usr/share/inzone-buds-mixer/"
+
+  install -Dm644 config/wireplumber/51-inzone-buds.conf \
+    "$pkgdir/usr/share/wireplumber/wireplumber.conf.d/51-inzone-buds.conf"
+
+  install -d "$pkgdir/usr/lib/systemd/user"
+  sed 's|@BINDIR@|/usr/bin|g' systemd/user/inzone-buds-autoswitch.service.in \
+    > "$pkgdir/usr/lib/systemd/user/inzone-buds-autoswitch.service"
+
+  install -d "$pkgdir/usr/share/applications"
+  sed 's|@BINDIR@|/usr/bin|g' \
+    data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in \
+    > "$pkgdir/usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop"
+
+  install -Dm644 \
+    data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml \
+    "$pkgdir/usr/share/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml"
+  install -Dm644 \
+    data/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg"
+  install -Dm644 \
+    data/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg \
+    "$pkgdir/usr/share/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg"
+
+  install -Dm644 config/inzone-buds-mixer/config.example \
+    "$pkgdir/usr/share/doc/$pkgname/config.example"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

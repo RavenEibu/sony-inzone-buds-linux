@@ -71,3 +71,5 @@ features or behavior changes, a patch release for fixes only.
    `tests/test_inzonectl.sh` fails if the three versions differ.
 6. Create an annotated `vX.Y.Z` tag and a GitHub release whose notes are the
    CHANGELOG section.
+7. Bump `pkgver` and `sha256sums` in `packaging/arch/PKGBUILD` (see
+   `packaging/arch/README.md`) once the release tarball exists.

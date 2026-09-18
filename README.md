@@ -78,7 +78,9 @@ sudo apt install pipewire pipewire-pulse wireplumber python3-gi gir1.2-gtk-4.0
 
 ## Install
 
-Put the dongle switch in **PC**, clone this repository, then run:
+Put the dongle switch in **PC**, then either build the Arch Linux package
+from [`packaging/arch/`](packaging/arch/README.md), or clone this repository
+and run:
 
 ```bash
 ./install.sh

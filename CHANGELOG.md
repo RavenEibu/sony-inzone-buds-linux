@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- `packaging/arch/PKGBUILD`, building `inzone-buds-mixer` for Arch Linux from
+  the GitHub release tarball. Not yet submitted to the AUR.
+
 ## 0.3.0 - 2026-09-18
 
 Adds a config file, desktop notifications, a Boost Chat preset, CI and
