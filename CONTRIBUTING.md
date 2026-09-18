@@ -48,6 +48,14 @@ proprietary controls in [docs/roadmap.md](docs/roadmap.md#experimental-proprieta
 Do not send output or feature reports to the device outside a controlled test
 where the result is documented; see the contribution standard in the roadmap.
 
+Unverified findings, partial decodes and speculative notes for proprietary
+controls go on the long-lived `experimental/hid` branch, not on `main` or on
+a short-lived feature branch. Rebase it onto `main` occasionally; do not merge
+it into `main` directly. Once a finding meets the contribution standard, cut
+an ordinary feature branch from it (or from `main`) for the actual
+`inzonectl`/mixer change, and follow the normal test-then-CI-then-merge flow
+for that branch.
+
 ## Releasing
 
 Versions follow semantic versioning within 0.x: a minor release for new
