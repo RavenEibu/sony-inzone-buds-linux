@@ -183,17 +183,27 @@ sub-message tags have been observed by passive capture:
 - `14 04`: two bytes that read `64 64` (100/100 decimal) while both earbuds
   are seated and connected, followed by a byte that reads `ff`.
 
-On one controlled test, removing the right earbud from the case changed the
-**second** `64` in the `14 04` sub-message to `ff` within the same burst that
-also zeroed the corresponding serial in `14 02` and set the corresponding
-field in `14 03` to `ff ff ff ff`; the first `64` (presumably the left
-earbud) did not change. This is a plausible battery-percentage field per
-earbud, with `0xff` as an "unavailable/disconnected" sentinel, but it is
-**not yet verified** under this project's contribution standard: it was
-observed only once, a matching test on the left earbud did not reproduce a
-`14 04` burst within a 10-second removal window, and no independent
-battery-level reading was cross-checked. Do not treat this as a supported
-feature until it is repeated and cross-checked.
+The `14 02`/`14 03`/`14 04` burst itself appears at irregular intervals that do
+not line up with any single tested action: seconds apart in one capture,
+minutes apart in another, and absent for a full minute in a test where an
+earbud was removed and kept out. It looks like a periodic status heartbeat on
+its own timer rather than something triggered by removing or inserting an
+earbud.
+
+On one controlled test, removing the right earbud from the case happened to
+coincide with such a burst, which changed the **second** `64` in `14 04` to
+`ff`, in the same burst that also zeroed the corresponding serial in `14 02`
+and set the corresponding field in `14 03` to `ff ff ff ff`; the first `64`
+(presumably the left earbud) did not change. This is a plausible
+battery-percentage field per earbud, with `0xff` as an "unavailable" or
+"disconnected" sentinel, but it is **not yet verified** under this project's
+contribution standard: it was observed only once, a matching test on the left
+earbud did not reproduce the burst within a 10-second removal window, and a
+one-minute removal test produced no burst at all, so the coincidence with the
+right-earbud test may not be causal. No independent battery-level reading has
+been cross-checked either. Do not treat this as a supported feature; the next
+step is to capture across a full heartbeat cycle (whatever its real period
+is) rather than a short, timed action.
 
 ### Passive capture
 

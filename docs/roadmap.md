@@ -58,11 +58,12 @@ The following work requires protocol research and real-device verification:
 - [ ] Capture one setting change at a time on a controlled Windows test system.
 - [ ] Document request/response framing and checksums.
 - [ ] Build a read-only device-status prototype.
-- [ ] Investigate battery reporting: report `0x02`'s `14 04` sub-message
-  changed on one right-earbud removal test (see
-  `docs/hardware.md#hypotheses-not-verified`), but is not yet verified —
-  repeat the test, reproduce it on the left earbud, and cross-check against
-  an independent battery reading before treating it as supported.
+- [ ] Investigate battery reporting: report `0x02`'s `14 04` sub-message is a
+  candidate, but the burst carrying it looks like an irregular, unrelated
+  heartbeat rather than something removing an earbud triggers (see
+  `docs/hardware.md#hypotheses-not-verified`) — capture across a full
+  heartbeat cycle, reproduce on both earbuds, and cross-check against an
+  independent battery reading before treating it as supported.
 - [ ] Investigate EQ, noise control and sidetone.
 - [ ] Investigate touch-control and power settings.
 
