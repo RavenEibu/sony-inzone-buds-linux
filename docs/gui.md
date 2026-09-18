@@ -44,7 +44,8 @@ Without a watcher, closing the window exits normally so the application cannot
 become inaccessible.
 
 Right-clicking the indicator opens a desktop-native D-Bus menu containing
-**Show Window** and **Quit**. The menu is rendered by the StatusNotifierHost,
+**Show Window**, **Center Game/Chat** and **Quit**. **Center Game/Chat** does
+the same as the window's **Center** button, even while the window is hidden. The menu is rendered by the StatusNotifierHost,
 rather than positioned by the application, which also works under Wayland.
 
 ## Light and dark appearance

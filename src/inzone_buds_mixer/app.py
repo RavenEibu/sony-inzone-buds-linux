@@ -102,7 +102,7 @@ class MixerWindow(Gtk.ApplicationWindow):
         self.center_button.set_tooltip_text(
             "Set Game and Chat to the same volume (balance 50)"
         )
-        self.center_button.connect("clicked", self._center_balance)
+        self.center_button.connect("clicked", lambda _button: self.center_balance())
         self.balance_scale, self.balance_value = self._add_scale(
             root,
             "Game / Chat balance",
@@ -243,7 +243,7 @@ class MixerWindow(Gtk.ApplicationWindow):
         self.application.run_audio_action(self.backend.set_balance, position, maximum)
         return GLib.SOURCE_REMOVE
 
-    def _center_balance(self, _button) -> None:
+    def center_balance(self) -> None:
         # Commit even when the slider already reads 50: rounding can show 50
         # for slightly different volumes, such as Game 100% and Chat 99%.
         self._updating = True
@@ -325,6 +325,7 @@ class MixerApplication(Gtk.Application):
                 icon_theme_path=icon_theme_path,
                 on_activate=self.toggle_window,
                 on_quit=self.quit,
+                on_center=self._center_from_tray,
                 on_availability_changed=self._tray_changed,
             )
         except GLib.Error:
@@ -337,6 +338,11 @@ class MixerApplication(Gtk.Application):
             self._held = True
         if self.window:
             self.window.set_tray_available(available)
+        return GLib.SOURCE_REMOVE
+
+    def _center_from_tray(self) -> bool:
+        if self.window:
+            self.window.center_balance()
         return GLib.SOURCE_REMOVE
 
     def toggle_window(self) -> bool:
