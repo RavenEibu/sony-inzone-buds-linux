@@ -22,17 +22,20 @@ Run the current shell tests with:
 ./tests/test_install_paths.sh
 python3 ./tests/test_gui_backend.py
 python3 ./tests/test_desktop_integration.py
+python3 ./tests/test_gui_refresh.py
 ```
 
-The GUI backend tests do not require GTK or physical hardware. Running the
-application itself requires Python GObject bindings and GTK4.
+The GUI backend tests do not require GTK or physical hardware.
+`test_gui_refresh.py` needs Python GObject bindings and GTK4 but no display; it
+is skipped when they are missing. Running the application itself requires
+Python GObject bindings and GTK4.
 
 If ShellCheck is installed:
 
 ```bash
 shellcheck bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
   install.sh uninstall.sh \
-  tests/test_inzonectl.sh
+  tests/test_inzonectl.sh tests/test_install_paths.sh
 ```
 
 Keep hardware claims tied to reproducible evidence. In particular, do not

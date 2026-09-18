@@ -21,6 +21,22 @@
 - Remove only project-owned system links during uninstall.
 - Document shell command-cache and `PATH` troubleshooting.
 
+### Fixes from the 2026-09-17 repository review
+
+- Keep the mixer's periodic refresh from moving sliders back, or committing
+  the previous value, while a user change is pending or being applied.
+- Report an unreachable PulseAudio-compatible server instead of exiting
+  silently from `inzonectl status` and other commands.
+- Generate the systemd user service from a template so it follows
+  `XDG_BIN_HOME` instead of assuming `~/.local/bin`.
+- Drop the service's `graphical-session.target` binding, which could leave it
+  stopped after logging out and back in.
+- Register the tray icon only after its D-Bus name is owned.
+- Keep the AppStream release list to published versions and fix the developer
+  ID reported by `appstreamcli validate`.
+- Use a single main desktop menu category so the mixer is not listed twice.
+- Describe KDE Plasma as expected to work but not yet tested.
+
 ## 0.1.0 - 2026-09-13
 
 - Add WirePlumber 0.5 rules for PC-mode dongle `054c:0ec2`.

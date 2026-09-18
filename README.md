@@ -13,18 +13,21 @@ with `snd_usb_audio`.
 
 - Game and Chat playback at the same time
 - Microphone capture at the same time as both playback endpoints
-- Friendly names in GNOME, KDE and `pavucontrol`
+- Friendly names in GNOME Settings and `pavucontrol`
 - Automatic `pro-audio` profile selection
 - Game as the default output and the INZONE microphone as the default input
   whenever the PC-mode dongle appears
 - Normal fallback to another audio device when the dongle is removed
 - Per-endpoint volume and a Game/Chat balance command
 - GTK4 mixer for Game/Chat balance, overall volume and microphone level
-- StatusNotifierItem tray icon for KDE and GNOME with AppIndicator support
+- StatusNotifierItem tray icon, tested on GNOME with AppIndicator support
 - Automatic light/dark appearance tracking while the application is running
 - Native tray menu actions to show the window or quit
 - User-level configuration, with rootless commands when `~/.local/bin` is
   already available in `PATH`
+
+KDE Plasma implements the same desktop interfaces natively and is expected to
+work, but it has not been tested yet; see the [roadmap](docs/roadmap.md).
 
 Tested with the INZONE Buds dongle in PC mode:
 
@@ -84,6 +87,10 @@ directory:
 - `~/.local/bin/inzone-buds-mixer`
 - `~/.local/share/inzone-buds-mixer/` (GTK application code)
 - application, AppStream and icon files under `~/.local/share`
+
+`XDG_CONFIG_HOME`, `XDG_DATA_HOME` and `XDG_BIN_HOME` are honored when set. The
+installed service and application-menu entry point to the directory that
+actually received the commands.
 
 It restarts WirePlumber, so audio streams may pause briefly. The program files
 remain under `~/.local/bin`. If that directory is missing from the current
