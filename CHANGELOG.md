@@ -36,6 +36,11 @@
   ID reported by `appstreamcli validate`.
 - Use a single main desktop menu category so the mixer is not listed twice.
 - Describe KDE Plasma as expected to work but not yet tested.
+- Create the PC-mode card directly in Pro Audio through a WirePlumber
+  `device.profile.priority.rules` entry, avoiding a profile switch that once
+  left generic analog nodes behind.
+- Document the generic Analog/S/PDIF profile names, verified channel order and
+  the 2026-09-17 hardware test results.
 
 ## 0.1.0 - 2026-09-13
 

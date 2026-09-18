@@ -53,6 +53,38 @@ systemctl --user restart pipewire.service pipewire-pulse.service wireplumber.ser
 Expected output includes node names ending in `pro-output-0`, `pro-output-1`
 and `pro-input-0`.
 
+## The Analog and S/PDIF outputs disappeared
+
+This is expected. With the generic profiles, the desktop shows the dongle as
+**Analog Output** or **Digital Output (S/PDIF)**, one at a time. They are not
+extra connectors: Analog is the Chat endpoint and S/PDIF is the Game endpoint,
+under ALSA's generic names. Pro Audio exposes both together as
+**Sony INZONE Buds - Game** and **Sony INZONE Buds - Chat**. See
+[Generic ALSA profile names](hardware.md#generic-alsa-profile-names).
+
+To return to the single generic output, choose another profile for the card in
+`pavucontrol` under **Configuration**. The project selects Pro Audio again the
+next time `inzonectl profile` or `inzonectl default` runs.
+
+## Extra "INZONE Buds Analog Stereo" or "Mono" devices next to Game and Chat
+
+These are generic-profile nodes left behind while the card changed to Pro
+Audio. They use the same ALSA devices as Chat and the microphone, and the mono
+input can outrank the INZONE microphone when WirePlumber chooses a default.
+This was observed once right after a first installation and could not be
+reproduced afterwards.
+
+Cycle the card profile once to remove them:
+
+```bash
+pactl set-card-profile alsa_card.usb-Sony_INZONE_Buds-00 output:analog-stereo+input:mono-fallback
+inzonectl default
+```
+
+`inzonectl default` switches back to Pro Audio and restores the defaults. The
+installed WirePlumber rule creates the card directly in Pro Audio, which avoids
+the switch that left these nodes behind.
+
 ## `inzonectl: command not found`
 
 The installer stores the scripts in `~/.local/bin`. When that directory is not

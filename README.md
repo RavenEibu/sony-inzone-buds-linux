@@ -178,6 +178,11 @@ For normal use, select these devices inside applications:
 PipeWire/WirePlumber normally remembers a stream's selected target after it is
 moved in `pavucontrol` or the desktop sound panel.
 
+The generic **Analog Output** and **Digital Output (S/PDIF)** entries disappear
+once the integration is active. They were the Chat and Game endpoints under
+ALSA's generic names, one at a time; see
+[Troubleshooting](docs/troubleshooting.md#the-analog-and-spdif-outputs-disappeared).
+
 ## Uninstall
 
 ```bash
