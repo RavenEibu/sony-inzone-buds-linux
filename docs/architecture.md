@@ -60,6 +60,27 @@ The daemon tracks whether the Game node was previously available. It does not
 continually override a manual device selection while the dongle remains
 connected.
 
+#### Volume linking
+
+Desktop volume and mute keys act only on the default output. The daemon
+watches sink changes and, once a burst of events has settled (150 ms), mirrors
+a change that affected only Game or only Chat onto the other endpoint:
+
+- volume is scaled from a fixed Game/Chat reference pair, in raw PulseAudio
+  units, so rounding does not accumulate and the balance survives a trip
+  through zero volume; the louder endpoint is capped at 100%;
+- mute is copied to the other endpoint;
+- a change to both endpoints at once is a balance change and becomes the new
+  reference;
+- `inzonectl` writes a timestamp to
+  `$XDG_RUNTIME_DIR/inzone-buds-manual-change` before changing Game or Chat
+  volume. Changes within one second of it are deliberate: they become the new
+  reference and are not mirrored;
+- for two seconds after the dongle appears, volumes restored by WirePlumber are
+  adopted as the reference instead of being mirrored.
+
+Set `INZONE_LINK_VOLUMES=0` in the service environment to disable linking.
+
 ### Command-line controller
 
 `inzonectl` resolves endpoints by stable PipeWire node suffix rather than by

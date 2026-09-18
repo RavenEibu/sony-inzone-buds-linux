@@ -6,6 +6,7 @@ WPCTL=${WPCTL:-wpctl}
 PC_VENDOR_ID=054c
 PC_PRODUCT_ID=0ec2
 CARD_PATTERN='^alsa_card[.]usb-Sony_INZONE_Buds'
+RUNTIME_DIR=${INZONE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-}}
 GAME_SUFFIX='.pro-output-1'
 CHAT_SUFFIX='.pro-output-0'
 MIC_SUFFIX='.pro-input-0'
@@ -55,6 +56,14 @@ pc_dongle_present() {
     fi
   done
   return 1
+}
+
+# Tell inzone-autoswitch that the next Game/Chat volume changes are
+# intentional, so it adopts them as the new balance instead of scaling the
+# other endpoint as it does for volume keys.
+mark_intentional_volume_change() {
+  [[ -n $RUNTIME_DIR && -d $RUNTIME_DIR ]] || return 0
+  date +%s%N > "$RUNTIME_DIR/inzone-buds-manual-change" 2>/dev/null || true
 }
 
 require_audio_server() {
@@ -170,10 +179,12 @@ set_endpoint_volume() {
   case "$endpoint" in
     game)
       target=$(game_sink)
+      mark_intentional_volume_change
       "$PACTL" set-sink-volume "$target" "${percent}%"
       ;;
     chat)
       target=$(chat_sink)
+      mark_intentional_volume_change
       "$PACTL" set-sink-volume "$target" "${percent}%"
       ;;
     mic)
@@ -201,6 +212,7 @@ set_balance() {
 
   game=$(game_sink)
   chat=$(chat_sink)
+  mark_intentional_volume_change
   "$PACTL" set-sink-volume "$game" "${game_percent}%"
   "$PACTL" set-sink-volume "$chat" "${chat_percent}%"
   printf 'Balance %s: Game %s%%, Chat %s%%\n' "$position" "$game_percent" "$chat_percent"

@@ -19,6 +19,7 @@ with `snd_usb_audio`.
   whenever the PC-mode dongle appears
 - Normal fallback to another audio device when the dongle is removed
 - Per-endpoint volume and a Game/Chat balance command
+- Volume and mute keys move Game and Chat together, keeping their balance
 - GTK4 mixer for Game/Chat balance, overall volume and microphone level,
   immediately reflecting changes made with volume keys or other mixers
 - StatusNotifierItem tray icon, tested on GNOME with AppIndicator support
@@ -127,8 +128,8 @@ slider is independent.
 KDE Plasma provides StatusNotifierItem support. GNOME requires an extension
 such as **AppIndicator and KStatusNotifierItem Support**. When tray support is
 available, closing the window hides it; use the quit button in the header to
-stop the application. Right-click the indicator for **Show Window** and
-**Quit** actions.
+stop the application. Right-click the indicator for **Show Window**,
+**Center Game/Chat** and **Quit** actions.
 
 The application follows GTK's desktop-wide color-scheme setting and updates
 between its light and dark appearances without needing a restart.
@@ -160,6 +161,15 @@ inzonectl volume game 50
 inzonectl volume chat 40
 inzonectl volume mic 100
 ```
+
+The desktop volume and mute keys change only the default output, normally
+Game. The hot-plug service follows such a change on the other endpoint, so
+Game and Chat rise, fall and mute together and keep their balance. The louder
+endpoint is capped at 100%. Changes made with `inzonectl` or the mixer are
+treated as deliberate and are not mirrored, so `inzonectl volume game 30`
+still changes Game alone. See
+[Troubleshooting](docs/troubleshooting.md#volume-keys-move-game-and-chat-together)
+to turn this off.
 
 Set Game/Chat balance. Position `0` means Chat, `50` is centered and `100`
 means Game. The optional second argument is the maximum volume and defaults to

@@ -62,6 +62,21 @@ assert_log_contains 'set-sink-volume alsa_output.usb-Sony_INZONE_Buds-00.pro-out
 assert_log_contains 'set-default-sink alsa_output.usb-Sony_INZONE_Buds-00.pro-output-1'
 assert_log_contains 'set-default-source alsa_input.usb-Sony_INZONE_Buds-00.pro-input-0'
 
+# Game/Chat volume commands tell inzone-autoswitch that the change is
+# intentional; the microphone is not part of the Game/Chat balance.
+export INZONE_RUNTIME_DIR="$TEST_TMP/run"
+mkdir -p "$INZONE_RUNTIME_DIR"
+MARKER="$INZONE_RUNTIME_DIR/inzone-buds-manual-change"
+for command in 'balance 50 30' 'volume game 40' 'volume chat 40'; do
+  rm -f -- "$MARKER"
+  # shellcheck disable=SC2086 # split the command into its arguments
+  "$PROJECT_DIR/bin/inzonectl" $command >/dev/null
+  [[ $(< "$MARKER") =~ ^[0-9]+$ ]] || fail "$command did not mark an intentional change"
+done
+rm -f -- "$MARKER"
+"$PROJECT_DIR/bin/inzonectl" volume mic 80 >/dev/null
+[[ ! -e $MARKER ]] || fail 'microphone volume marked a Game/Chat change'
+
 if "$PROJECT_DIR/bin/inzonectl" balance 101 >/dev/null 2>&1; then
   fail 'invalid balance was accepted'
 fi

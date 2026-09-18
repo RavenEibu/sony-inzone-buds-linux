@@ -151,6 +151,31 @@ systemctl --user restart inzone-buds-autoswitch.service
 The service selects Game only when the Game endpoint newly appears. It does not
 continually undo manual output changes while the dongle stays connected.
 
+## Volume keys move Game and Chat together
+
+This is intended: the keys change only the default output, and the hot-plug
+service mirrors the change on the other endpoint to keep the Game/Chat balance.
+Adjust one endpoint alone with the mixer or `inzonectl volume game|chat`.
+
+To turn linking off:
+
+```bash
+systemctl --user edit inzone-buds-autoswitch.service
+```
+
+Add:
+
+```ini
+[Service]
+Environment=INZONE_LINK_VOLUMES=0
+```
+
+Then restart the service:
+
+```bash
+systemctl --user restart inzone-buds-autoswitch.service
+```
+
 ## Discord uses Game instead of Chat
 
 While Discord is producing audio, open `pavucontrol` and move its playback

@@ -20,6 +20,7 @@ Run the current shell tests with:
 ```bash
 ./tests/test_inzonectl.sh
 ./tests/test_install_paths.sh
+./tests/test_autoswitch.sh
 python3 ./tests/test_gui_backend.py
 python3 ./tests/test_desktop_integration.py
 python3 ./tests/test_gui_refresh.py
@@ -35,7 +36,7 @@ If ShellCheck is installed:
 ```bash
 shellcheck bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
   install.sh uninstall.sh \
-  tests/test_inzonectl.sh tests/test_install_paths.sh
+  tests/test_inzonectl.sh tests/test_install_paths.sh tests/test_autoswitch.sh
 ```
 
 Keep hardware claims tied to reproducible evidence. In particular, do not

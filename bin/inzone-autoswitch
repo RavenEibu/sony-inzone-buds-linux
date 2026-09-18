@@ -5,8 +5,26 @@ PACTL=${PACTL:-pactl}
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 INZONECTL=${INZONECTL:-"$SCRIPT_DIR/inzonectl"}
 GAME_SUFFIX='.pro-output-1'
+CHAT_SUFFIX='.pro-output-0'
 PC_VENDOR_ID=054c
 PC_PRODUCT_ID=0ec2
+
+# Volume linking: when something outside this project changes only Game or
+# only Chat (volume keys, the desktop sound panel), scale the other endpoint so
+# the Game/Chat balance is kept. Set INZONE_LINK_VOLUMES=0 to disable.
+LINK_VOLUMES=${INZONE_LINK_VOLUMES:-1}
+RUNTIME_DIR=${INZONE_RUNTIME_DIR:-${XDG_RUNTIME_DIR:-}}
+MANUAL_MARKER=${RUNTIME_DIR:+$RUNTIME_DIR/inzone-buds-manual-change}
+# One key press or inzonectl command produces a burst of events; act once the
+# burst has settled.
+LINK_SETTLE_SECONDS=${INZONE_LINK_SETTLE_SECONDS:-0.15}
+# inzonectl marks its own volume changes; changes within this window are
+# intentional and become the new balance reference instead of being followed.
+MANUAL_WINDOW_NS=1000000000
+# WirePlumber restores saved volumes one endpoint at a time after the dongle
+# appears. Adopt whatever it restores instead of treating it as a key press.
+APPEAR_GRACE_NS=2000000000
+FULL_VOLUME=65536
 
 pc_dongle_present() {
   local vendor_file product_file vendor product
@@ -23,12 +41,15 @@ pc_dongle_present() {
   return 1
 }
 
+sink_by_suffix() {
+  local sinks
+  sinks=$("$PACTL" list short sinks 2>/dev/null) || return 0
+  awk -v suffix="$1" \
+    'index($2, suffix) == length($2) - length(suffix) + 1 { print $2; exit }' <<< "$sinks"
+}
+
 game_is_available() {
-  "$PACTL" list short sinks 2>/dev/null |
-    awk -v suffix="$GAME_SUFFIX" '
-      index($2, suffix) == length($2) - length(suffix) + 1 { found=1 }
-      END { exit !found }
-    '
+  [[ -n $(sink_by_suffix "$GAME_SUFFIX") ]]
 }
 
 select_inzone() {
@@ -49,34 +70,176 @@ activate_profile() {
   return 1
 }
 
-command -v "$PACTL" >/dev/null 2>&1 || exit 1
-command -v "$INZONECTL" >/dev/null 2>&1 || exit 1
+now_ns() {
+  date +%s%N
+}
 
-was_available=0
-if game_is_available; then
-  select_inzone
-  was_available=1
-else
-  # This is a no-op when the PC-mode dongle is not attached. If it is attached
-  # with the desktop profile active, switching profile will create Game/Chat.
-  activate_profile || true
-fi
+# Print "RAW_VOLUME MUTE" for a sink, with MUTE as 0 or 1.
+sink_state() {
+  local volume mute
+  volume=$(LC_ALL=C "$PACTL" get-sink-volume "$1" 2>/dev/null) || return 1
+  mute=$(LC_ALL=C "$PACTL" get-sink-mute "$1" 2>/dev/null) || return 1
+  [[ $volume =~ :\ *([0-9]+)\ / ]] || return 1
+  printf '%s %s\n' "${BASH_REMATCH[1]}" "$([[ $mute == *yes* ]] && echo 1 || echo 0)"
+}
 
-LC_ALL=C "$PACTL" subscribe 2>/dev/null | while IFS= read -r event; do
-  case "$event" in
-    *"'new' on card"*)
-      activate_profile || true
+# Scale VALUE by NUMERATOR/DENOMINATOR, rounded and capped at 100%.
+scale_volume() {
+  local value=$(( ($1 * $2 + $3 / 2) / $3 ))
+  (( value > FULL_VOLUME )) && value=$FULL_VOLUME
+  printf '%s\n' "$value"
+}
+
+# Decide how to follow a volume change. Arguments are raw volumes:
+#   GAME_REF CHAT_REF  balance reference, updated only by intentional changes
+#   GAME_LAST CHAT_LAST  volumes seen last time
+#   GAME CHAT  current volumes
+#   INTENTIONAL  1 when inzonectl or a device appearance caused the change
+# Prints "none", "reference" (adopt the current volumes as the new balance),
+# "set-chat RAW" or "set-game RAW".
+link_plan() {
+  local game_ref=$1 chat_ref=$2 game_last=$3 chat_last=$4 game=$5 chat=$6
+  local intentional=$7 game_changed=0 chat_changed=0
+  (( game != game_last )) && game_changed=1
+  (( chat != chat_last )) && chat_changed=1
+  if (( !game_changed && !chat_changed )); then
+    echo none
+  elif (( intentional || (game_changed && chat_changed) )); then
+    echo reference
+  elif (( game_changed )); then
+    # Scale from the fixed reference, not the last value, so rounding does not
+    # accumulate and the balance survives a trip through zero volume.
+    if (( game_ref > 0 )); then
+      echo "set-chat $(scale_volume "$chat_ref" "$game" "$game_ref")"
+    else
+      echo reference
+    fi
+  elif (( chat_ref > 0 )); then
+    echo "set-game $(scale_volume "$game_ref" "$chat" "$chat_ref")"
+  else
+    echo reference
+  fi
+}
+
+link_reset() {
+  game_ref='' chat_ref='' game_last='' chat_last='' game_mute_last='' chat_mute_last=''
+  link_grace_until=$(( $(now_ns) + APPEAR_GRACE_NS ))
+}
+
+recent_intentional_change() {
+  local now marked
+  now=$(now_ns)
+  (( now < link_grace_until )) && return 0
+  [[ -n $MANUAL_MARKER && -r $MANUAL_MARKER ]] || return 1
+  read -r marked < "$MANUAL_MARKER" 2>/dev/null || return 1
+  [[ $marked =~ ^[0-9]+$ ]] && (( now - marked < MANUAL_WINDOW_NS ))
+}
+
+link_volumes() {
+  local game_sink chat_sink game chat game_mute chat_mute intentional=0 plan
+  game_sink=$(sink_by_suffix "$GAME_SUFFIX")
+  chat_sink=$(sink_by_suffix "$CHAT_SUFFIX")
+  [[ -n $game_sink && -n $chat_sink ]] || return 0
+  read -r game game_mute < <(sink_state "$game_sink") || return 0
+  read -r chat chat_mute < <(sink_state "$chat_sink") || return 0
+  [[ -n ${game:-} && -n ${chat:-} ]] || return 0
+
+  if [[ -z $game_last ]]; then
+    game_ref=$game chat_ref=$chat
+    game_last=$game chat_last=$chat game_mute_last=$game_mute chat_mute_last=$chat_mute
+    return 0
+  fi
+  recent_intentional_change && intentional=1
+
+  plan=$(link_plan "$game_ref" "$chat_ref" "$game_last" "$chat_last" \
+    "$game" "$chat" "$intentional")
+  case $plan in
+    reference)
+      game_ref=$game chat_ref=$chat
       ;;
-    *"'new' on sink"*|*"'new' on source"*)
-      if (( was_available == 0 )) && game_is_available; then
-        select_inzone
-        was_available=1
-      fi
+    set-chat\ *)
+      chat=${plan#set-chat }
+      "$PACTL" set-sink-volume "$chat_sink" "$chat" 2>/dev/null || true
       ;;
-    *"'remove' on sink"*)
-      if ! game_is_available; then
-        was_available=0
-      fi
+    set-game\ *)
+      game=${plan#set-game }
+      "$PACTL" set-sink-volume "$game_sink" "$game" 2>/dev/null || true
       ;;
   esac
-done
+
+  # The mute key toggles only the default endpoint; mirror it on the other.
+  if (( !intentional )); then
+    if (( game_mute != game_mute_last && chat_mute == chat_mute_last )); then
+      "$PACTL" set-sink-mute "$chat_sink" "$game_mute" 2>/dev/null || true
+      chat_mute=$game_mute
+    elif (( chat_mute != chat_mute_last && game_mute == game_mute_last )); then
+      "$PACTL" set-sink-mute "$game_sink" "$chat_mute" 2>/dev/null || true
+      game_mute=$chat_mute
+    fi
+  fi
+
+  game_last=$game chat_last=$chat game_mute_last=$game_mute chat_mute_last=$chat_mute
+}
+
+main() {
+  local was_available=0 pending=0 event status
+
+  command -v "$PACTL" >/dev/null 2>&1 || exit 1
+  command -v "$INZONECTL" >/dev/null 2>&1 || exit 1
+
+  link_reset
+  if game_is_available; then
+    select_inzone
+    was_available=1
+  else
+    # This is a no-op when the PC-mode dongle is not attached. If it is attached
+    # with the desktop profile active, switching profile will create Game/Chat.
+    activate_profile || true
+  fi
+  (( LINK_VOLUMES )) && link_volumes
+
+  while :; do
+    if (( pending )); then
+      IFS= read -r -t "$LINK_SETTLE_SECONDS" event
+    else
+      IFS= read -r event
+    fi
+    status=$?
+    if (( status > 128 )); then
+      # Read timed out: the burst of volume events has settled.
+      pending=0
+      link_volumes
+      continue
+    elif (( status != 0 )); then
+      break  # pactl subscribe ended; systemd restarts the service.
+    fi
+
+    case "$event" in
+      *"'new' on card"*)
+        activate_profile || true
+        ;;
+      *"'new' on sink"*|*"'new' on source"*)
+        if (( was_available == 0 )) && game_is_available; then
+          link_reset
+          select_inzone
+          was_available=1
+          (( LINK_VOLUMES )) && link_volumes
+        fi
+        ;;
+      *"'remove' on sink"*)
+        if ! game_is_available; then
+          was_available=0
+          link_reset
+        fi
+        ;;
+      *"'change' on sink #"*)
+        (( LINK_VOLUMES )) && pending=1
+        ;;
+    esac
+  done < <(LC_ALL=C "$PACTL" subscribe 2>/dev/null)
+}
+
+# Allow tests to source the functions without starting the daemon.
+if [[ ${BASH_SOURCE[0]} == "$0" ]]; then
+  main "$@"
+fi
