@@ -118,9 +118,11 @@ inzone-buds-mixer
 ```
 
 The **Overall volume** slider controls the louder Game/Chat endpoint. The
-**Game / Chat balance** slider attenuates the opposite endpoint. Set balance
-to `50` and overall volume to `100%` when both Game and Chat should be at their
-maximum level. The microphone slider is independent.
+**Game / Chat balance** slider attenuates the opposite endpoint. **Center**
+sets the balance to `50`, giving Game and Chat the same volume without
+changing the overall level. Set balance to `50` and overall volume to `100%`
+when both Game and Chat should be at their maximum level. The microphone
+slider is independent.
 
 KDE Plasma provides StatusNotifierItem support. GNOME requires an extension
 such as **AppIndicator and KStatusNotifierItem Support**. When tray support is

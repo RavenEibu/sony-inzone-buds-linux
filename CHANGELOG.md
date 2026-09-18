@@ -25,6 +25,8 @@
   waiting for the two-second poll.
 - Read the audio state again when a refresh is requested while another one is
   still running, instead of dropping the request.
+- Add a Center button that sets the Game/Chat balance to 50 without changing
+  the overall volume.
 
 ### Fixes from the 2026-09-17 repository review
 

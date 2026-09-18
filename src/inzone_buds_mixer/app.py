@@ -97,11 +97,18 @@ class MixerWindow(Gtk.ApplicationWindow):
             self._balance_changed,
         )
 
+        self.center_button = Gtk.Button(label="Center")
+        self.center_button.add_css_class("flat")
+        self.center_button.set_tooltip_text(
+            "Set Game and Chat to the same volume (balance 50)"
+        )
+        self.center_button.connect("clicked", self._center_balance)
         self.balance_scale, self.balance_value = self._add_scale(
             root,
             "Game / Chat balance",
             "0 = Chat, 50 = both equally, 100 = Game",
             self._balance_changed,
+            extra=self.center_button,
         )
         self.balance_scale.add_mark(0, Gtk.PositionType.BOTTOM, "Chat")
         self.balance_scale.add_mark(50, Gtk.PositionType.BOTTOM, "Both")
@@ -130,7 +137,7 @@ class MixerWindow(Gtk.ApplicationWindow):
         self.tray_status.add_css_class("dim-label")
         root.append(self.tray_status)
 
-    def _add_scale(self, parent, heading, description, callback):
+    def _add_scale(self, parent, heading, description, callback, extra=None):
         section = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
         label = Gtk.Label(label=heading)
@@ -138,6 +145,8 @@ class MixerWindow(Gtk.ApplicationWindow):
         label.set_hexpand(True)
         value = Gtk.Label(label="—")
         row.append(label)
+        if extra is not None:
+            row.append(extra)
         row.append(value)
         section.append(row)
 
@@ -191,7 +200,13 @@ class MixerWindow(Gtk.ApplicationWindow):
         self.mic_scale.set_value(snapshot.microphone_volume or 0)
         self._update_value_labels()
 
-        controls = (self.overall_scale, self.balance_scale, self.mic_scale, self.defaults_button)
+        controls = (
+            self.overall_scale,
+            self.balance_scale,
+            self.center_button,
+            self.mic_scale,
+            self.defaults_button,
+        )
         for control in controls:
             control.set_sensitive(snapshot.connected)
 
@@ -227,6 +242,17 @@ class MixerWindow(Gtk.ApplicationWindow):
         maximum = round(self.overall_scale.get_value())
         self.application.run_audio_action(self.backend.set_balance, position, maximum)
         return GLib.SOURCE_REMOVE
+
+    def _center_balance(self, _button) -> None:
+        # Commit even when the slider already reads 50: rounding can show 50
+        # for slightly different volumes, such as Game 100% and Chat 99%.
+        self._updating = True
+        self.balance_scale.set_value(50)
+        self._updating = False
+        self._update_value_labels()
+        if self._balance_timer:
+            GLib.source_remove(self._balance_timer)
+        self._commit_balance()
 
     def _microphone_changed(self, _scale) -> None:
         self._update_value_labels()

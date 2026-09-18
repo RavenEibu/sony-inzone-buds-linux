@@ -10,6 +10,7 @@ undocumented commands to the earbuds.
 | --- | --- |
 | Overall volume | Sets the maximum of the Game and Chat endpoints |
 | Game / Chat balance | Attenuates Game or Chat relative to the maximum |
+| Center | Sets the balance to 50 so Game and Chat share the overall volume |
 | Microphone volume | Sets the native microphone endpoint level |
 | Use Game output + INZONE microphone | Restores the recommended defaults |
 
