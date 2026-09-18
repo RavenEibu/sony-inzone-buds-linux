@@ -6,12 +6,6 @@
 
 - **Boost Chat** toggle in the mixer window and tray menu: sets Game 30% /
   Chat 70%, and restores the exact volumes from before on a second press.
-
-### Changed
-
-- **Center** and **Boost Chat** use the accent-colored `suggested-action`
-  style instead of `flat`, matching **Use Game output + INZONE microphone**,
-  so they stand out from the plain slider labels around them.
 - `~/.config/inzone-buds-mixer/config`, an optional, commented shell file for
   `inzone-autoswitch` settings (volume-key linking, notifications) that does
   not require editing a script or the systemd unit. An `Environment=` line on
@@ -38,6 +32,12 @@
 - Document the nested framing of HID input report `0x02` and a candidate,
   not-yet-verified battery-percentage field in its `14 04` sub-message; see
   `docs/hardware.md#hypotheses-not-verified`.
+
+### Changed
+
+- **Center** and **Boost Chat** use the accent-colored `suggested-action`
+  style instead of `flat`, matching **Use Game output + INZONE microphone**,
+  so they stand out from the plain slider labels around them.
 
 ## 0.2.0 - 2026-09-17
 
