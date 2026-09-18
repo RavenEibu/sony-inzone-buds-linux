@@ -15,6 +15,11 @@
 - Document the dongle's USB interfaces, including the device-provided Chat and
   Game function names, its HID report descriptor and the input devices the
   kernel creates from it.
+- Add `config/udev/70-inzone-buds-hidraw.rules`, an optional udev rule that
+  grants the logged-in user read/write access to the dongle's hidraw device
+  through systemd-logind (no group membership, no world-accessible device),
+  and `tools/inzone-hid-capture`, a read-only tool that prints its HID input
+  reports for hardware research. Neither is installed by `install.sh`.
 
 ## 0.2.0 - 2026-09-17
 

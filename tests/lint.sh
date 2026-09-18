@@ -22,7 +22,7 @@ sed 's|@BINDIR@|/usr/bin|g' \
 desktop-file-validate "$desktop_file"
 
 printf '== python syntax\n'
-python3 - src/inzone_buds_mixer/*.py tests/*.py <<'EOF'
+python3 - src/inzone_buds_mixer/*.py tests/*.py tools/inzone-hid-capture <<'EOF'
 import ast
 import sys
 

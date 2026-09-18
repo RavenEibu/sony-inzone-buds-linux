@@ -167,10 +167,38 @@ hypotheses to test, not supported features:
   report would reach the desktop as ordinary volume keys. This has not been
   observed.
 
-The next step is passive: grant the logged-in user read access to the dongle's
-hidraw node only, then record input reports while changing one thing at a time,
-such as removing an earbud from the case or connecting a charger. No output or
-feature report is to be sent until its effect is documented.
+### Passive capture
+
+`config/udev/70-inzone-buds-hidraw.rules` grants the logged-in seat user
+read/write access to the dongle's hidraw node through systemd-logind's ACL
+mechanism (`TAG+="uaccess"`), without adding the user to a group or leaving the
+device world-accessible. Install it once with:
+
+```bash
+sudo install -m 0644 config/udev/70-inzone-buds-hidraw.rules \
+  /etc/udev/rules.d/70-inzone-buds-hidraw.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+`tools/inzone-hid-capture` then reads and prints raw input reports without
+sending anything to the device: it opens the hidraw node read-only and only
+calls `os.read()`. Run it and change one thing at a time, such as removing an
+earbud from the case, putting it back, connecting a charger, or touching a
+control:
+
+```bash
+tools/inzone-hid-capture
+```
+
+Each line has a timestamp, the report ID, its length and its bytes in hex.
+Compare reports before and after each change to see which report ID and which
+bytes moved. `--out FILE` also appends every line to a file, and `--seconds N`
+stops the capture automatically. Report `0xB0` (see above) is the first one to
+watch for a battery-level change.
+
+No output or feature report is to be sent until its effect is documented on a
+controlled test system.
 
 ## Not yet verified
 

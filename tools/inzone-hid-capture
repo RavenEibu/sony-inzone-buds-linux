@@ -1,0 +1,114 @@
+#!/usr/bin/env python3
+"""Capture raw HID input reports from the Sony INZONE Buds dongle.
+
+Research tool, not installed by install.sh. Read-only: it only calls
+os.read() on the hidraw device. It never writes, and never issues a
+SET_REPORT, GET_REPORT or any other ioctl. Safe to run repeatedly while
+changing one thing about the earbuds at a time (removing one from the case,
+plugging in a charger, touching a control) to see which report changes.
+
+Usage:
+    tools/inzone-hid-capture [--seconds N] [--out FILE]
+
+Requires read access to the dongle's hidraw device. See
+config/udev/70-inzone-buds-hidraw.rules for a udev rule that grants it to the
+logged-in user without root.
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime
+import os
+import sys
+from pathlib import Path
+
+VENDOR_PRODUCT = "054C:0EC2"  # PC mode; MOBILE/PS5 mode is 054C:0EC3.
+HIDRAW_CLASS = Path("/sys/class/hidraw")
+
+
+def find_hidraw_device() -> Path | None:
+    if not HIDRAW_CLASS.is_dir():
+        return None
+    for entry in sorted(HIDRAW_CLASS.iterdir()):
+        device_link = entry / "device"
+        try:
+            resolved = device_link.resolve()
+        except OSError:
+            continue
+        if VENDOR_PRODUCT in str(resolved).upper():
+            return Path("/dev") / entry.name
+    return None
+
+
+def format_report(data: bytes) -> str:
+    hex_bytes = " ".join(f"{byte:02x}" for byte in data)
+    return f"id={data[0]:3d}  len={len(data):3d}  {hex_bytes}"
+
+
+def capture(device_path: Path, seconds: float | None, out) -> None:
+    print(f"Reading from {device_path}. Press Ctrl-C to stop.", file=sys.stderr)
+    print(
+        "Change one thing at a time: remove an earbud from the case, put it "
+        "back, connect a charger, touch a control.",
+        file=sys.stderr,
+    )
+    fd = os.open(device_path, os.O_RDONLY)
+    start = datetime.datetime.now()
+    try:
+        while seconds is None or (datetime.datetime.now() - start).total_seconds() < seconds:
+            data = os.read(fd, 64)  # read-only: this is the only I/O call on fd
+            if not data:
+                continue
+            timestamp = datetime.datetime.now().isoformat(timespec="milliseconds")
+            line = f"{timestamp}  {format_report(data)}"
+            print(line)
+            if out is not None:
+                out.write(line + "\n")
+                out.flush()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        os.close(fd)
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--seconds", type=float, default=None, help="stop after this many seconds"
+    )
+    parser.add_argument(
+        "--out", type=Path, default=None, help="also append each line to this file"
+    )
+    parser.add_argument(
+        "--device", type=Path, default=None, help="hidraw device path (auto-detected by default)"
+    )
+    arguments = parser.parse_args()
+
+    device_path = arguments.device or find_hidraw_device()
+    if device_path is None:
+        print(
+            "inzone-hid-capture: no hidraw device found for the INZONE Buds "
+            "dongle. Is it connected?",
+            file=sys.stderr,
+        )
+        return 1
+    if not os.access(device_path, os.R_OK):
+        print(
+            f"inzone-hid-capture: {device_path} is not readable. See "
+            "config/udev/70-inzone-buds-hidraw.rules.",
+            file=sys.stderr,
+        )
+        return 1
+
+    out = arguments.out.open("a", encoding="utf-8") if arguments.out else None
+    try:
+        capture(device_path, arguments.seconds, out)
+    finally:
+        if out is not None:
+            out.close()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

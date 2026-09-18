@@ -50,8 +50,11 @@ control work.
 The following work requires protocol research and real-device verification:
 
 - [x] Enumerate HID interfaces and report descriptors.
-- [ ] Record input reports passively while changing one device state at a
-  time.
+- [x] Build a udev rule and a read-only capture tool
+  (`tools/inzone-hid-capture`) for recording input reports without root.
+- [ ] Record input reports while changing one device state at a time (remove
+  an earbud from the case, connect a charger, touch a control) and document
+  which report changes, starting with report `0xB0`.
 - [ ] Capture one setting change at a time on a controlled Windows test system.
 - [ ] Document request/response framing and checksums.
 - [ ] Build a read-only device-status prototype.

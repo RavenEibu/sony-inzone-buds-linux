@@ -36,6 +36,18 @@ Keep hardware claims tied to reproducible evidence. In particular, do not
 label a proprietary control as supported based only on a guessed USB packet.
 Do not redistribute Sony binaries, firmware or extracted copyrighted assets.
 
+## HID research
+
+`tools/inzone-hid-capture` prints the dongle's raw HID input reports; it is
+read-only and never writes to the device. It needs read access to the hidraw
+node, which `config/udev/70-inzone-buds-hidraw.rules` grants to the logged-in
+user (see `docs/hardware.md#passive-capture` for install steps). Neither file
+is installed by `install.sh`; they are for contributors investigating the
+proprietary controls in [docs/roadmap.md](docs/roadmap.md#experimental-proprietary-controls).
+
+Do not send output or feature reports to the device outside a controlled test
+where the result is documented; see the contribution standard in the roadmap.
+
 ## Releasing
 
 Versions follow semantic versioning within 0.x: a minor release for new

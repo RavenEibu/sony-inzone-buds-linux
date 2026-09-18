@@ -1,0 +1,12 @@
+# Sony INZONE Buds USB dongle (054c:0ec2), PC and MOBILE/PS5 modes.
+#
+# Grants the logged-in seat user read/write access to the dongle's hidraw
+# device through systemd-logind's ACL mechanism (TAG+="uaccess"), the same
+# mechanism GNOME/KDE use for webcams and other per-user hardware. No group
+# membership or persistent world-writable permission is created; access
+# follows the active session and is revoked on logout.
+#
+# This does not send anything to the device by itself. It only makes the
+# hidraw node readable so this project's tools can capture reports without
+# root.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0ec2", TAG+="uaccess"
