@@ -1,6 +1,6 @@
 # Maintainer: Agustin Arce Martinez <arcemartinez.agustin@gmail.com>
 pkgname=inzone-buds-mixer
-pkgver=0.5.0
+pkgver=0.5.1
 pkgrel=1
 pkgdesc="Linux integration for the Sony INZONE Buds USB dongle: Game/Chat audio routing and a GTK4 mixer"
 arch=('any')
@@ -14,7 +14,7 @@ depends=('bash' 'libpulse' 'wireplumber' 'python' 'python-gobject' 'gtk4'
 makedepends=('gettext')
 optdepends=('libnotify: desktop notification when the dongle connects or disconnects')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/RavenEibu/sony-inzone-buds-linux/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('d7ee0839aecfa89104c76e9a325da75f10761be47f9ba82474500e4a123ef113')
+sha256sums=('2162da919df60e13f0ae5368ee53a9b80597bc97c5d61c663b1be63a3474e440')
 install=inzone-buds-mixer.install
 backup=('usr/share/wireplumber/wireplumber.conf.d/51-inzone-buds.conf')
 
