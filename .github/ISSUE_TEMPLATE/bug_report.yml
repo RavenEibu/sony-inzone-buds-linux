@@ -1,0 +1,31 @@
+name: Bug report
+description: Something does not work with the INZONE Buds dongle
+body:
+  - type: checkboxes
+    attributes:
+      label: Checks
+      options:
+        - label: The dongle switch is in PC mode (USB ID 054c:0ec2)
+          required: true
+  - type: textarea
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "`inzonectl doctor` output"
+      description: Remove usernames and unrelated device details first.
+      render: text
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Distribution and desktop environment
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: PipeWire and WirePlumber versions
+    validations:
+      required: true

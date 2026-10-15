@@ -1,0 +1,53 @@
+name: Arch package
+
+# Builds the PKGBUILD in a clean Arch container and runs the package
+# validators. The PKGBUILD builds from the published release tarball, so this
+# validates the packaging of the last release, not of unreleased code.
+
+on:
+  pull_request:
+    paths:
+      - packaging/arch/**
+      - .github/workflows/arch-package.yml
+  push:
+    branches: [main]
+    paths:
+      - packaging/arch/**
+      - .github/workflows/arch-package.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  makepkg:
+    runs-on: ubuntu-24.04
+    container: archlinux:base-devel
+    steps:
+      - name: Install tools
+        run: |
+          pacman -Syu --noconfirm git namcap appstream desktop-file-utils sudo
+
+      - uses: actions/checkout@v7
+
+      - name: Build as an unprivileged user
+        run: |
+          useradd -m builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/builder
+          cp -r "$GITHUB_WORKSPACE/packaging/arch" /home/builder/pkg
+          chown -R builder /home/builder/pkg
+          su builder -c 'cd ~/pkg && makepkg -sf --noconfirm'
+
+      - name: namcap
+        run: |
+          cd /home/builder/pkg
+          namcap PKGBUILD
+          namcap ./*.pkg.tar.zst
+
+      - name: Check installed metadata
+        run: |
+          cd /home/builder/pkg
+          pacman -U --noconfirm ./*.pkg.tar.zst
+          desktop-file-validate /usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop
+          appstreamcli validate --no-net /usr/share/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml
+          inzonectl --version

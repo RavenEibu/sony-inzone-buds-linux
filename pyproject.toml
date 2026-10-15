@@ -1,0 +1,10 @@
+# Tool configuration only; the project is not built or installed via pip.
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["packaging"]
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, bugbear. Import sorting is deliberately off:
+# gi.require_version() must run before the gi.repository imports.
+select = ["E", "F", "W", "B"]
