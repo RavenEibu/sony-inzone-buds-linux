@@ -34,7 +34,7 @@ control work.
 - [x] Add Arch Linux packaging (`packaging/arch/`, not yet submitted to the
   AUR).
 - [ ] Add Debian packaging.
-- [ ] Add release artifacts and checksums through GitHub Actions.
+- [x] Add release artifacts and checksums through GitHub Actions.
 
 ## Version 0.4: desktop controls
 

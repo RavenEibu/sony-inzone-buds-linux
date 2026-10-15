@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.4.0 - 2026-10-15
+
+Release automation and diagnostics; no change to audio routing or the mixer.
+Checks run in CI and locally; nothing here needs the dongle.
+
 ### Added
 
 - `inzonectl doctor` reports the PipeWire and WirePlumber versions.
