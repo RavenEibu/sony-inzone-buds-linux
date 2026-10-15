@@ -6,6 +6,8 @@ set -euo pipefail
 VERSION=0.3.1
 PACTL=${PACTL:-pactl}
 WPCTL=${WPCTL:-wpctl}
+PIPEWIRE=${PIPEWIRE:-pipewire}
+WIREPLUMBER=${WIREPLUMBER:-wireplumber}
 PC_VENDOR_ID=054c
 PC_PRODUCT_ID=0ec2
 CARD_PATTERN='^alsa_card[.]usb-Sony_INZONE_Buds'
@@ -246,7 +248,11 @@ show_doctor() {
   printf 'inzonectl %s diagnostics\n' "$VERSION"
   printf 'Kernel: '
   uname -sr
-  printf 'PipeWire/WirePlumber:\n'
+  pw_version=$("$PIPEWIRE" --version 2>/dev/null | sed -n 's/^Linked with libpipewire //p' | head -n 1) || true
+  wp_version=$("$WIREPLUMBER" --version 2>/dev/null | sed -n 's/^Linked with libwireplumber //p' | head -n 1) || true
+  printf 'PipeWire: %s\n' "${pw_version:-unknown}"
+  printf 'WirePlumber: %s\n' "${wp_version:-unknown}"
+  printf '\nPipeWire/WirePlumber:\n'
   "$WPCTL" status 2>&1 || true
   printf '\nINZONE USB devices:\n'
   if command -v lsusb >/dev/null 2>&1; then
