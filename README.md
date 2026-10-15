@@ -1,6 +1,8 @@
 # Sony INZONE Buds for Linux
 
 [![CI](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/ci.yml/badge.svg)](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/ci.yml)
+[![Arch package](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/arch-package.yml/badge.svg)](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/arch-package.yml)
+[![Debian package](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/deb-package.yml/badge.svg)](https://github.com/RavenEibu/sony-inzone-buds-linux/actions/workflows/deb-package.yml)
 
 Open-source Linux integration for the Sony INZONE Buds USB dongle in **PC
 mode** (`054c:0ec2`). It exposes and labels the dongle's native Game, Chat and

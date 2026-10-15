@@ -3,6 +3,9 @@ name: CI
 on:
   push:
   pull_request:
+  schedule:
+    # Weekly: catches breakage from new runner images or package versions.
+    - cron: "17 5 * * 1"
 
 permissions:
   contents: read

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+
+- `SECURITY.md`, package-workflow badges in the README, and a weekly scheduled
+  CI run.
+
 ### Changed
 
 - Roadmap: Debian packaging marked done, and headings clarified as themes
