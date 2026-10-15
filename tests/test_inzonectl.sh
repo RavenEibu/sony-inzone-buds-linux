@@ -102,6 +102,23 @@ done
 PACTL="$FAILING_PACTL" "$PROJECT_DIR/bin/inzonectl" help >/dev/null ||
   fail 'help required an audio server'
 
+# doctor reports the PipeWire and WirePlumber versions, even if a tool is missing.
+MOCK_PW="$TEST_TMP/pipewire"
+MOCK_WP="$TEST_TMP/wireplumber"
+printf '#!/usr/bin/env bash\nprintf "pipewire\\nCompiled with libpipewire 1.2.3\\nLinked with libpipewire 1.2.4\\n"\n' > "$MOCK_PW"
+printf '#!/usr/bin/env bash\nprintf "wireplumber\\nCompiled with libwireplumber 0.5.1\\nLinked with libwireplumber 0.5.2\\n"\n' > "$MOCK_WP"
+chmod +x "$MOCK_PW" "$MOCK_WP"
+MOCK_WPCTL="$TEST_TMP/wpctl"
+printf '#!/usr/bin/env bash\nexit 0\n' > "$MOCK_WPCTL"
+chmod +x "$MOCK_WPCTL"
+doctor_out=$(PIPEWIRE="$MOCK_PW" WIREPLUMBER="$MOCK_WP" WPCTL="$MOCK_WPCTL" \
+  "$PROJECT_DIR/bin/inzonectl" doctor)
+grep -Fx 'PipeWire: 1.2.4' <<<"$doctor_out" >/dev/null || fail 'doctor missing PipeWire version'
+grep -Fx 'WirePlumber: 0.5.2' <<<"$doctor_out" >/dev/null || fail 'doctor missing WirePlumber version'
+doctor_out=$(PIPEWIRE=/nonexistent WIREPLUMBER=/nonexistent WPCTL="$MOCK_WPCTL" \
+  "$PROJECT_DIR/bin/inzonectl" doctor) || fail 'doctor failed without version tools'
+grep -Fx 'PipeWire: unknown' <<<"$doctor_out" >/dev/null || fail 'doctor should report unknown PipeWire'
+
 # The version must match the newest CHANGELOG entry and AppStream release.
 version=$("$PROJECT_DIR/bin/inzonectl" --version)
 version=${version#inzonectl }

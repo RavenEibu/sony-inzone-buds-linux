@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Static checks. Requires shellcheck, appstreamcli and desktop-file-validate.
+# ruff is optional locally (skipped with a notice) and mandatory when
+# INZONE_REQUIRE_RUFF=1, which CI sets.
 # CI uses this same entry point.
 set -euo pipefail
 
@@ -9,7 +11,7 @@ trap 'rm -rf -- "$TMP"' EXIT
 
 printf '== shellcheck\n'
 shellcheck -x bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
-  install.sh uninstall.sh tests/*.sh
+  install.sh uninstall.sh tests/*.sh tools/*.sh .githooks/pre-push
 
 printf '== appstreamcli\n'
 appstreamcli validate --no-net \
@@ -30,5 +32,15 @@ for path in sys.argv[1:]:
     with open(path, encoding="utf-8") as source:
         ast.parse(source.read(), path)
 EOF
+
+printf '== ruff\n'
+if command -v ruff >/dev/null 2>&1; then
+  ruff check src tests tools/inzone-hid-capture
+elif [[ ${INZONE_REQUIRE_RUFF:-0} = 1 ]]; then
+  printf 'ruff is required but not installed\n' >&2
+  exit 1
+else
+  printf 'ruff not installed; skipped\n'
+fi
 
 printf 'Lint passed.\n'

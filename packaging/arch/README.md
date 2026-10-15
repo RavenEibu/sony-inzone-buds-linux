@@ -22,13 +22,10 @@ audio integration.
 
 ## Releasing a new version
 
-1. Bump `pkgver` (and reset `pkgrel=1`) to match the new git tag.
-2. Update `sha256sums` with the new tarball's checksum:
-   ```bash
-   curl -sL -o /tmp/inzone.tar.gz \
-     "https://github.com/RavenEibu/sony-inzone-buds-linux/archive/refs/tags/v$PKGVER.tar.gz"
-   sha256sum /tmp/inzone.tar.gz
-   ```
+1. Run `tools/bump-pkgbuild.sh X.Y.Z` from the repository root once the tag
+   exists. It sets `pkgver`, resets `pkgrel=1` and writes the release
+   tarball's `sha256sums`. The `Release` workflow does this and opens a PR.
+2. Review the diff: only `pkgver`, `pkgrel` and `sha256sums` should change.
 3. Build and test as above.
 4. Update the separate AUR git repository (`ssh://aur@aur.archlinux.org/inzone-buds-mixer.git`),
    which is not this repository: copy `PKGBUILD` and

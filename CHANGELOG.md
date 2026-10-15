@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Added
+
+- `inzonectl doctor` reports the PipeWire and WirePlumber versions.
+- `Release` workflow: a `vX.Y.Z` tag publishes the GitHub release with the
+  CHANGELOG notes, a tarball and `SHA256SUMS`, and opens a PKGBUILD bump PR.
+- `Arch package` workflow: builds the PKGBUILD in an Arch container and runs
+  namcap and the metadata validators.
+- `tools/release-notes.sh` and `tools/bump-pkgbuild.sh`, with offline tests.
+- `ruff` in `tests/lint.sh`, Dependabot for GitHub Actions, issue and pull
+  request templates, and an optional `.githooks/pre-push`.
+
 ## 0.3.1 - 2026-09-18
 
 Adds Arch Linux packaging and fixes a Boost Chat bug found right after the

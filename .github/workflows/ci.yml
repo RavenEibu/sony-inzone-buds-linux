@@ -17,9 +17,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            shellcheck appstream desktop-file-utils python3-gi gir1.2-gtk-4.0
+            shellcheck appstream desktop-file-utils python3-gi gir1.2-gtk-4.0 pipx
+          pipx install ruff
 
       - name: Lint
+        env:
+          INZONE_REQUIRE_RUFF: "1"
         run: tests/lint.sh
 
       - name: Tests
