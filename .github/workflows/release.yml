@@ -60,6 +60,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
           git switch -c "packaging/pkgbuild-$VERSION" origin/main
           tools/bump-pkgbuild.sh "$VERSION"
           git commit -am "packaging: bump PKGBUILD to $VERSION"
