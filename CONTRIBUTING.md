@@ -86,9 +86,23 @@ features or behavior changes, a patch release for fixes only.
 
 ## Translations
 
-User-visible strings go through `tr()` from `src/inzone_buds_mixer/i18n.py`.
-After adding or changing one, run `tools/update-pot.sh` to refresh
-`po/inzone-buds-mixer.pot` (`tests/test_pot_current.sh` fails otherwise). To
-add a language: `msginit -i po/inzone-buds-mixer.pot -l LANG -o po/LANG.po`,
-translate it, and compile it with `msgfmt` into
-`~/.local/share/locale/LANG/LC_MESSAGES/inzone-buds-mixer.mo` to try it.
+User-visible strings go through `tr()` from `src/inzone_buds_mixer/i18n.py`;
+messages with values use named fields, for example
+`tr("Error: {message}").format(message=text)`. Texts shown by Bash (the
+notifications in `bin/inzone-autoswitch`) are listed in `po/notifications.py`
+so the extractor sees them. After adding or changing a string run
+`tools/update-pot.sh`: it refreshes `po/inzone-buds-mixer.pot` and merges it
+into every `po/*.po` (`tests/test_pot_current.sh` fails otherwise). The tests
+require every language to be complete and to keep the `{fields}` of the
+original.
+
+Shipped languages: es, fr, pt, de, ru, zh_CN, ar, hi, bn, id. They are drafts
+written with machine assistance: corrections from native speakers are very
+welcome as pull requests against the matching `po/LANG.po`. To add a language:
+`msginit -i po/inzone-buds-mixer.pot -l LANG -o po/LANG.po`, translate every
+message, and run the tests. To try a catalog without installing:
+
+```bash
+tools/compile-translations.sh ~/.local/share/locale
+inzone-buds-mixer --language es
+```

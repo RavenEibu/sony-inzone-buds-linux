@@ -78,6 +78,23 @@ On Debian or Ubuntu:
 sudo apt install pipewire pipewire-pulse wireplumber python3-gi gir1.2-gtk-4.0
 ```
 
+## Language
+
+The mixer, the tray menu and the desktop notifications follow the system
+language automatically (Spanish, French, Portuguese, German, Russian,
+Chinese (Simplified), Arabic, Hindi, Bengali and Indonesian are included;
+English otherwise). To choose another language:
+
+```bash
+inzone-buds-mixer --language de        # one run
+```
+
+or set `INZONE_LANGUAGE` in `~/.config/inzone-buds-mixer/config` (see the
+commented example there; `en` forces English, `auto` returns to the system
+language). The translations are drafts: corrections are welcome. The
+catalogs are compiled by `install.sh` when `msgfmt` (the `gettext` package) is
+installed.
+
 ## Install
 
 Put the dongle switch in **PC**, then either build the Arch Linux package

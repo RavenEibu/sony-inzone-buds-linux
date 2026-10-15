@@ -1,0 +1,143 @@
+# French translation for inzone-buds-mixer.
+# Machine-assisted draft: native-speaker review is welcome.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: inzone-buds-mixer\n"
+"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
+"issues\n"
+"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: Claude (draft, needs native review)\n"
+"Language-Team: French\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Refresh device status"
+msgstr "Actualiser l'état de l'appareil"
+
+msgid "Quit"
+msgstr "Quitter"
+
+msgid "Game / Chat audio"
+msgstr "Audio Jeu / Chat"
+
+msgid "Checking for the PC-mode dongle…"
+msgstr "Recherche du dongle en mode PC…"
+
+msgid "Overall volume"
+msgstr "Volume général"
+
+msgid "Limits the louder Game/Chat endpoint. At center, both use this volume."
+msgstr ""
+"Limite le canal Jeu/Chat le plus fort. Au centre, les deux utilisent ce "
+"volume."
+
+msgid "Center"
+msgstr "Centrer"
+
+msgid "Set Game and Chat to the same volume (balance 50)"
+msgstr "Régler Jeu et Chat au même volume (équilibre 50)"
+
+msgid "Boost Chat"
+msgstr "Renforcer le Chat"
+
+msgid ""
+"Set Chat to 70% and Game to 30%; press again to restore the volumes from "
+"before"
+msgstr ""
+"Règle Chat à 70 % et Jeu à 30 % ; appuyez de nouveau pour rétablir les "
+"volumes précédents"
+
+msgid "Game / Chat balance"
+msgstr "Équilibre Jeu / Chat"
+
+msgid "0 = Chat, 50 = both equally, 100 = Game"
+msgstr "0 = Chat, 50 = les deux à égalité, 100 = Jeu"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Both"
+msgstr "Les deux"
+
+msgid "Game"
+msgstr "Jeu"
+
+msgid "Microphone volume"
+msgstr "Volume du microphone"
+
+msgid "Input level sent to voice applications."
+msgstr "Niveau d'entrée envoyé aux applications vocales."
+
+msgid "Use Game output + INZONE microphone"
+msgstr "Utiliser la sortie Jeu + le microphone INZONE"
+
+msgid "Start at login in the tray"
+msgstr "Lancer à l'ouverture de session dans la zone de notification"
+
+msgid "Tray integration: checking…"
+msgstr "Intégration à la zone de notification : vérification…"
+
+msgid "Tray integration active — closing hides this window."
+msgstr ""
+"Intégration à la zone de notification active : fermer masque cette fenêtre."
+
+msgid "Tray icon unavailable — install/enable AppIndicator support in GNOME."
+msgstr ""
+"Icône de notification indisponible : installez ou activez la prise en charge "
+"d'AppIndicator dans GNOME."
+
+#, python-brace-format
+msgid "Audio control error: {message}"
+msgstr "Erreur de contrôle audio : {message}"
+
+msgid "● INZONE Buds connected in PC mode"
+msgstr "● INZONE Buds connectés en mode PC"
+
+msgid ""
+"INZONE Buds PC-mode endpoints are unavailable. Connect the dongle with its "
+"switch set to PC."
+msgstr ""
+"Les points de terminaison du mode PC d'INZONE Buds sont indisponibles. "
+"Branchez le dongle avec son commutateur sur PC."
+
+msgid "another device"
+msgstr "un autre appareil"
+
+msgid "INZONE microphone"
+msgstr "microphone INZONE"
+
+#, python-brace-format
+msgid ""
+"Game {game}%  ·  Chat {chat}%  ·  Default output: {output}  ·  Default "
+"input: {input}"
+msgstr ""
+"Jeu {game} %  ·  Chat {chat} %  ·  Sortie par défaut : {output}  ·  Entrée "
+"par défaut : {input}"
+
+#, python-brace-format
+msgid "could not change the login setting: {error}"
+msgstr ""
+"impossible de modifier le réglage de lancement à l'ouverture de session : "
+"{error}"
+
+msgid "Show Window"
+msgstr "Afficher la fenêtre"
+
+msgid "Center Game/Chat"
+msgstr "Centrer Jeu/Chat"
+
+msgid "Boost Chat 70%"
+msgstr "Renforcer le Chat 70 %"
+
+msgid "INZONE Buds connected"
+msgstr "INZONE Buds connectés"
+
+msgid "Game and Chat are ready."
+msgstr "Jeu et Chat sont prêts."
+
+msgid "INZONE Buds disconnected"
+msgstr "INZONE Buds déconnectés"

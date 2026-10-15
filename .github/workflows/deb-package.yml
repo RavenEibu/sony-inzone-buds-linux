@@ -27,7 +27,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y --no-install-recommends \
-            git ca-certificates build-essential debhelper devscripts lintian
+            git ca-certificates build-essential debhelper devscripts lintian gettext
 
       - uses: actions/checkout@v7
 

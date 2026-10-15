@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: inzone-buds-mixer\n"
 "Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
 "issues\n"
-"POT-Creation-Date: 2026-10-15 19:14-0300\n"
+"POT-Creation-Date: 2026-10-15 19:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,12 +86,32 @@ msgstr ""
 msgid "Tray icon unavailable — install/enable AppIndicator support in GNOME."
 msgstr ""
 
+#, python-brace-format
+msgid "Audio control error: {message}"
+msgstr ""
+
 msgid "● INZONE Buds connected in PC mode"
 msgstr ""
 
 msgid ""
 "INZONE Buds PC-mode endpoints are unavailable. Connect the dongle with its "
 "switch set to PC."
+msgstr ""
+
+msgid "another device"
+msgstr ""
+
+msgid "INZONE microphone"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"Game {game}%  ·  Chat {chat}%  ·  Default output: {output}  ·  Default "
+"input: {input}"
+msgstr ""
+
+#, python-brace-format
+msgid "could not change the login setting: {error}"
 msgstr ""
 
 msgid "Show Window"
@@ -101,4 +121,13 @@ msgid "Center Game/Chat"
 msgstr ""
 
 msgid "Boost Chat 70%"
+msgstr ""
+
+msgid "INZONE Buds connected"
+msgstr ""
+
+msgid "Game and Chat are ready."
+msgstr ""
+
+msgid "INZONE Buds disconnected"
 msgstr ""

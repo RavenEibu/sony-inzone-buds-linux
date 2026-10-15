@@ -1,0 +1,135 @@
+# Bengali translation for inzone-buds-mixer.
+# Machine-assisted draft: native-speaker review is welcome.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: inzone-buds-mixer\n"
+"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
+"issues\n"
+"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: Claude (draft, needs native review)\n"
+"Language-Team: Bengali\n"
+"Language: bn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Refresh device status"
+msgstr "ডিভাইসের অবস্থা রিফ্রেশ করুন"
+
+msgid "Quit"
+msgstr "প্রস্থান"
+
+msgid "Game / Chat audio"
+msgstr "গেম / চ্যাট অডিও"
+
+msgid "Checking for the PC-mode dongle…"
+msgstr "পিসি মোডে ডংগল খোঁজা হচ্ছে…"
+
+msgid "Overall volume"
+msgstr "মোট ভলিউম"
+
+msgid "Limits the louder Game/Chat endpoint. At center, both use this volume."
+msgstr ""
+"গেম/চ্যাটের মধ্যে যেটি জোরে তাকে সীমিত করে। মাঝখানে দুটোই এই ভলিউম ব্যবহার করে।"
+
+msgid "Center"
+msgstr "মাঝখানে আনুন"
+
+msgid "Set Game and Chat to the same volume (balance 50)"
+msgstr "গেম ও চ্যাট একই ভলিউমে সেট করুন (ভারসাম্য ৫০)"
+
+msgid "Boost Chat"
+msgstr "চ্যাট বাড়ান"
+
+msgid ""
+"Set Chat to 70% and Game to 30%; press again to restore the volumes from "
+"before"
+msgstr "চ্যাট ৭০% ও গেম ৩০% করে; আগের ভলিউম ফিরিয়ে আনতে আবার চাপুন"
+
+msgid "Game / Chat balance"
+msgstr "গেম / চ্যাট ভারসাম্য"
+
+msgid "0 = Chat, 50 = both equally, 100 = Game"
+msgstr "০ = চ্যাট, ৫০ = দুটোই সমান, ১০০ = গেম"
+
+msgid "Chat"
+msgstr "চ্যাট"
+
+msgid "Both"
+msgstr "দুটোই"
+
+msgid "Game"
+msgstr "গেম"
+
+msgid "Microphone volume"
+msgstr "মাইক্রোফোনের ভলিউম"
+
+msgid "Input level sent to voice applications."
+msgstr "ভয়েস অ্যাপ্লিকেশনে পাঠানো ইনপুট স্তর।"
+
+msgid "Use Game output + INZONE microphone"
+msgstr "গেম আউটপুট + INZONE মাইক্রোফোন ব্যবহার করুন"
+
+msgid "Start at login in the tray"
+msgstr "লগইনের সময় ট্রেতে চালু করুন"
+
+msgid "Tray integration: checking…"
+msgstr "ট্রে ইন্টিগ্রেশন: যাচাই করা হচ্ছে…"
+
+msgid "Tray integration active — closing hides this window."
+msgstr "ট্রে ইন্টিগ্রেশন সক্রিয় — বন্ধ করলে এই উইন্ডো লুকিয়ে যায়।"
+
+msgid "Tray icon unavailable — install/enable AppIndicator support in GNOME."
+msgstr "ট্রে আইকন পাওয়া যাচ্ছে না — GNOME-এ AppIndicator সমর্থন ইনস্টল/চালু করুন।"
+
+#, python-brace-format
+msgid "Audio control error: {message}"
+msgstr "অডিও নিয়ন্ত্রণে ত্রুটি: {message}"
+
+msgid "● INZONE Buds connected in PC mode"
+msgstr "● INZONE Buds পিসি মোডে সংযুক্ত"
+
+msgid ""
+"INZONE Buds PC-mode endpoints are unavailable. Connect the dongle with its "
+"switch set to PC."
+msgstr ""
+"INZONE Buds-এর পিসি মোড এন্ডপয়েন্ট পাওয়া যাচ্ছে না। ডংগলের সুইচ PC-তে রেখে সংযুক্ত "
+"করুন।"
+
+msgid "another device"
+msgstr "অন্য ডিভাইস"
+
+msgid "INZONE microphone"
+msgstr "INZONE মাইক্রোফোন"
+
+#, python-brace-format
+msgid ""
+"Game {game}%  ·  Chat {chat}%  ·  Default output: {output}  ·  Default "
+"input: {input}"
+msgstr ""
+"গেম {game}%  ·  চ্যাট {chat}%  ·  ডিফল্ট আউটপুট: {output}  ·  ডিফল্ট ইনপুট: "
+"{input}"
+
+#, python-brace-format
+msgid "could not change the login setting: {error}"
+msgstr "লগইন সেটিং পরিবর্তন করা যায়নি: {error}"
+
+msgid "Show Window"
+msgstr "উইন্ডো দেখান"
+
+msgid "Center Game/Chat"
+msgstr "গেম/চ্যাট মাঝখানে আনুন"
+
+msgid "Boost Chat 70%"
+msgstr "চ্যাট বাড়ান ৭০%"
+
+msgid "INZONE Buds connected"
+msgstr "INZONE Buds সংযুক্ত হয়েছে"
+
+msgid "Game and Chat are ready."
+msgstr "গেম ও চ্যাট প্রস্তুত।"
+
+msgid "INZONE Buds disconnected"
+msgstr "INZONE Buds সংযোগ বিচ্ছিন্ন হয়েছে"

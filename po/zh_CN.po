@@ -1,0 +1,131 @@
+# Chinese (Simplified) translation for inzone-buds-mixer.
+# Machine-assisted draft: native-speaker review is welcome.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: inzone-buds-mixer\n"
+"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
+"issues\n"
+"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: Claude (draft, needs native review)\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Refresh device status"
+msgstr "刷新设备状态"
+
+msgid "Quit"
+msgstr "退出"
+
+msgid "Game / Chat audio"
+msgstr "游戏 / 聊天音频"
+
+msgid "Checking for the PC-mode dongle…"
+msgstr "正在检测 PC 模式的接收器…"
+
+msgid "Overall volume"
+msgstr "总音量"
+
+msgid "Limits the louder Game/Chat endpoint. At center, both use this volume."
+msgstr "限制游戏/聊天中较响的通道。居中时，两者使用此音量。"
+
+msgid "Center"
+msgstr "居中"
+
+msgid "Set Game and Chat to the same volume (balance 50)"
+msgstr "将游戏和聊天设为相同音量（平衡 50）"
+
+msgid "Boost Chat"
+msgstr "增强聊天"
+
+msgid ""
+"Set Chat to 70% and Game to 30%; press again to restore the volumes from "
+"before"
+msgstr "将聊天设为 70%、游戏设为 30%；再次按下可恢复之前的音量"
+
+msgid "Game / Chat balance"
+msgstr "游戏 / 聊天平衡"
+
+msgid "0 = Chat, 50 = both equally, 100 = Game"
+msgstr "0 = 聊天，50 = 两者相等，100 = 游戏"
+
+msgid "Chat"
+msgstr "聊天"
+
+msgid "Both"
+msgstr "两者"
+
+msgid "Game"
+msgstr "游戏"
+
+msgid "Microphone volume"
+msgstr "麦克风音量"
+
+msgid "Input level sent to voice applications."
+msgstr "发送给语音应用的输入电平。"
+
+msgid "Use Game output + INZONE microphone"
+msgstr "使用游戏输出 + INZONE 麦克风"
+
+msgid "Start at login in the tray"
+msgstr "登录时在托盘中启动"
+
+msgid "Tray integration: checking…"
+msgstr "托盘集成：检测中…"
+
+msgid "Tray integration active — closing hides this window."
+msgstr "托盘集成已启用 — 关闭窗口将其隐藏。"
+
+msgid "Tray icon unavailable — install/enable AppIndicator support in GNOME."
+msgstr "托盘图标不可用 — 请在 GNOME 中安装或启用 AppIndicator 支持。"
+
+#, python-brace-format
+msgid "Audio control error: {message}"
+msgstr "音频控制错误：{message}"
+
+msgid "● INZONE Buds connected in PC mode"
+msgstr "● INZONE Buds 已在 PC 模式下连接"
+
+msgid ""
+"INZONE Buds PC-mode endpoints are unavailable. Connect the dongle with its "
+"switch set to PC."
+msgstr "INZONE Buds 的 PC 模式端点不可用。请将接收器的开关拨到 PC 后连接。"
+
+msgid "another device"
+msgstr "其他设备"
+
+msgid "INZONE microphone"
+msgstr "INZONE 麦克风"
+
+#, python-brace-format
+msgid ""
+"Game {game}%  ·  Chat {chat}%  ·  Default output: {output}  ·  Default "
+"input: {input}"
+msgstr ""
+"游戏 {game}%  ·  聊天 {chat}%  ·  默认输出：{output}  ·  默认输入：{input}"
+
+#, python-brace-format
+msgid "could not change the login setting: {error}"
+msgstr "无法更改登录设置：{error}"
+
+msgid "Show Window"
+msgstr "显示窗口"
+
+msgid "Center Game/Chat"
+msgstr "游戏/聊天居中"
+
+msgid "Boost Chat 70%"
+msgstr "增强聊天 70%"
+
+msgid "INZONE Buds connected"
+msgstr "INZONE Buds 已连接"
+
+msgid "Game and Chat are ready."
+msgstr "游戏和聊天已就绪。"
+
+msgid "INZONE Buds disconnected"
+msgstr "INZONE Buds 已断开"

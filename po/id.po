@@ -1,0 +1,139 @@
+# Indonesian translation for inzone-buds-mixer.
+# Machine-assisted draft: native-speaker review is welcome.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: inzone-buds-mixer\n"
+"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
+"issues\n"
+"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: Claude (draft, needs native review)\n"
+"Language-Team: Indonesian\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Refresh device status"
+msgstr "Segarkan status perangkat"
+
+msgid "Quit"
+msgstr "Keluar"
+
+msgid "Game / Chat audio"
+msgstr "Audio Game / Chat"
+
+msgid "Checking for the PC-mode dongle…"
+msgstr "Mencari dongle dalam mode PC…"
+
+msgid "Overall volume"
+msgstr "Volume keseluruhan"
+
+msgid "Limits the louder Game/Chat endpoint. At center, both use this volume."
+msgstr ""
+"Membatasi saluran Game/Chat yang lebih keras. Di tengah, keduanya memakai "
+"volume ini."
+
+msgid "Center"
+msgstr "Tengahkan"
+
+msgid "Set Game and Chat to the same volume (balance 50)"
+msgstr "Atur Game dan Chat ke volume yang sama (keseimbangan 50)"
+
+msgid "Boost Chat"
+msgstr "Perkuat Chat"
+
+msgid ""
+"Set Chat to 70% and Game to 30%; press again to restore the volumes from "
+"before"
+msgstr ""
+"Atur Chat ke 70% dan Game ke 30%; tekan lagi untuk memulihkan volume "
+"sebelumnya"
+
+msgid "Game / Chat balance"
+msgstr "Keseimbangan Game / Chat"
+
+msgid "0 = Chat, 50 = both equally, 100 = Game"
+msgstr "0 = Chat, 50 = keduanya sama, 100 = Game"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Both"
+msgstr "Keduanya"
+
+msgid "Game"
+msgstr "Game"
+
+msgid "Microphone volume"
+msgstr "Volume mikrofon"
+
+msgid "Input level sent to voice applications."
+msgstr "Level input yang dikirim ke aplikasi suara."
+
+msgid "Use Game output + INZONE microphone"
+msgstr "Gunakan output Game + mikrofon INZONE"
+
+msgid "Start at login in the tray"
+msgstr "Mulai saat masuk di baki sistem"
+
+msgid "Tray integration: checking…"
+msgstr "Integrasi baki: memeriksa…"
+
+msgid "Tray integration active — closing hides this window."
+msgstr "Integrasi baki aktif — menutup akan menyembunyikan jendela ini."
+
+msgid "Tray icon unavailable — install/enable AppIndicator support in GNOME."
+msgstr ""
+"Ikon baki tidak tersedia — pasang/aktifkan dukungan AppIndicator di GNOME."
+
+#, python-brace-format
+msgid "Audio control error: {message}"
+msgstr "Kesalahan kontrol audio: {message}"
+
+msgid "● INZONE Buds connected in PC mode"
+msgstr "● INZONE Buds terhubung dalam mode PC"
+
+msgid ""
+"INZONE Buds PC-mode endpoints are unavailable. Connect the dongle with its "
+"switch set to PC."
+msgstr ""
+"Endpoint mode PC INZONE Buds tidak tersedia. Hubungkan dongle dengan sakelar "
+"di posisi PC."
+
+msgid "another device"
+msgstr "perangkat lain"
+
+msgid "INZONE microphone"
+msgstr "mikrofon INZONE"
+
+#, python-brace-format
+msgid ""
+"Game {game}%  ·  Chat {chat}%  ·  Default output: {output}  ·  Default "
+"input: {input}"
+msgstr ""
+"Game {game}%  ·  Chat {chat}%  ·  Output bawaan: {output}  ·  Input bawaan: "
+"{input}"
+
+#, python-brace-format
+msgid "could not change the login setting: {error}"
+msgstr "tidak dapat mengubah pengaturan saat masuk: {error}"
+
+msgid "Show Window"
+msgstr "Tampilkan jendela"
+
+msgid "Center Game/Chat"
+msgstr "Tengahkan Game/Chat"
+
+msgid "Boost Chat 70%"
+msgstr "Perkuat Chat 70%"
+
+msgid "INZONE Buds connected"
+msgstr "INZONE Buds terhubung"
+
+msgid "Game and Chat are ready."
+msgstr "Game dan Chat siap."
+
+msgid "INZONE Buds disconnected"
+msgstr "INZONE Buds terputus"
