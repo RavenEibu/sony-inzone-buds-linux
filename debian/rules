@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -Dm755 bin/inzonectl debian/inzone-buds-mixer/usr/bin/inzonectl
+	install -Dm755 bin/inzone-autoswitch debian/inzone-buds-mixer/usr/bin/inzone-autoswitch
+	install -Dm755 bin/inzone-buds-mixer debian/inzone-buds-mixer/usr/bin/inzone-buds-mixer
+	install -d debian/inzone-buds-mixer/usr/share/inzone-buds-mixer
+	install -m644 src/inzone_buds_mixer/*.py debian/inzone-buds-mixer/usr/share/inzone-buds-mixer/
+	install -Dm644 config/wireplumber/51-inzone-buds.conf \
+	  debian/inzone-buds-mixer/usr/share/wireplumber/wireplumber.conf.d/51-inzone-buds.conf
+	install -d debian/inzone-buds-mixer/usr/lib/systemd/user
+	sed 's|@BINDIR@|/usr/bin|g' systemd/user/inzone-buds-autoswitch.service.in \
+	  > debian/inzone-buds-mixer/usr/lib/systemd/user/inzone-buds-autoswitch.service
+	install -d debian/inzone-buds-mixer/usr/share/applications
+	sed 's|@BINDIR@|/usr/bin|g' \
+	  data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in \
+	  > debian/inzone-buds-mixer/usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop
+	install -Dm644 data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml \
+	  debian/inzone-buds-mixer/usr/share/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml
+	install -Dm644 data/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg \
+	  debian/inzone-buds-mixer/usr/share/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg
+	install -Dm644 data/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg \
+	  debian/inzone-buds-mixer/usr/share/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg
+	install -Dm644 config/inzone-buds-mixer/config.example \
+	  debian/inzone-buds-mixer/usr/share/doc/inzone-buds-mixer/config.example

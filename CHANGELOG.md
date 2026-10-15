@@ -9,6 +9,8 @@ Checks run in CI and locally; nothing here needs the dongle.
 
 ### Added
 
+- `debian/` packaging and a `Debian package` workflow that builds the `.deb` and
+  runs lintian (not yet run: needs the first CI execution).
 - `inzonectl doctor` reports the PipeWire and WirePlumber versions.
 - `Release` workflow: a `vX.Y.Z` tag publishes the GitHub release with the
   CHANGELOG notes, a tarball and `SHA256SUMS`, and opens a PKGBUILD bump PR.
