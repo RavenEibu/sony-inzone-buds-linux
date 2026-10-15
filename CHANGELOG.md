@@ -4,6 +4,9 @@
 
 ### Added
 
+- `tests/test_wireplumber_conf.py` and a CI job that parses the WirePlumber
+  config with PipeWire's `spa-json-dump` and checks its rules against the
+  dongle's node names.
 - Translation infrastructure: user-visible strings in the mixer and tray go
   through gettext (`i18n.py`, English fallback), with `po/` and
   `tools/update-pot.sh`. No translations ship yet, and interpolated messages
