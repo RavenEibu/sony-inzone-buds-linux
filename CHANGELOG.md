@@ -4,6 +4,8 @@
 
 ### Added
 
+- `docs/shortcuts.md`: keyboard-shortcut examples for GNOME, KDE, Sway and
+  Hyprland, with a test that their `inzonectl` commands exist.
 - `SECURITY.md`, package-workflow badges in the README, and a weekly scheduled
   CI run.
 

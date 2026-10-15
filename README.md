@@ -258,6 +258,7 @@ include personal data, account tokens or copyrighted Sony software.
 - [Architecture](docs/architecture.md)
 - [Verified hardware behavior](docs/hardware.md)
 - [Troubleshooting](docs/troubleshooting.md)
+- [Keyboard shortcut examples](docs/shortcuts.md)
 - [Roadmap](docs/roadmap.md)
 - [Graphical mixer](docs/gui.md)
 

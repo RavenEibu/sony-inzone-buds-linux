@@ -49,7 +49,7 @@ not the desktop-controls theme below).
 - [x] Add desktop notifications for connect/disconnect events.
 - [x] Support configurable default behavior without editing scripts or service
   files, including volume-key linking.
-- [ ] Add optional keyboard-shortcut examples.
+- [x] Add optional keyboard-shortcut examples (`docs/shortcuts.md`).
 
 ## Experimental: proprietary controls
 
