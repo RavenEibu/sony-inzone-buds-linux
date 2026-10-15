@@ -4,7 +4,8 @@ set -euo pipefail
 
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
 
-help=$(bin/inzonectl help)
+# `help` still requires pactl to exist; a stub is enough.
+help=$(PACTL=true bin/inzonectl help)
 mapfile -t subcommands < <(
   grep -o 'inzonectl [a-z-]*' docs/shortcuts.md | awk '{print $2}' | sort -u
 )
