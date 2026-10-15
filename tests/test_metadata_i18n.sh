@@ -44,8 +44,20 @@ awk '/<releases>/,/<\/releases>/' "$TMP/app.metainfo.xml" | grep -q 'xml:lang' &
   fail 'release notes were translated'
 [[ $releases -ge 1 ]] || fail 'releases lost'
 
-desktop-file-validate "$TMP/app.desktop"
-appstreamcli validate --no-net "$TMP/app.metainfo.xml" >/dev/null
+# Validators are optional locally and on minimal containers; CI sets
+# INZONE_REQUIRE_VALIDATORS=1 where they are installed.
+for validator in desktop-file-validate appstreamcli; do
+  if ! command -v "$validator" >/dev/null 2>&1; then
+    [[ ${INZONE_REQUIRE_VALIDATORS:-0} != 1 ]] || fail "$validator is required but missing"
+    printf '%s not installed; skipped\n' "$validator"
+  fi
+done
+if command -v desktop-file-validate >/dev/null 2>&1; then
+  desktop-file-validate "$TMP/app.desktop"
+fi
+if command -v appstreamcli >/dev/null 2>&1; then
+  appstreamcli validate --no-net "$TMP/app.metainfo.xml" >/dev/null
+fi
 
 # Without msgfmt the English files are installed unchanged.
 mkdir "$TMP/nobin"
