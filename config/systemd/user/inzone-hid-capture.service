@@ -1,0 +1,19 @@
+# Opt-in HID research: long passive capture during normal use.
+# Read-only (see tools/inzone-hid-capture). Not installed by install.sh.
+#
+#   mkdir -p ~/.config/systemd/user ~/.local/state/inzone-buds-mixer
+#   cp config/systemd/user/inzone-hid-capture.service ~/.config/systemd/user/
+#   # edit ExecStart to point at your checkout, then:
+#   systemctl --user daemon-reload
+#   systemctl --user start inzone-hid-capture
+#   ... use the earbuds normally, note when you do something ...
+#   tools/inzone-hid-analyze ~/.local/state/inzone-buds-mixer/hid-capture.log --find "14 04"
+[Unit]
+Description=Passive HID capture for the Sony INZONE Buds dongle (research)
+
+[Service]
+Type=simple
+ExecStart=%h/git/sony-inzone-buds-linux/tools/inzone-hid-capture --changes-only --out %h/.local/state/inzone-buds-mixer/hid-capture.log
+Restart=on-failure
+RestartSec=30
+Nice=10

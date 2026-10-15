@@ -24,7 +24,7 @@ sed 's|@BINDIR@|/usr/bin|g' \
 desktop-file-validate "$desktop_file"
 
 printf '== python syntax\n'
-python3 - src/inzone_buds_mixer/*.py tests/*.py tools/inzone-hid-capture <<'EOF'
+python3 - src/inzone_buds_mixer/*.py tests/*.py tools/inzone-hid-capture tools/inzone-hid-analyze <<'EOF'
 import ast
 import sys
 
@@ -35,7 +35,7 @@ EOF
 
 printf '== ruff\n'
 if command -v ruff >/dev/null 2>&1; then
-  ruff check src tests tools/inzone-hid-capture
+  ruff check src tests tools/inzone-hid-capture tools/inzone-hid-analyze
 elif [[ ${INZONE_REQUIRE_RUFF:-0} = 1 ]]; then
   printf 'ruff is required but not installed\n' >&2
   exit 1
