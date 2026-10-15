@@ -33,3 +33,19 @@ jobs:
           INZONE_REQUIRE_GTK_TESTS: "1"
           INZONE_REQUIRE_GETTEXT: "1"
         run: tests/run-all.sh
+
+  wireplumber-conf:
+    # Parses the WirePlumber config with PipeWire's own SPA-JSON parser, which
+    # the Ubuntu runner above cannot provide in a 0.5-compatible version.
+    runs-on: ubuntu-24.04
+    container: archlinux:base
+    steps:
+      - name: Install tools
+        run: pacman -Syu --noconfirm pipewire wireplumber python
+
+      - uses: actions/checkout@v7
+
+      - name: Validate config/wireplumber
+        env:
+          INZONE_REQUIRE_SPA_JSON: "1"
+        run: python3 tests/test_wireplumber_conf.py

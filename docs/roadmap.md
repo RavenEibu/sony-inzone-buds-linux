@@ -34,7 +34,8 @@ not the desktop-controls theme below).
 - [ ] Test KDE Plasma and additional desktop audio panels.
 - [ ] Test GNOME without a StatusNotifierItem extension.
 - [x] Run the tests, ShellCheck and metadata validation in GitHub Actions.
-- [ ] Add automated configuration validation with WirePlumber available in CI.
+- [x] Add automated configuration validation with WirePlumber available in CI
+  (parser and rule-matching checks; WirePlumber itself is not started).
 - [x] Add Arch Linux packaging (`packaging/arch/`, not yet submitted to the
   AUR).
 - [x] Add Debian packaging (`debian/`, built and linted in CI; not yet
