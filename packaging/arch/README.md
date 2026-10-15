@@ -31,22 +31,3 @@ audio integration.
    which is not this repository: copy `PKGBUILD` and
    `inzone-buds-mixer.install` into it, run `makepkg --printsrcinfo > .SRCINFO`,
    commit both files, and push.
-
-## Pending for the next release
-
-The PKGBUILD builds from the published release tarball, so it can only install
-files that tarball contains. Once a release includes `data/man/inzonectl.1` and
-`data/completions/`, add these to `package()`:
-
-Translations likewise need `gettext` in `makedepends` and, in `package()`:
-`tools/compile-translations.sh "$pkgdir/usr/share/locale"`.
-
-```bash
-install -Dm644 data/man/inzonectl.1 "$pkgdir/usr/share/man/man1/inzonectl.1"
-install -Dm644 data/completions/inzonectl.bash \
-  "$pkgdir/usr/share/bash-completion/completions/inzonectl"
-install -Dm644 data/completions/_inzonectl \
-  "$pkgdir/usr/share/zsh/site-functions/_inzonectl"
-install -Dm644 data/completions/inzonectl.fish \
-  "$pkgdir/usr/share/fish/vendor_completions.d/inzonectl.fish"
-```
