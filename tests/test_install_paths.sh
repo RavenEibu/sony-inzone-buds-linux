@@ -55,6 +55,8 @@ INZONE_SYSTEM_BIN_DIR="$SYSTEM_BIN" \
 grep -F "Exec=$USER_BIN/inzone-buds-mixer" \
   "$DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.desktop" >/dev/null
 [[ -f $DATA_HOME/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg ]]
+[[ -f $DATA_HOME/man/man1/inzonectl.1 ]]
+[[ -f $DATA_HOME/bash-completion/completions/inzonectl ]]
 [[ -f $CONFIG_HOME/inzone-buds-mixer/config ]]
 cmp -s "$PROJECT_DIR/config/inzone-buds-mixer/config.example" \
   "$CONFIG_HOME/inzone-buds-mixer/config"

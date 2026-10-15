@@ -4,6 +4,8 @@
 
 ### Added
 
+- `inzonectl(1)` man page and bash, zsh and fish completions, installed by
+  `install.sh` (man page and bash completion) and the Debian package.
 - `docs/shortcuts.md`: keyboard-shortcut examples for GNOME, KDE, Sway and
   Hyprland, with a test that their `inzonectl` commands exist.
 - `SECURITY.md`, package-workflow badges in the README, and a weekly scheduled

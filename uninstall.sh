@@ -13,6 +13,8 @@ DESKTOP_FILE="$DATA_HOME/applications/io.github.RavenEibu.InzoneBudsMixer.deskto
 AUTOSTART_FILE="$CONFIG_HOME/autostart/io.github.RavenEibu.InzoneBudsMixer.desktop"
 METAINFO_FILE="$DATA_HOME/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml"
 ICON_FILE="$DATA_HOME/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg"
+MAN_FILE="$DATA_HOME/man/man1/inzonectl.1"
+BASH_COMPLETION_FILE="$DATA_HOME/bash-completion/completions/inzonectl"
 SYMBOLIC_ICON_FILE="$DATA_HOME/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg"
 
 remove_owned_system_link() {
@@ -45,6 +47,8 @@ rm -f -- "$AUTOSTART_FILE"
 rm -f -- "$METAINFO_FILE"
 rm -f -- "$ICON_FILE"
 rm -f -- "$SYMBOLIC_ICON_FILE"
+rm -f -- "$MAN_FILE"
+rm -f -- "$BASH_COMPLETION_FILE"
 rm -f -- "$APP_DATA_DIR/audio.py"
 rm -f -- "$APP_DATA_DIR/app.py"
 rm -f -- "$APP_DATA_DIR/autostart.py"

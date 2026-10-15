@@ -11,7 +11,7 @@ trap 'rm -rf -- "$TMP"' EXIT
 
 printf '== shellcheck\n'
 shellcheck -x bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer \
-  install.sh uninstall.sh tests/*.sh tools/*.sh .githooks/pre-push
+  data/completions/inzonectl.bash install.sh uninstall.sh tests/*.sh tools/*.sh .githooks/pre-push
 
 printf '== appstreamcli\n'
 appstreamcli validate --no-net \

@@ -1,0 +1,78 @@
+.TH INZONECTL 1 "" "inzone-buds-mixer" "User Commands"
+.SH NAME
+inzonectl \- control the Sony INZONE Buds dongle audio routing
+.SH SYNOPSIS
+.B inzonectl
+.I COMMAND
+.RI [ ARGUMENTS ]
+.SH DESCRIPTION
+.B inzonectl
+selects and adjusts the native Game, Chat and Microphone endpoints that the
+Sony INZONE Buds USB dongle (PC mode,
+.BR 054c:0ec2 )
+exposes through PipeWire. It talks to the PulseAudio\-compatible server with
+.BR pactl (1).
+.SH COMMANDS
+.TP
+.B status
+Show the INZONE endpoints and the current defaults.
+.TP
+.B doctor
+Show diagnostic information: versions, kernel, USB devices, cards, sinks and
+sources. Include this output in bug reports.
+.TP
+.B profile
+Activate the Pro Audio profile on the INZONE card.
+.TP
+.B game
+Make Game the default output.
+.TP
+.B chat
+Make Chat the default output.
+.TP
+.B mic
+Make the INZONE microphone the default input.
+.TP
+.B default
+Select the Game output and the INZONE microphone.
+.TP
+.BI "volume game|chat|mic " PERCENT
+Set one endpoint's volume, 0 to 100.
+.TP
+.BI "balance " POSITION " \fR[\fIMAX\fR]"
+Set the Game/Chat balance. 0 is Chat only, 50 is centered and 100 is Game
+only.
+.I MAX
+is the highest volume either endpoint reaches, as a percentage; it defaults
+to 50.
+.TP
+.BR version ", " \-\-version
+Show the version.
+.TP
+.B help
+Show the command summary.
+.SH ENVIRONMENT
+.TP
+.B PACTL
+Path of the
+.BR pactl (1)
+command (default
+.BR pactl ).
+.TP
+.B WPCTL
+Path of the
+.BR wpctl (1)
+command (default
+.BR wpctl ).
+.SH FILES
+.TP
+.I ~/.config/inzone-buds-mixer/config
+Optional user configuration; see
+.I config.example
+in the documentation directory.
+.SH SEE ALSO
+.BR inzone\-buds\-mixer (1),
+.BR pactl (1),
+.BR wpctl (1)
+.PP
+https://github.com/RavenEibu/sony-inzone-buds-linux
