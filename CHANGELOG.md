@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+- Roadmap: Debian packaging marked done, and headings clarified as themes
+  rather than release numbers.
+
 ## 0.4.0 - 2026-10-15
 
 Release automation and diagnostics; no change to audio routing or the mixer.

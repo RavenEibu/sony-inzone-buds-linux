@@ -3,6 +3,10 @@
 The roadmap separates the verified audio integration from proprietary device
 control work.
 
+Section headings are themes, not release numbers: release numbers follow
+`CHANGELOG.md` (for example 0.4.0 shipped release automation and diagnostics,
+not the desktop-controls theme below).
+
 ## Version 0.1: audio routing
 
 - [x] Identify PC and MOBILE/PS5 USB product IDs.
@@ -33,7 +37,8 @@ control work.
 - [ ] Add automated configuration validation with WirePlumber available in CI.
 - [x] Add Arch Linux packaging (`packaging/arch/`, not yet submitted to the
   AUR).
-- [ ] Add Debian packaging.
+- [x] Add Debian packaging (`debian/`, built and linted in CI; not yet
+  installed or tested on a Debian system).
 - [x] Add release artifacts and checksums through GitHub Actions.
 
 ## Version 0.4: desktop controls
