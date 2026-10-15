@@ -4,6 +4,8 @@
 
 ### Added
 
+- `tests/coverage.sh`, a CI coverage job with a minimum threshold, and tray menu
+  model tests (`tests/test_tray_menu.py`).
 - Translated desktop entry and AppStream metadata (name, summary and
   description in the ten languages), merged in by `install.sh` and the Debian
   build through `tools/localize-metadata.sh`. Release notes stay in English.
