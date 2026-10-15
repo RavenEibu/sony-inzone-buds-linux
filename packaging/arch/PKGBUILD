@@ -1,6 +1,6 @@
 # Maintainer: Agustin Arce Martinez <arcemartinez.agustin@gmail.com>
 pkgname=inzone-buds-mixer
-pkgver=0.4.0
+pkgver=0.5.0
 pkgrel=1
 pkgdesc="Linux integration for the Sony INZONE Buds USB dongle: Game/Chat audio routing and a GTK4 mixer"
 arch=('any')
@@ -11,9 +11,10 @@ license=('MIT')
 # cannot see the reference; they are required regardless.
 depends=('bash' 'libpulse' 'wireplumber' 'python' 'python-gobject' 'gtk4'
          'glib2' 'hicolor-icon-theme')
+makedepends=('gettext')
 optdepends=('libnotify: desktop notification when the dongle connects or disconnects')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/RavenEibu/sony-inzone-buds-linux/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('02c621a3a62ea66f4f36b70bd6026d98d811f7be4cbaa226d6fb1672f314699d')
+sha256sums=('d7ee0839aecfa89104c76e9a325da75f10761be47f9ba82474500e4a123ef113')
 install=inzone-buds-mixer.install
 backup=('usr/share/wireplumber/wireplumber.conf.d/51-inzone-buds.conf')
 
@@ -34,14 +35,25 @@ package() {
   sed 's|@BINDIR@|/usr/bin|g' systemd/user/inzone-buds-autoswitch.service.in \
     > "$pkgdir/usr/lib/systemd/user/inzone-buds-autoswitch.service"
 
-  install -d "$pkgdir/usr/share/applications"
+  # Desktop entry and AppStream file with the translations merged in.
+  install -d "$pkgdir/usr/share/applications" "$pkgdir/usr/share/metainfo"
   sed 's|@BINDIR@|/usr/bin|g' \
     data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in \
-    > "$pkgdir/usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop"
-
-  install -Dm644 \
+    > desktop.rendered
+  tools/localize-metadata.sh desktop desktop.rendered \
+    "$pkgdir/usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop"
+  tools/localize-metadata.sh metainfo \
     data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml \
     "$pkgdir/usr/share/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml"
+
+  tools/compile-translations.sh "$pkgdir/usr/share/locale"
+  install -Dm644 data/man/inzonectl.1 "$pkgdir/usr/share/man/man1/inzonectl.1"
+  install -Dm644 data/completions/inzonectl.bash \
+    "$pkgdir/usr/share/bash-completion/completions/inzonectl"
+  install -Dm644 data/completions/_inzonectl \
+    "$pkgdir/usr/share/zsh/site-functions/_inzonectl"
+  install -Dm644 data/completions/inzonectl.fish \
+    "$pkgdir/usr/share/fish/vendor_completions.d/inzonectl.fish"
   install -Dm644 \
     data/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg \
     "$pkgdir/usr/share/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg"

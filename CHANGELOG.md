@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Changed
+
+- The Release workflow no longer fails after publishing when GitHub Actions is
+  not allowed to open pull requests: it warns, and the pushed
+  `packaging/pkgbuild-X.Y.Z` branch is turned into a PR by hand.
+- Arch package: installs the man page, shell completions, translations and the
+  localized desktop entry and AppStream file.
+
 ## 0.5.0 - 2026-10-15
 
 Translations, a man page, shell completions and a much larger automated test

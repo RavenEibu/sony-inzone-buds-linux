@@ -65,6 +65,11 @@ jobs:
           tools/bump-pkgbuild.sh "$VERSION"
           git commit -am "packaging: bump PKGBUILD to $VERSION"
           git push origin "packaging/pkgbuild-$VERSION"
-          gh pr create --base main --head "packaging/pkgbuild-$VERSION" \
+          if ! gh pr create --base main --head "packaging/pkgbuild-$VERSION" \
             --title "packaging: bump PKGBUILD to $VERSION" \
-            --body "Automated: pkgver and sha256sums for the $GITHUB_REF_NAME tarball."
+            --body "Automated: pkgver and sha256sums for the $GITHUB_REF_NAME tarball."; then
+            # The release itself is already published. Without the repository
+            # setting "Allow GitHub Actions to create and approve pull requests"
+            # the branch is pushed but the PR must be opened by hand.
+            echo "::warning::Could not open the PR; open one from packaging/pkgbuild-$VERSION."
+          fi
