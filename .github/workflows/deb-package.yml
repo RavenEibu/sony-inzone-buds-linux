@@ -34,7 +34,7 @@ jobs:
       - name: Generate debian/changelog
         run: |
           version=$(sed -n 's/^VERSION=//p' bin/inzonectl)
-          export DEBFULLNAME="CI" DEBEMAIL="ci@invalid"
+          export DEBFULLNAME="CI" DEBEMAIL="noreply@github.com"
           dch --create --package inzone-buds-mixer --newversion "$version" \
             --distribution unstable "Build of $version."
 
