@@ -4,6 +4,9 @@
 
 ### Added
 
+- `Distributions` workflow: runs the test suite on Arch, Fedora, Ubuntu 24.04,
+  Debian stable and openSUSE Tumbleweed containers (software compatibility
+  only).
 - `tests/test_wireplumber_conf.py` and a CI job that parses the WirePlumber
   config with PipeWire's `spa-json-dump` and checks its rules against the
   dongle's node names.
