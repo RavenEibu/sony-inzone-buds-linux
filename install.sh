@@ -36,13 +36,27 @@ install_one() {
 
 # Install a *.in file after replacing @BINDIR@ with the real command directory.
 install_template() {
-  local source=$1 destination=$2 backup=${3:-} rendered bindir
+  local source=$1 destination=$2 backup=${3:-} rendered bindir localized
   rendered=$(mktemp)
   # Escape sed replacement metacharacters so any directory name is literal.
   bindir=$(printf '%s' "$BIN_HOME" | sed 's/[\\|&]/\\&/g')
   sed "s|@BINDIR@|$bindir|g" "$source" > "$rendered"
+  if [[ $source == *.desktop.in ]]; then
+    localized=$(mktemp)
+    "$PROJECT_DIR/tools/localize-metadata.sh" desktop "$rendered" "$localized"
+    mv -- "$localized" "$rendered"
+  fi
   install_one "$rendered" "$destination" 0644 "$backup"
   rm -f -- "$rendered"
+}
+
+# Install the AppStream file with its translations merged in.
+install_metainfo() {
+  local source=$1 destination=$2 localized
+  localized=$(mktemp)
+  "$PROJECT_DIR/tools/localize-metadata.sh" metainfo "$source" "$localized"
+  install_one "$localized" "$destination" 0644
+  rm -f -- "$localized"
 }
 
 path_contains() {
@@ -130,9 +144,9 @@ install_one \
 install_one \
   "$PROJECT_DIR/data/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg" \
   "$ICON_SYMBOLIC_DIR/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg" 0644
-install_one \
+install_metainfo \
   "$PROJECT_DIR/data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" \
-  "$METAINFO_DIR/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml" 0644
+  "$METAINFO_DIR/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml"
 
 install_one "$PROJECT_DIR/data/man/inzonectl.1" "$MAN_DIR/inzonectl.1" 0644
 install_one "$PROJECT_DIR/data/completions/inzonectl.bash" \

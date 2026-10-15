@@ -4,9 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: inzone-buds-mixer\n"
-"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
-"issues\n"
-"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:41-0300\n"
 "PO-Revision-Date: 2026-10-15 00:00+0000\n"
 "Last-Translator: Claude (draft, needs native review)\n"
 "Language-Team: Chinese (Simplified)\n"
@@ -129,3 +128,31 @@ msgstr "游戏和聊天已就绪。"
 
 msgid "INZONE Buds disconnected"
 msgstr "INZONE Buds 已断开"
+
+msgid "INZONE Buds Mixer"
+msgstr "INZONE Buds Mixer"
+
+msgid "Control Game, Chat and microphone levels for INZONE Buds"
+msgstr "控制 INZONE Buds 的游戏、聊天和麦克风音量"
+
+msgid "INZONE;Buds;Game;Chat;Audio;Mixer;"
+msgstr "INZONE;Buds;游戏;聊天;音频;混音器;"
+
+msgid "Control the native Game, Chat and microphone endpoints on Linux"
+msgstr "在 Linux 上控制原生的游戏、聊天和麦克风端点"
+
+msgid ""
+"INZONE Buds Mixer is an unofficial open-source controller for the Sony "
+"INZONE Buds USB dongle in PC mode. It adjusts the native Game and Chat "
+"balance, overall playback level and microphone level through PipeWire."
+msgstr ""
+"INZONE Buds Mixer 是一个非官方的开源控制器，用于处于 PC 模式的 Sony INZONE "
+"Buds USB 接收器。它通过 PipeWire 调节原生的游戏与聊天平衡、总播放音量和麦克风"
+"音量。"
+
+msgid ""
+"This project is not affiliated with or endorsed by Sony. INZONE and Sony are "
+"trademarks of their respective owner."
+msgstr ""
+"本项目与 Sony 无关，也未获得 Sony 的认可。INZONE 和 Sony 是其各自所有者的商"
+"标。"

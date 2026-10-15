@@ -97,6 +97,10 @@ into every `po/*.po` (`tests/test_pot_current.sh` fails otherwise). The tests
 require every language to be complete and to keep the `{fields}` of the
 original.
 
+The desktop entry (`Name`, `Comment`, `Keywords`) and the AppStream summary and
+description are extracted into the same catalogs (`tools/update-pot.sh`) and
+merged by `tools/localize-metadata.sh`. List a new language in `po/LINGUAS`.
+
 Shipped languages: es, fr, pt, de, ru, zh_CN, ar, hi, bn, id. They are drafts
 written with machine assistance: corrections from native speakers are very
 welcome as pull requests against the matching `po/LANG.po`. To add a language:

@@ -1,15 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the inzone-buds-mixer package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: inzone-buds-mixer\n"
-"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
-"issues\n"
-"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 19:42-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,4 +129,27 @@ msgid "Game and Chat are ready."
 msgstr ""
 
 msgid "INZONE Buds disconnected"
+msgstr ""
+
+msgid "INZONE Buds Mixer"
+msgstr ""
+
+msgid "Control Game, Chat and microphone levels for INZONE Buds"
+msgstr ""
+
+msgid "INZONE;Buds;Game;Chat;Audio;Mixer;"
+msgstr ""
+
+msgid "Control the native Game, Chat and microphone endpoints on Linux"
+msgstr ""
+
+msgid ""
+"INZONE Buds Mixer is an unofficial open-source controller for the Sony "
+"INZONE Buds USB dongle in PC mode. It adjusts the native Game and Chat "
+"balance, overall playback level and microphone level through PipeWire."
+msgstr ""
+
+msgid ""
+"This project is not affiliated with or endorsed by Sony. INZONE and Sony are "
+"trademarks of their respective owner."
 msgstr ""

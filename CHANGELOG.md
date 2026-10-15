@@ -4,6 +4,9 @@
 
 ### Added
 
+- Translated desktop entry and AppStream metadata (name, summary and
+  description in the ten languages), merged in by `install.sh` and the Debian
+  build through `tools/localize-metadata.sh`. Release notes stay in English.
 - `inzonectl doctor --report`: the diagnostics with user, host and home
   directory names masked, in a Markdown code block for bug reports.
 
