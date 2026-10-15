@@ -1,0 +1,62 @@
+name: Distributions
+
+# Runs the test suite (not the lint) on current releases of the main
+# distributions with their own Python, GTK4 bindings and Bash. This covers
+# software compatibility only: audio routing and the tray still need to be
+# tried on real desktops and hardware (see docs/roadmap.md).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - bin/**
+      - src/**
+      - tests/**
+      - .github/workflows/distros.yml
+  schedule:
+    - cron: "43 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Arch Linux
+            image: archlinux:base
+            install: pacman -Syu --noconfirm python python-gobject gtk4 gettext pipewire diffutils
+          - name: Fedora
+            image: fedora:latest
+            install: dnf install -y python3 python3-gobject gtk4 gettext pipewire-utils diffutils which
+          - name: Ubuntu 24.04
+            image: ubuntu:24.04
+            install: apt-get update && apt-get install -y --no-install-recommends python3 python3-gi gir1.2-gtk-4.0 gettext diffutils
+          - name: Debian stable
+            image: debian:stable
+            install: apt-get update && apt-get install -y --no-install-recommends python3 python3-gi gir1.2-gtk-4.0 gettext diffutils
+          - name: openSUSE Tumbleweed
+            image: opensuse/tumbleweed
+            install: zypper --non-interactive install python3 python3-gobject gtk4-devel-tools typelib-1_0-Gtk-4_0 gettext-tools diffutils which tar gzip
+    steps:
+      - name: Install dependencies
+        run: ${{ matrix.install }}
+
+      - uses: actions/checkout@v7
+
+      - name: Show versions
+        run: |
+          bash --version | head -n 1
+          python3 --version
+
+      - name: Tests
+        env:
+          INZONE_REQUIRE_GTK_TESTS: "1"
+        run: tests/run-all.sh

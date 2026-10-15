@@ -30,7 +30,9 @@ not the desktop-controls theme below).
 
 ## Version 0.3: compatibility and packaging
 
-- [ ] Test current Fedora, Ubuntu, Debian, Arch Linux and openSUSE releases.
+- [ ] Test current Fedora, Ubuntu, Debian, Arch Linux and openSUSE releases
+  (the test suite already runs in their containers in CI; real-desktop and
+  hardware testing is still open).
 - [ ] Test KDE Plasma and additional desktop audio panels.
 - [ ] Test GNOME without a StatusNotifierItem extension.
 - [x] Run the tests, ShellCheck and metadata validation in GitHub Actions.
