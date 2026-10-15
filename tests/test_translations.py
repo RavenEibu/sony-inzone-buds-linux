@@ -89,6 +89,10 @@ class CatalogTests(unittest.TestCase):
                     f"{path.name}: placeholders differ in {msgid!r}",
                 )
 
+    def test_linguas_lists_every_catalog(self):
+        listed = (PO_DIR / "LINGUAS").read_text(encoding="utf-8").split()
+        self.assertEqual(sorted(listed), sorted(p.stem for p in PO_DIR.glob("*.po")))
+
     @unittest.skipUnless(HAVE_MSGFMT, "msgfmt not installed")
     def test_every_catalog_compiles(self):
         with tempfile.TemporaryDirectory() as tmp:

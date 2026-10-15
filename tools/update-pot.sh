@@ -15,10 +15,19 @@ LC_ALL=C xgettext --files-from=po/POTFILES.in --directory=. --keyword=tr \
   --package-name=inzone-buds-mixer --msgid-bugs-address=https://github.com/RavenEibu/sony-inzone-buds-linux/issues \
   --no-location -o "$out"
 
+# Desktop entry and AppStream metadata (translated by tools/localize-metadata.sh).
+desktop=data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in
+metainfo=data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml
+LC_ALL=C xgettext --join-existing --language=Desktop --from-code=UTF-8 --no-location \
+  -k -kName -kComment -kKeywords -o "$out" "$desktop"
+LC_ALL=C xgettext --join-existing --its=po/metainfo.its --from-code=UTF-8 --no-location \
+  -o "$out" "$metainfo"
+
 if [[ ${1:-} == --check ]]; then
   # Compare only the message ids: headers and ordering details differ between
   # gettext versions.
-  if ! diff <(grep '^msgid' "$pot" | sort) <(grep '^msgid' "$out" | sort) >/dev/null; then
+  if ! diff <(msgcat --no-wrap "$pot" | grep '^msgid' | sort) \
+            <(msgcat --no-wrap "$out" | grep '^msgid' | sort) >/dev/null; then
     rm -f -- "$out"
     printf 'po/inzone-buds-mixer.pot is out of date; run tools/update-pot.sh\n' >&2
     exit 1

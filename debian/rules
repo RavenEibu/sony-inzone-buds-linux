@@ -16,8 +16,13 @@ override_dh_auto_install:
 	install -d debian/inzone-buds-mixer/usr/share/applications
 	sed 's|@BINDIR@|/usr/bin|g' \
 	  data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in \
-	  > debian/inzone-buds-mixer/usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop
-	install -Dm644 data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml \
+	  > debian/desktop.rendered
+	tools/localize-metadata.sh desktop debian/desktop.rendered \
+	  debian/inzone-buds-mixer/usr/share/applications/io.github.RavenEibu.InzoneBudsMixer.desktop
+	rm -f debian/desktop.rendered
+	install -d debian/inzone-buds-mixer/usr/share/metainfo
+	tools/localize-metadata.sh metainfo \
+	  data/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml \
 	  debian/inzone-buds-mixer/usr/share/metainfo/io.github.RavenEibu.InzoneBudsMixer.metainfo.xml
 	install -Dm644 data/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg \
 	  debian/inzone-buds-mixer/usr/share/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg

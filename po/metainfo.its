@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Translate only what users read in app stores: the name, the summary and the
+     description paragraphs. Release notes stay in English (they change with
+     every version and are mirrored by CHANGELOG.md). -->
+<its:rules xmlns:its="http://www.w3.org/2005/11/its" version="1.0">
+  <its:translateRule selector="/component" translate="no"/>
+  <its:translateRule selector="/component/name" translate="yes"/>
+  <its:translateRule selector="/component/summary" translate="yes"/>
+  <its:translateRule selector="/component/description/p" translate="yes"/>
+</its:rules>
