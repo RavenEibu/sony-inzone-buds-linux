@@ -11,7 +11,7 @@ fail() {
 
 # Commands according to `inzonectl help` (first word of each command line).
 mapfile -t commands < <(
-  bin/inzonectl help | sed -n 's/^  \([a-z][a-z-]*\)[ ,].*/\1/p;s/^  \([a-z][a-z-]*\)$/\1/p' |
+  PACTL=true bin/inzonectl help | sed -n 's/^  \([a-z][a-z-]*\)[ ,].*/\1/p;s/^  \([a-z][a-z-]*\)$/\1/p' |
     sort -u
 )
 [[ ${#commands[@]} -ge 9 ]] || fail "could not extract commands from help: ${commands[*]}"
