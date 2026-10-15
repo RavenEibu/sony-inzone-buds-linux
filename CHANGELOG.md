@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.5.1 - 2026-10-15
+
+Fixes the layout of right-to-left languages and improves the release tooling.
+The audio routing and the mixer controls are unchanged. Verified with the
+dongle on CachyOS with GNOME on Wayland: the mixer window was rendered with
+real data in all ten languages, with the fix confirmed for Arabic.
+
 ### Fixed
 
 - Choosing a right-to-left language explicitly (`--language ar`, `INZONE_LANGUAGE`
