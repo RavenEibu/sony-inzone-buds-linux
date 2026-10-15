@@ -1,0 +1,17 @@
+Source: inzone-buds-mixer
+Section: sound
+Priority: optional
+Maintainer: Agustin Arce Martinez <arcemartinez.agustin@gmail.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Homepage: https://github.com/RavenEibu/sony-inzone-buds-linux
+Rules-Requires-Root: no
+
+Package: inzone-buds-mixer
+Architecture: all
+Depends: ${misc:Depends}, bash, pulseaudio-utils, wireplumber, python3,
+ python3-gi, gir1.2-gtk-4.0, libglib2.0-bin, hicolor-icon-theme
+Recommends: libnotify-bin
+Description: Linux integration for the Sony INZONE Buds USB dongle
+ Game/Chat audio routing, a GTK4 mixer and a tray icon for the Sony INZONE
+ Buds dongle in PC mode, built on the native PipeWire endpoints.

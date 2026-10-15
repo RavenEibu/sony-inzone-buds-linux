@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: inzone-buds-mixer
+Source: https://github.com/RavenEibu/sony-inzone-buds-linux
+
+Files: *
+Copyright: 2026 Sony INZONE Buds for Linux contributors
+License: MIT
+ See the LICENSE file shipped upstream.
