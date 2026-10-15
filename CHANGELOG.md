@@ -4,6 +4,11 @@
 
 ### Added
 
+- `inzonectl doctor --report`: the diagnostics with user, host and home
+  directory names masked, in a Markdown code block for bug reports.
+
+### Added
+
 - `Distributions` workflow: runs the test suite on Arch, Fedora, Ubuntu 24.04,
   Debian stable and openSUSE Tumbleweed containers (software compatibility
   only).
