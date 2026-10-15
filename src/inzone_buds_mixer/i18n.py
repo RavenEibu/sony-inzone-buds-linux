@@ -80,6 +80,23 @@ def load_translation(language: str | None = None) -> gettext.NullTranslations:
     return gettext.NullTranslations()
 
 
+RTL_LANGUAGES = {"ar", "he", "fa", "ur"}
+
+
+def explicit_text_direction() -> str | None:
+    """Return "rtl" or "ltr" when a language was chosen explicitly, else None.
+
+    GTK picks the direction from the system locale by itself; this only matters
+    when the user overrides the language (for example ``--language ar`` on a
+    system running in another language), so the layout mirrors with the text.
+    """
+    language = configured_language()
+    if not language:
+        return None
+    base = re.split(r"[_.@-]", language, maxsplit=1)[0].lower()
+    return "rtl" if base in RTL_LANGUAGES else "ltr"
+
+
 _translation = load_translation()
 
 
