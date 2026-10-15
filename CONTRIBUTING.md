@@ -33,6 +33,11 @@ git config core.hooksPath .githooks
 GitHub Actions runs both scripts on Ubuntu 24.04 for every push and pull
 request, so they are the same commands locally and in CI.
 
+`tests/coverage.sh` runs the Python tests under coverage.py (needs `pip install
+coverage`, in a venv that can also see PyGObject) and fails below a minimum set
+inside the script; CI runs it and prints the table in the job summary. Raise
+the minimum when you add tests.
+
 No test requires physical hardware. `test_gui_refresh.py` needs Python GObject
 bindings and GTK4 but no display; it is skipped when they are missing, except
 in CI, where `INZONE_REQUIRE_GTK_TESTS=1` makes a missing GTK a failure.

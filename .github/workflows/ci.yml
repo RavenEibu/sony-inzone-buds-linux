@@ -50,3 +50,23 @@ jobs:
         env:
           INZONE_REQUIRE_SPA_JSON: "1"
         run: python3 tests/test_wireplumber_conf.py
+
+  coverage:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            python3-gi gir1.2-gtk-4.0 python3-venv
+          python3 -m venv --system-site-packages "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install coverage
+
+      - name: Coverage
+        env:
+          INZONE_REQUIRE_GTK_TESTS: "1"
+        run: |
+          PATH="$RUNNER_TEMP/venv/bin:$PATH" tests/coverage.sh | tee "$RUNNER_TEMP/coverage.txt"
+          { echo '```text'; cat "$RUNNER_TEMP/coverage.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
