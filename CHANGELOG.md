@@ -4,6 +4,8 @@
 
 ### Added
 
+- HID research: `inzone-hid-capture --changes-only`, `tools/inzone-hid-analyze`
+  and an opt-in `inzone-hid-capture.service` for long passive captures.
 - `inzonectl doctor` reports the PipeWire and WirePlumber versions.
 - `Release` workflow: a `vX.Y.Z` tag publishes the GitHub release with the
   CHANGELOG notes, a tarball and `SHA256SUMS`, and opens a PKGBUILD bump PR.

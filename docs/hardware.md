@@ -244,6 +244,23 @@ above) is the current candidate to watch for a battery-level change.
 No output or feature report is to be sent until its effect is documented on a
 controlled test system.
 
+### Long unattended capture and offline analysis
+
+For the battery hypothesis a long, untimed capture during normal use is more
+useful than short scripted tests. `inzone-hid-capture --changes-only` logs a
+report only when it differs from the previous one with the same id, so the
+log stays small. `config/systemd/user/inzone-hid-capture.service` runs it as
+an opt-in user service (setup steps are in the unit's header). Afterwards:
+
+```bash
+tools/inzone-hid-analyze ~/.local/state/inzone-buds-mixer/hid-capture.log --find "14 04"
+```
+
+lists which bytes ever changed, the change timeline and each `14 04`
+occurrence with the byte that follows it. This is analysis of captured bytes
+only; a candidate value still has to be reproduced and cross-checked against
+an independent battery reading before it is treated as supported.
+
 ## Not yet verified
 
 The following functions are outside the verified audio topology and must not be

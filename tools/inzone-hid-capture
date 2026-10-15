@@ -46,19 +46,37 @@ def format_report(data: bytes) -> str:
     return f"id={data[0]:3d}  len={len(data):3d}  {hex_bytes}"
 
 
-def capture(device_path: Path, seconds: float | None, out) -> None:
+class ChangeFilter:
+    """Pass a report only when it differs from the last one with the same id."""
+
+    def __init__(self) -> None:
+        self._last: dict[int, bytes] = {}
+
+    def is_new(self, data: bytes) -> bool:
+        if self._last.get(data[0]) == data:
+            return False
+        self._last[data[0]] = data
+        return True
+
+
+def capture(
+    device_path: Path, seconds: float | None, out, changes_only: bool = False
+) -> None:
     print(f"Reading from {device_path}. Press Ctrl-C to stop.", file=sys.stderr)
     print(
         "Change one thing at a time: remove an earbud from the case, put it "
         "back, connect a charger, touch a control.",
         file=sys.stderr,
     )
+    change_filter = ChangeFilter() if changes_only else None
     fd = os.open(device_path, os.O_RDONLY)
     start = datetime.datetime.now()
     try:
         while seconds is None or (datetime.datetime.now() - start).total_seconds() < seconds:
             data = os.read(fd, 64)  # read-only: this is the only I/O call on fd
             if not data:
+                continue
+            if change_filter is not None and not change_filter.is_new(data):
                 continue
             timestamp = datetime.datetime.now().isoformat(timespec="milliseconds")
             line = f"{timestamp}  {format_report(data)}"
@@ -79,6 +97,12 @@ def main() -> int:
     )
     parser.add_argument(
         "--out", type=Path, default=None, help="also append each line to this file"
+    )
+    parser.add_argument(
+        "--changes-only",
+        action="store_true",
+        help="log a report only when it differs from the previous one with the same id "
+        "(for long unattended captures)",
     )
     parser.add_argument(
         "--device", type=Path, default=None, help="hidraw device path (auto-detected by default)"
@@ -103,7 +127,7 @@ def main() -> int:
 
     out = arguments.out.open("a", encoding="utf-8") if arguments.out else None
     try:
-        capture(device_path, arguments.seconds, out)
+        capture(device_path, arguments.seconds, out, arguments.changes_only)
     finally:
         if out is not None:
             out.close()
