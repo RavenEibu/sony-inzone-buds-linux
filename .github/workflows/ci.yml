@@ -20,7 +20,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            shellcheck appstream desktop-file-utils python3-gi gir1.2-gtk-4.0 gettext pipx
+            shellcheck appstream desktop-file-utils python3-gi gir1.2-gtk-4.0 gettext pipx \
+            xvfb
           pipx install ruff
 
       - name: Lint
@@ -33,7 +34,19 @@ jobs:
           INZONE_REQUIRE_GTK_TESTS: "1"
           INZONE_REQUIRE_GETTEXT: "1"
           INZONE_REQUIRE_VALIDATORS: "1"
-        run: tests/run-all.sh
+          INZONE_REQUIRE_DISPLAY_TESTS: "1"
+          INZONE_GALLERY_DIR: ${{ runner.temp }}/gallery
+        # xvfb-run gives the GTK window tests a virtual display.
+        run: xvfb-run -a tests/run-all.sh
+
+      - name: Upload the per-language window gallery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mixer-window-gallery
+          path: ${{ runner.temp }}/gallery
+          if-no-files-found: ignore
+          retention-days: 14
 
   wireplumber-conf:
     # Parses the WirePlumber config with PipeWire's own SPA-JSON parser, which
@@ -60,7 +73,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            python3-gi gir1.2-gtk-4.0 python3-venv
+            python3-gi gir1.2-gtk-4.0 python3-venv xvfb
           python3 -m venv --system-site-packages "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/pip" install coverage
 
@@ -68,5 +81,5 @@ jobs:
         env:
           INZONE_REQUIRE_GTK_TESTS: "1"
         run: |
-          PATH="$RUNNER_TEMP/venv/bin:$PATH" tests/coverage.sh | tee "$RUNNER_TEMP/coverage.txt"
+          PATH="$RUNNER_TEMP/venv/bin:$PATH" xvfb-run -a tests/coverage.sh | tee "$RUNNER_TEMP/coverage.txt"
           { echo '```text'; cat "$RUNNER_TEMP/coverage.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
