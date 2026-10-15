@@ -48,6 +48,11 @@ rm -f -- "$METAINFO_FILE"
 rm -f -- "$ICON_FILE"
 rm -f -- "$SYMBOLIC_ICON_FILE"
 rm -f -- "$MAN_FILE"
+for mo in "$DATA_HOME"/locale/*/LC_MESSAGES/inzone-buds-mixer.mo; do
+  [[ -e $mo ]] || continue
+  rm -f -- "$mo"
+  rmdir -- "$(dirname -- "$mo")" "$(dirname -- "$(dirname -- "$mo")")" 2>/dev/null || true
+done
 rm -f -- "$BASH_COMPLETION_FILE"
 rm -f -- "$APP_DATA_DIR/audio.py"
 rm -f -- "$APP_DATA_DIR/app.py"

@@ -2,7 +2,7 @@ Source: inzone-buds-mixer
 Section: sound
 Priority: optional
 Maintainer: Agustin Arce Martinez <arcemartinez.agustin@gmail.com>
-Build-Depends: debhelper-compat (= 13)
+Build-Depends: debhelper-compat (= 13), gettext
 Standards-Version: 4.7.0
 Homepage: https://github.com/RavenEibu/sony-inzone-buds-linux
 Rules-Requires-Root: no

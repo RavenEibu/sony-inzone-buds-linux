@@ -48,8 +48,8 @@ not the desktop-controls theme below).
 
 - [x] Add more Game/Chat presets to the tray context menu (Boost Chat 70%).
 - [x] Add launch-at-login preference, starting hidden in the tray.
-- [ ] Add translated interface strings (gettext infrastructure is in place:
-  `po/`, `tools/update-pot.sh`; no translations or interpolated messages yet).
+- [x] Add translated interface strings (10 languages, machine-assisted drafts
+  awaiting native review; see `CONTRIBUTING.md#translations`).
 - [x] Add desktop notifications for connect/disconnect events.
 - [x] Support configurable default behavior without editing scripts or service
   files, including volume-key linking.

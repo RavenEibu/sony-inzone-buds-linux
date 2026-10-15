@@ -10,10 +10,17 @@
 - `tests/test_wireplumber_conf.py` and a CI job that parses the WirePlumber
   config with PipeWire's `spa-json-dump` and checks its rules against the
   dongle's node names.
+- **Translations** of the mixer, the tray menu and the desktop notifications
+  into Spanish, French, Portuguese, German, Russian, Chinese (Simplified),
+  Arabic, Hindi, Bengali and Indonesian. They are drafts that need native
+  review. The language follows the system (`LANGUAGE`/`LANG`) automatically
+  and can be overridden with `--language CODE`, `INZONE_LANGUAGE` or the
+  `INZONE_LANGUAGE` line in `~/.config/inzone-buds-mixer/config`; `en` forces
+  English. `install.sh` compiles the catalogs when `msgfmt` is available and
+  the Debian package ships them.
 - Translation infrastructure: user-visible strings in the mixer and tray go
   through gettext (`i18n.py`, English fallback), with `po/` and
-  `tools/update-pot.sh`. No translations ship yet, and interpolated messages
-  (those with values inside) are not translatable yet.
+  `tools/update-pot.sh`, `tools/compile-translations.sh`.
 - `inzonectl(1)` man page and bash, zsh and fish completions, installed by
   `install.sh` (man page and bash completion) and the Debian package.
 - `docs/shortcuts.md`: keyboard-shortcut examples for GNOME, KDE, Sway and

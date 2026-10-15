@@ -175,6 +175,23 @@ NOTIFY=1
 NOTIFY_SEND="$TEST_TMP/does-not-exist"
 notify 'Title' 'Body text' || fail 'notify failed with a missing notify-send'
 
+# Notifications are translated with the configured language.
+if command -v msgfmt >/dev/null 2>&1; then
+  LOCALE_TEST_DIR="$TEST_TMP/locale"
+  "$PROJECT_DIR/tools/compile-translations.sh" "$LOCALE_TEST_DIR"
+  NOTIFY_SEND="$TEST_TMP/notify-send"
+  : > "$STATE/notify.log"
+  INZONE_LOCALEDIR="$LOCALE_TEST_DIR" INZONE_LANGUAGE=es \
+    notify 'INZONE Buds connected' 'Game and Chat are ready.'
+  grep -q -- 'INZONE Buds conectados Juego y Chat están listos.' "$STATE/notify.log" \
+    || fail 'notification was not translated to Spanish'
+  : > "$STATE/notify.log"
+  INZONE_LOCALEDIR="$LOCALE_TEST_DIR" INZONE_LANGUAGE=en \
+    notify 'INZONE Buds connected' 'Game and Chat are ready.'
+  grep -q -- 'INZONE Buds connected Game and Chat are ready.' "$STATE/notify.log" \
+    || fail 'English notification changed'
+fi
+
 # The user config file sets a default, but an already-set environment
 # variable still takes precedence over it.
 CONFIG="$TEST_TMP/config"

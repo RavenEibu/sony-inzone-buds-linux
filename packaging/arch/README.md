@@ -38,6 +38,9 @@ The PKGBUILD builds from the published release tarball, so it can only install
 files that tarball contains. Once a release includes `data/man/inzonectl.1` and
 `data/completions/`, add these to `package()`:
 
+Translations likewise need `gettext` in `makedepends` and, in `package()`:
+`tools/compile-translations.sh "$pkgdir/usr/share/locale"`.
+
 ```bash
 install -Dm644 data/man/inzonectl.1 "$pkgdir/usr/share/man/man1/inzonectl.1"
 install -Dm644 data/completions/inzonectl.bash \

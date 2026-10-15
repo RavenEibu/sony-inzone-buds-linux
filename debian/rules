@@ -23,6 +23,7 @@ override_dh_auto_install:
 	  debian/inzone-buds-mixer/usr/share/icons/hicolor/scalable/apps/io.github.RavenEibu.InzoneBudsMixer.svg
 	install -Dm644 data/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg \
 	  debian/inzone-buds-mixer/usr/share/icons/hicolor/symbolic/apps/io.github.RavenEibu.InzoneBudsMixer-symbolic.svg
+	tools/compile-translations.sh debian/inzone-buds-mixer/usr/share/locale
 	install -Dm644 data/man/inzonectl.1 debian/inzone-buds-mixer/usr/share/man/man1/inzonectl.1
 	install -Dm644 data/completions/inzonectl.bash \
 	  debian/inzone-buds-mixer/usr/share/bash-completion/completions/inzonectl

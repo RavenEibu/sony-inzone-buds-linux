@@ -87,12 +87,35 @@ now_ns() {
   date +%s%N
 }
 
+# Translate a notification text with the mixer's i18n.py (gettext, language from
+# INZONE_LANGUAGE / the config file / the system). Falls back to the English text
+# if the file or Python is unavailable.
+translate() {  # TEXT
+  local dir file=''
+  for dir in "${INZONE_BUDS_MIXER_DATADIR:-}" \
+      "${XDG_DATA_HOME:-$HOME/.local/share}/inzone-buds-mixer" \
+      "$(dirname -- "${BASH_SOURCE[0]}")/../src/inzone_buds_mixer" \
+      /usr/share/inzone-buds-mixer; do
+    if [[ -n $dir && -f $dir/i18n.py ]]; then
+      file=$dir/i18n.py
+      break
+    fi
+  done
+  if [[ -n $file ]] && command -v python3 >/dev/null 2>&1; then
+    python3 "$file" "$1" 2>/dev/null && return 0
+  fi
+  printf '%s\n' "$1"
+}
+
 # Print a desktop notification. Silently does nothing without notify-send or
 # with INZONE_NOTIFY=0.
 notify() {  # TITLE BODY
   (( NOTIFY )) || return 0
   command -v "$NOTIFY_SEND" >/dev/null 2>&1 || return 0
-  "$NOTIFY_SEND" --app-name='INZONE Buds' --icon=audio-headset -- "$1" "$2" \
+  local title body=''
+  title=$(translate "$1")
+  [[ -z $2 ]] || body=$(translate "$2")
+  "$NOTIFY_SEND" --app-name='INZONE Buds' --icon=audio-headset -- "$title" "$body" \
     >/dev/null 2>&1 || true
 }
 

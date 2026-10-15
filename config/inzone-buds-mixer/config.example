@@ -15,3 +15,10 @@
 # Show a desktop notification when the dongle's Game/Chat endpoints appear or
 # disappear while the service is already running.
 # : "${INZONE_NOTIFY:=1}"
+
+# Interface language of the mixer, the tray menu and the desktop notifications.
+# By default the system language is used (LANGUAGE/LANG). Set a code to force
+# another one: es, fr, pt, de, ru, zh_CN, ar, hi, bn, id; "en" forces English.
+# "auto" returns to the system language. The mixer also accepts
+# --language CODE, and INZONE_LANGUAGE in the environment takes precedence.
+# : "${INZONE_LANGUAGE:=auto}"

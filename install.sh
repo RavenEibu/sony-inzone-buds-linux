@@ -14,6 +14,7 @@ METAINFO_DIR="$DATA_HOME/metainfo"
 ICON_SCALABLE_DIR="$DATA_HOME/icons/hicolor/scalable/apps"
 ICON_SYMBOLIC_DIR="$DATA_HOME/icons/hicolor/symbolic/apps"
 MAN_DIR="$DATA_HOME/man/man1"
+LOCALE_DIR="$DATA_HOME/locale"
 BASH_COMPLETION_DIR="$DATA_HOME/bash-completion/completions"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 SYSTEM_LINKS_INSTALLED=0
@@ -136,6 +137,12 @@ install_one \
 install_one "$PROJECT_DIR/data/man/inzonectl.1" "$MAN_DIR/inzonectl.1" 0644
 install_one "$PROJECT_DIR/data/completions/inzonectl.bash" \
   "$BASH_COMPLETION_DIR/inzonectl" 0644
+
+if command -v msgfmt >/dev/null 2>&1; then
+  "$PROJECT_DIR/tools/compile-translations.sh" "$LOCALE_DIR"
+else
+  printf 'msgfmt (gettext) not found: the interface will stay in English.\n' >&2
+fi
 
 install_template \
   "$PROJECT_DIR/data/applications/io.github.RavenEibu.InzoneBudsMixer.desktop.in" \

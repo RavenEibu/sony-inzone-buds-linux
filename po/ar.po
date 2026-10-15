@@ -1,0 +1,138 @@
+# Arabic translation for inzone-buds-mixer.
+# Machine-assisted draft: native-speaker review is welcome.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: inzone-buds-mixer\n"
+"Report-Msgid-Bugs-To: https://github.com/RavenEibu/sony-inzone-buds-linux/"
+"issues\n"
+"POT-Creation-Date: 2026-10-15 19:28-0300\n"
+"PO-Revision-Date: 2026-10-15 00:00+0000\n"
+"Last-Translator: Claude (draft, needs native review)\n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Refresh device status"
+msgstr "تحديث حالة الجهاز"
+
+msgid "Quit"
+msgstr "إنهاء"
+
+msgid "Game / Chat audio"
+msgstr "صوت اللعبة / الدردشة"
+
+msgid "Checking for the PC-mode dongle…"
+msgstr "جارٍ البحث عن المحوّل في وضع الحاسوب…"
+
+msgid "Overall volume"
+msgstr "مستوى الصوت الكلي"
+
+msgid "Limits the louder Game/Chat endpoint. At center, both use this volume."
+msgstr ""
+"يحدّ من القناة الأعلى صوتًا بين اللعبة والدردشة. في المنتصف يستخدم كلاهما هذا "
+"المستوى."
+
+msgid "Center"
+msgstr "توسيط"
+
+msgid "Set Game and Chat to the same volume (balance 50)"
+msgstr "ضبط اللعبة والدردشة على المستوى نفسه (التوازن 50)"
+
+msgid "Boost Chat"
+msgstr "تعزيز الدردشة"
+
+msgid ""
+"Set Chat to 70% and Game to 30%; press again to restore the volumes from "
+"before"
+msgstr ""
+"يضبط الدردشة على 70٪ واللعبة على 30٪؛ اضغط مرة أخرى لاستعادة المستويات "
+"السابقة"
+
+msgid "Game / Chat balance"
+msgstr "توازن اللعبة / الدردشة"
+
+msgid "0 = Chat, 50 = both equally, 100 = Game"
+msgstr "0 = الدردشة، 50 = متساويان، 100 = اللعبة"
+
+msgid "Chat"
+msgstr "الدردشة"
+
+msgid "Both"
+msgstr "كلاهما"
+
+msgid "Game"
+msgstr "اللعبة"
+
+msgid "Microphone volume"
+msgstr "مستوى صوت الميكروفون"
+
+msgid "Input level sent to voice applications."
+msgstr "مستوى الإدخال المُرسل إلى تطبيقات الصوت."
+
+msgid "Use Game output + INZONE microphone"
+msgstr "استخدام مخرج اللعبة + ميكروفون INZONE"
+
+msgid "Start at login in the tray"
+msgstr "التشغيل عند تسجيل الدخول في صينية النظام"
+
+msgid "Tray integration: checking…"
+msgstr "تكامل الصينية: جارٍ التحقق…"
+
+msgid "Tray integration active — closing hides this window."
+msgstr "تكامل الصينية نشط — الإغلاق يخفي هذه النافذة."
+
+msgid "Tray icon unavailable — install/enable AppIndicator support in GNOME."
+msgstr "أيقونة الصينية غير متاحة — ثبّت دعم AppIndicator أو فعّله في GNOME."
+
+#, python-brace-format
+msgid "Audio control error: {message}"
+msgstr "خطأ في التحكم بالصوت: {message}"
+
+msgid "● INZONE Buds connected in PC mode"
+msgstr "● سماعات INZONE Buds متصلة في وضع الحاسوب"
+
+msgid ""
+"INZONE Buds PC-mode endpoints are unavailable. Connect the dongle with its "
+"switch set to PC."
+msgstr ""
+"نقاط وضع الحاسوب لسماعات INZONE Buds غير متاحة. وصّل المحوّل مع ضبط المفتاح "
+"على PC."
+
+msgid "another device"
+msgstr "جهاز آخر"
+
+msgid "INZONE microphone"
+msgstr "ميكروفون INZONE"
+
+#, python-brace-format
+msgid ""
+"Game {game}%  ·  Chat {chat}%  ·  Default output: {output}  ·  Default "
+"input: {input}"
+msgstr ""
+"اللعبة {game}٪  ·  الدردشة {chat}٪  ·  المخرج الافتراضي: {output}  ·  المدخل "
+"الافتراضي: {input}"
+
+#, python-brace-format
+msgid "could not change the login setting: {error}"
+msgstr "تعذّر تغيير إعداد تسجيل الدخول: {error}"
+
+msgid "Show Window"
+msgstr "إظهار النافذة"
+
+msgid "Center Game/Chat"
+msgstr "توسيط اللعبة/الدردشة"
+
+msgid "Boost Chat 70%"
+msgstr "تعزيز الدردشة 70٪"
+
+msgid "INZONE Buds connected"
+msgstr "سماعات INZONE Buds متصلة"
+
+msgid "Game and Chat are ready."
+msgstr "اللعبة والدردشة جاهزتان."
+
+msgid "INZONE Buds disconnected"
+msgstr "سماعات INZONE Buds غير متصلة"

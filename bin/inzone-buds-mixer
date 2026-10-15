@@ -25,6 +25,23 @@ if [[ -z $found ]]; then
   exit 1
 fi
 
+# --language CODE / --language=CODE overrides the interface language
+# (auto = system language, en = English); see config.example.
+args=()
+while (( $# )); do
+  case $1 in
+    --language=*) export INZONE_LANGUAGE=${1#--language=} ;;
+    --language)
+      [[ $# -ge 2 ]] || { printf 'inzone-buds-mixer: --language needs a code\n' >&2; exit 2; }
+      export INZONE_LANGUAGE=$2
+      shift
+      ;;
+    *) args+=("$1") ;;
+  esac
+  shift
+done
+set -- "${args[@]+"${args[@]}"}"
+
 export INZONE_BUDS_MIXER_DATADIR=$found
 # The launch-at-login entry needs an absolute command: the session may start it
 # before ~/.local/bin is in PATH.

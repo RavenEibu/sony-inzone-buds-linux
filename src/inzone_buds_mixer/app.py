@@ -225,7 +225,7 @@ class MixerWindow(Gtk.ApplicationWindow):
             )
 
     def show_error(self, message: str) -> None:
-        self.status.set_label(f"Audio control error: {message}")
+        self.status.set_label(tr("Audio control error: {message}").format(message=message))
         self.status.add_css_class("error")
 
     def apply_snapshot(self, snapshot: AudioSnapshot) -> None:
@@ -260,16 +260,21 @@ class MixerWindow(Gtk.ApplicationWindow):
         for control in controls:
             control.set_sensitive(snapshot.connected)
 
-        output = "Game" if snapshot.default_sink == snapshot.game else "another device"
-        microphone = (
-            "INZONE microphone"
-            if snapshot.default_source == snapshot.microphone
-            else "another device"
+        output = (
+            tr("Game") if snapshot.default_sink == snapshot.game else tr("another device")
         )
+        microphone = (
+            tr("INZONE microphone")
+            if snapshot.default_source == snapshot.microphone
+            else tr("another device")
+        )
+        game_volume = snapshot.game_volume if snapshot.game_volume is not None else "—"
+        chat_volume = snapshot.chat_volume if snapshot.chat_volume is not None else "—"
         self.endpoint_status.set_label(
-            f"Game {snapshot.game_volume if snapshot.game_volume is not None else '—'}%  ·  "
-            f"Chat {snapshot.chat_volume if snapshot.chat_volume is not None else '—'}%  ·  "
-            f"Default output: {output}  ·  Default input: {microphone}"
+            tr(
+                "Game {game}%  ·  Chat {chat}%  ·  "
+                "Default output: {output}  ·  Default input: {input}"
+            ).format(game=game_volume, chat=chat_volume, output=output, input=microphone)
         )
         self._updating = False
 
@@ -354,7 +359,9 @@ class MixerWindow(Gtk.ApplicationWindow):
         try:
             autostart.set_enabled(enabled)
         except OSError as error:
-            self.show_error(f"could not change the login setting: {error}")
+            self.show_error(
+                tr("could not change the login setting: {error}").format(error=error)
+            )
             switch.handler_block_by_func(self._autostart_toggled)
             switch.set_active(not enabled)
             switch.handler_unblock_by_func(self._autostart_toggled)
