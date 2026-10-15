@@ -4,6 +4,10 @@
 
 ### Added
 
+- Translation infrastructure: user-visible strings in the mixer and tray go
+  through gettext (`i18n.py`, English fallback), with `po/` and
+  `tools/update-pot.sh`. No translations ship yet, and interpolated messages
+  (those with values inside) are not translatable yet.
 - `inzonectl(1)` man page and bash, zsh and fish completions, installed by
   `install.sh` (man page and bash completion) and the Debian package.
 - `docs/shortcuts.md`: keyboard-shortcut examples for GNOME, KDE, Sway and
