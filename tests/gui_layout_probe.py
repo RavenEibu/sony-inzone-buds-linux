@@ -23,7 +23,7 @@ os.environ["XDG_CONFIG_HOME"] = tempfile.mkdtemp()
 
 import app  # noqa: E402
 from audio import AudioSnapshot  # noqa: E402
-from gi.repository import GLib, Gtk  # noqa: E402
+from gi.repository import Gdk, GLib, Gtk  # noqa: E402
 
 
 class FakeApplication(Gtk.Application):
@@ -45,7 +45,10 @@ class FakeBackend:
 
 def main() -> int:
     app.apply_language_direction()
-    if not Gtk.init_check():
+    Gtk.init_check()
+    # init_check() returns a bool or a tuple depending on the PyGObject version;
+    # the default display is the reliable signal.
+    if Gdk.Display.get_default() is None:
         print("no display", file=sys.stderr)
         return 3
     window = app.MixerWindow(FakeApplication(), FakeBackend())

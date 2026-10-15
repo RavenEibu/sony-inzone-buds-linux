@@ -27,9 +27,11 @@ REQUIRED = os.environ.get("INZONE_REQUIRE_DISPLAY_TESTS") == "1"
 try:
     import app
     from audio import AudioSnapshot
-    from gi.repository import GLib, Gtk
+    from gi.repository import Gdk, GLib, Gtk
 
-    HAVE_DISPLAY = Gtk.init_check()
+    Gtk.init_check()
+    # init_check() returns a bool or a tuple depending on the PyGObject version.
+    HAVE_DISPLAY = Gdk.Display.get_default() is not None
     SKIP_REASON = "" if HAVE_DISPLAY else "no display available"
 except (ImportError, ValueError) as error:
     app = None
