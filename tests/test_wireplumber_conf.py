@@ -9,9 +9,9 @@ INZONE_REQUIRE_SPA_JSON=1 (set in the dedicated CI job).
 
 from __future__ import annotations
 
-import fnmatch
 import json
 import os
+import re
 import shutil
 import subprocess
 import unittest
@@ -25,9 +25,9 @@ if SPA_JSON_DUMP is None and os.environ.get("INZONE_REQUIRE_SPA_JSON") == "1":
 
 
 def matches(pattern: str, value: str) -> bool:
-    """WirePlumber string match: '~' prefix means glob, otherwise exact."""
+    """WirePlumber string match: '~' prefix means regex (unanchored), else exact."""
     if pattern.startswith("~"):
-        return fnmatch.fnmatchcase(value, pattern[1:])
+        return re.search(pattern[1:], value) is not None
     return pattern == value
 
 
