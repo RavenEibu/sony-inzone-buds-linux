@@ -14,8 +14,8 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: "`inzonectl doctor` output"
-      description: Remove usernames and unrelated device details first.
+      label: "`inzonectl doctor --report` output"
+      description: Paste the whole output. It masks your user, host and home directory names; check it for anything else personal.
       render: text
     validations:
       required: true

@@ -119,6 +119,24 @@ doctor_out=$(PIPEWIRE=/nonexistent WIREPLUMBER=/nonexistent WPCTL="$MOCK_WPCTL" 
   "$PROJECT_DIR/bin/inzonectl" doctor) || fail 'doctor failed without version tools'
 grep -Fx 'PipeWire: unknown' <<<"$doctor_out" >/dev/null || fail 'doctor should report unknown PipeWire'
 
+# doctor --report masks personal names and wraps the text for pasting.
+MOCK_WPCTL_REPORT="$TEST_TMP/wpctl-report"
+real_host=$(hostname 2>/dev/null || uname -n)
+printf '#!/usr/bin/env bash\nprintf "PipeWire [1.0, tester@%s, cookie:1]\\n/home/tester/.config/x\\n"\n' \
+  "$real_host" > "$MOCK_WPCTL_REPORT"
+chmod +x "$MOCK_WPCTL_REPORT"
+report=$(HOME=/home/tester USER=tester PIPEWIRE=/nonexistent WIREPLUMBER=/nonexistent \
+  WPCTL="$MOCK_WPCTL_REPORT" "$PROJECT_DIR/bin/inzonectl" doctor --report)
+# shellcheck disable=SC2016  # literal Markdown fence, not a command substitution
+[[ $report == '```text'* && $report == *'```' ]] || fail 'report is not fenced'
+grep -F '/home/tester' <<<"$report" >/dev/null && fail 'report leaks the home directory'
+grep -E '\btester\b' <<<"$report" >/dev/null && fail 'report leaks the user name'
+grep -F "$real_host" <<<"$report" >/dev/null && fail 'report leaks the host name'
+grep -F '<user>@<host>' <<<"$report" >/dev/null || fail 'report did not mask user@host'
+# shellcheck disable=SC2088  # the literal text "~" is what is expected
+grep -F '~/.config/x' <<<"$report" >/dev/null || fail 'report did not shorten the home path'
+"$PROJECT_DIR/bin/inzonectl" doctor --bogus >/dev/null 2>&1 && fail 'unknown doctor option accepted'
+
 # The version must match the newest CHANGELOG entry and AppStream release.
 version=$("$PROJECT_DIR/bin/inzonectl" --version)
 version=${version#inzonectl }

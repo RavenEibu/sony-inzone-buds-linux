@@ -22,7 +22,8 @@ Usage: inzonectl COMMAND [ARGUMENTS]
 
 Commands:
   status                       Show INZONE endpoints and defaults
-  doctor                       Show diagnostic information
+  doctor [--report]            Show diagnostic information; --report masks
+                               personal names and adds a Markdown fence
   profile                      Activate the Pro Audio profile
   game                         Make Game the default output
   chat                         Make Chat the default output
@@ -269,6 +270,24 @@ show_doctor() {
   "$PACTL" list short sources 2>/dev/null | grep 'Sony_INZONE_Buds' || true
 }
 
+# doctor output for a bug report: personal names are replaced and the text is
+# wrapped in a Markdown code fence ready to paste into an issue.
+show_report() {
+  local text home=${HOME:-} user=${USER:-${LOGNAME:-}} host
+  host=$(hostname 2>/dev/null || uname -n)
+  text=$(show_doctor 2>&1)
+  local tilde='~'
+  [[ -n $home && $home != / ]] && text=${text//"$home"/$tilde}
+  [[ -n $host ]] && text=${text//"$host"/'<host>'}
+  # A user name is masked as a whole word, and only if it is plain enough to
+  # be used safely in a regular expression.
+  if [[ $user =~ ^[A-Za-z0-9_-]+$ ]]; then
+    text=$(sed -E "s/(^|[^A-Za-z0-9_])$user([^A-Za-z0-9_]|\$)/\\1<user>\\2/g" <<< "$text")
+  fi
+  # shellcheck disable=SC2016  # literal Markdown fence
+  printf '```text\n%s\n```\n' "$text"
+}
+
 main() {
   case ${1:-} in
     version|--version|-V)
@@ -286,7 +305,11 @@ main() {
     status) show_status ;;
     doctor)
       require_command "$WPCTL"
-      show_doctor
+      case ${2:-} in
+        '') show_doctor ;;
+        --report) show_report ;;
+        *) die "unknown doctor option: $2" ;;
+      esac
       ;;
     profile)
       activate_profile

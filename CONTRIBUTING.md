@@ -6,7 +6,8 @@ welcome.
 ## Before opening an issue
 
 1. Confirm that the dongle switch is in PC mode.
-2. Run `inzonectl doctor` and include the relevant output. Its first line shows
+2. Run `inzonectl doctor --report` (it masks user, host and home directory
+   names) and include the output. Its first line shows
    the installed version.
 3. Describe the Linux distribution and desktop environment.
 4. State the PipeWire and WirePlumber versions.
