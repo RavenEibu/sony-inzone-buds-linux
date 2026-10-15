@@ -28,6 +28,16 @@
   <content_rating type="oars-1.1"/>
   <releases>
     <!-- Add each version here with its real date only when it is released. -->
+    <release version="0.5.0" date="2026-10-15">
+      <description>
+        <p>Translations, a man page and shell completions.</p>
+        <ul>
+          <li>Interface, tray menu, notifications, desktop entry and AppStream text in ten more languages (drafts, review welcome)</li>
+          <li>The language follows the system and can be changed with --language or the config file</li>
+          <li>inzonectl man page, shell completions and doctor --report for bug reports</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.4.0" date="2026-10-15">
       <description>
         <p>Release automation and better diagnostics.</p>

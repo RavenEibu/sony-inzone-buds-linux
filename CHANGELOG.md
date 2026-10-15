@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.5.0 - 2026-10-15
+
+Translations, a man page, shell completions and a much larger automated test
+and packaging pipeline. The audio routing and the mixer behave as in 0.4.0;
+what changes is what users can read and how the project is checked. Nothing
+here needs the dongle to verify, and nothing was re-verified on hardware.
+
 ### Added
 
 - `tests/coverage.sh`, a CI coverage job with a minimum threshold, and tray menu
@@ -11,9 +18,6 @@
   build through `tools/localize-metadata.sh`. Release notes stay in English.
 - `inzonectl doctor --report`: the diagnostics with user, host and home
   directory names masked, in a Markdown code block for bug reports.
-
-### Added
-
 - `Distributions` workflow: runs the test suite on Arch, Fedora, Ubuntu 24.04,
   Debian stable and openSUSE Tumbleweed containers (software compatibility
   only).
