@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Fixed
+
+- Choosing a right-to-left language explicitly (`--language ar`, `INZONE_LANGUAGE`
+  or the config line) now mirrors the whole layout; before, only the text
+  changed and the window stayed left-to-right unless the system itself used
+  that language. Found by rendering the mixer on real hardware.
+
 ### Changed
 
 - The Release workflow no longer fails after publishing when GitHub Actions is

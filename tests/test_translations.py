@@ -12,6 +12,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 SOURCE_DIR = PROJECT_DIR / "src/inzone_buds_mixer"
@@ -119,6 +120,7 @@ class LanguageSelectionTests(unittest.TestCase):
 
     def env(self, **extra):
         base = {
+            "XDG_DATA_HOME": self.locale_dir,  # never pick up the user's installed catalogs
             "INZONE_LOCALEDIR": self.locale_dir,
             "INZONE_LANGUAGE": None,
             "INZONE_CONFIG_FILE": "/nonexistent/config",
@@ -164,6 +166,25 @@ class LanguageSelectionTests(unittest.TestCase):
         self.assertEqual(fresh_i18n({**config, "INZONE_LANGUAGE": "en"}).tr("Quit"), "Quit")
         self.assertEqual(fresh_i18n({**config, "INZONE_LANGUAGE": "C"}).tr("Quit"), "Quit")
         self.assertEqual(fresh_i18n({**config, "INZONE_LANGUAGE": "tlh"}).tr("Quit"), "Quit")
+
+    def test_explicit_language_sets_the_text_direction(self):
+        i18n = fresh_i18n(self.env())
+
+        def direction(language):
+            environment = {k: v for k, v in self.env().items() if v is not None}
+            if language is not None:
+                environment["INZONE_LANGUAGE"] = language
+            with mock.patch.dict(os.environ, environment):
+                if language is None:
+                    os.environ.pop("INZONE_LANGUAGE", None)
+                return i18n.explicit_text_direction()
+
+        self.assertIsNone(direction(None))
+        for language, expected in (("ar", "rtl"), ("ar_EG.UTF-8", "rtl"), ("he", "rtl"),
+                                   ("es", "ltr"), ("en", "ltr"), ("zh_CN", "ltr")):
+            self.assertEqual(direction(language), expected, language)
+        # "auto" leaves the decision to GTK and the system locale.
+        self.assertIsNone(direction("auto"))
 
     def test_formatted_messages_keep_their_fields(self):
         i18n = fresh_i18n(self.env(INZONE_LANGUAGE="zh_CN"))

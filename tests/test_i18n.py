@@ -33,7 +33,9 @@ def load_i18n(environment: dict[str, str]):
 class TranslationTests(unittest.TestCase):
     def test_untranslated_strings_are_returned_unchanged(self):
         with tempfile.TemporaryDirectory() as empty:
-            i18n = load_i18n({"INZONE_LOCALEDIR": empty, "LANGUAGE": "es", "INZONE_LANGUAGE": "es"})
+            i18n = load_i18n(
+                {"INZONE_LOCALEDIR": empty, "XDG_DATA_HOME": empty, "INZONE_LANGUAGE": "it"}
+            )
             self.assertEqual(i18n.tr("Center"), "Center")
 
     @unittest.skipUnless(shutil.which("msgfmt"), "msgfmt not installed")
@@ -50,7 +52,14 @@ class TranslationTests(unittest.TestCase):
             subprocess.run(
                 ["msgfmt", "-o", str(messages / "inzone-buds-mixer.mo"), str(po)], check=True
             )
-            i18n = load_i18n({"INZONE_LOCALEDIR": tmp, "LANGUAGE": "es", "INZONE_LANGUAGE": "es"})
+            i18n = load_i18n(
+                {
+                    "INZONE_LOCALEDIR": tmp,
+                    "XDG_DATA_HOME": tmp,
+                    "LANGUAGE": "es",
+                    "INZONE_LANGUAGE": "es",
+                }
+            )
             self.assertEqual(i18n.tr("Center"), "Centrar")
             self.assertEqual(i18n.tr("Not in the catalog"), "Not in the catalog")
 

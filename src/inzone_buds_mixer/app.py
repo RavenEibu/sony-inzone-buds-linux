@@ -15,7 +15,7 @@ gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
 import autostart  # noqa: E402
-from i18n import tr  # noqa: E402
+from i18n import explicit_text_direction, tr  # noqa: E402
 from audio import (  # noqa: E402
     AudioBackend,
     AudioSnapshot,
@@ -777,7 +777,17 @@ class MixerApplication(Gtk.Application):
         Gtk.Application.do_shutdown(self)
 
 
+def apply_language_direction() -> None:
+    """Mirror the layout for an explicitly chosen right-to-left language."""
+    direction = explicit_text_direction()
+    if direction == "rtl":
+        Gtk.Widget.set_default_direction(Gtk.TextDirection.RTL)
+    elif direction == "ltr":
+        Gtk.Widget.set_default_direction(Gtk.TextDirection.LTR)
+
+
 def main() -> int:
+    apply_language_direction()
     start_hidden = autostart.HIDDEN_OPTION in sys.argv[1:]
     arguments = [argument for argument in sys.argv if argument != autostart.HIDDEN_OPTION]
     application = MixerApplication(start_hidden=start_hidden)
