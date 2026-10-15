@@ -7,6 +7,8 @@ from typing import Callable
 
 from gi.repository import Gio, GLib
 
+from i18n import tr
+
 
 SNI_XML = """
 <node>
@@ -252,19 +254,19 @@ class StatusNotifierItem:
             return {"children-display": GLib.Variant("s", "submenu")}
         if item_id == 1:
             return {
-                "label": GLib.Variant("s", "Show Window"),
+                "label": GLib.Variant("s", tr("Show Window")),
                 "enabled": GLib.Variant("b", True),
                 "visible": GLib.Variant("b", True),
             }
         if item_id == 4:
             return {
-                "label": GLib.Variant("s", "Center Game/Chat"),
+                "label": GLib.Variant("s", tr("Center Game/Chat")),
                 "enabled": GLib.Variant("b", True),
                 "visible": GLib.Variant("b", True),
             }
         if item_id == 5:
             return {
-                "label": GLib.Variant("s", "Boost Chat 70%"),
+                "label": GLib.Variant("s", tr("Boost Chat 70%")),
                 "enabled": GLib.Variant("b", True),
                 "visible": GLib.Variant("b", True),
             }
@@ -275,7 +277,7 @@ class StatusNotifierItem:
             }
         if item_id == 3:
             return {
-                "label": GLib.Variant("s", "Quit"),
+                "label": GLib.Variant("s", tr("Quit")),
                 "enabled": GLib.Variant("b", True),
                 "visible": GLib.Variant("b", True),
             }

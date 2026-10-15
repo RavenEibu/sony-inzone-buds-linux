@@ -30,10 +30,10 @@ class DesktopIntegrationTests(unittest.TestCase):
         source = (PROJECT_DIR / "src/inzone_buds_mixer/tray.py").read_text(
             encoding="utf-8"
         )
-        self.assertIn('GLib.Variant("s", "Show Window")', source)
-        self.assertIn('GLib.Variant("s", "Center Game/Chat")', source)
-        self.assertIn('GLib.Variant("s", "Boost Chat 70%")', source)
-        self.assertIn('GLib.Variant("s", "Quit")', source)
+        self.assertIn('GLib.Variant("s", tr("Show Window"))', source)
+        self.assertIn('GLib.Variant("s", tr("Center Game/Chat"))', source)
+        self.assertIn('GLib.Variant("s", tr("Boost Chat 70%"))', source)
+        self.assertIn('GLib.Variant("s", tr("Quit"))', source)
         self.assertIn("for child_id in (1, 4, 5, 2, 3)", source)
         self.assertIn('MENU_PATH = "/MenuBar"', source)
 

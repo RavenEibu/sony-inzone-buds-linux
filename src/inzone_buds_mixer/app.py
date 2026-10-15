@@ -15,6 +15,7 @@ gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk  # noqa: E402
 
 import autostart  # noqa: E402
+from i18n import tr  # noqa: E402
 from audio import (  # noqa: E402
     AudioBackend,
     AudioSnapshot,
@@ -81,12 +82,12 @@ class MixerWindow(Gtk.ApplicationWindow):
         header = Gtk.HeaderBar()
         self.set_titlebar(header)
         refresh = Gtk.Button.new_from_icon_name("view-refresh-symbolic")
-        refresh.set_tooltip_text("Refresh device status")
+        refresh.set_tooltip_text(tr("Refresh device status"))
         refresh.connect("clicked", lambda _button: self.application.refresh())
         header.pack_start(refresh)
 
         quit_button = Gtk.Button.new_from_icon_name("application-exit-symbolic")
-        quit_button.set_tooltip_text("Quit")
+        quit_button.set_tooltip_text(tr("Quit"))
         quit_button.connect("clicked", lambda _button: self.application.quit())
         header.pack_end(quit_button)
 
@@ -94,35 +95,37 @@ class MixerWindow(Gtk.ApplicationWindow):
         _margins(root, 24)
         self.set_child(root)
 
-        title = Gtk.Label(label="Game / Chat audio")
+        title = Gtk.Label(label=tr("Game / Chat audio"))
         title.set_xalign(0)
         title.add_css_class("title-2")
         root.append(title)
 
-        self.status = Gtk.Label(label="Checking for the PC-mode dongle…")
+        self.status = Gtk.Label(label=tr("Checking for the PC-mode dongle…"))
         self.status.set_xalign(0)
         self.status.set_wrap(True)
         root.append(self.status)
 
         self.overall_scale, self.overall_value = self._add_scale(
             root,
-            "Overall volume",
-            "Limits the louder Game/Chat endpoint. At center, both use this volume.",
+            tr("Overall volume"),
+            tr("Limits the louder Game/Chat endpoint. At center, both use this volume."),
             self._balance_changed,
         )
 
-        self.center_button = Gtk.Button(label="Center")
+        self.center_button = Gtk.Button(label=tr("Center"))
         self.center_button.add_css_class("suggested-action")
         self.center_button.set_tooltip_text(
-            "Set Game and Chat to the same volume (balance 50)"
+            tr("Set Game and Chat to the same volume (balance 50)")
         )
         self.center_button.connect("clicked", lambda _button: self.center_balance())
 
-        self.boost_chat_button = Gtk.ToggleButton(label="Boost Chat")
+        self.boost_chat_button = Gtk.ToggleButton(label=tr("Boost Chat"))
         self.boost_chat_button.add_css_class("suggested-action")
         self.boost_chat_button.set_tooltip_text(
-            "Set Chat to 70% and Game to 30%; press again to restore the "
-            "volumes from before"
+            tr(
+                "Set Chat to 70% and Game to 30%; press again to restore the "
+                "volumes from before"
+            )
         )
         self.boost_chat_button.connect("toggled", self._boost_chat_toggled)
 
@@ -131,23 +134,23 @@ class MixerWindow(Gtk.ApplicationWindow):
         balance_extra.append(self.boost_chat_button)
         self.balance_scale, self.balance_value = self._add_scale(
             root,
-            "Game / Chat balance",
-            "0 = Chat, 50 = both equally, 100 = Game",
+            tr("Game / Chat balance"),
+            tr("0 = Chat, 50 = both equally, 100 = Game"),
             self._balance_changed,
             extra=balance_extra,
         )
-        self.balance_scale.add_mark(0, Gtk.PositionType.BOTTOM, "Chat")
-        self.balance_scale.add_mark(50, Gtk.PositionType.BOTTOM, "Both")
-        self.balance_scale.add_mark(100, Gtk.PositionType.BOTTOM, "Game")
+        self.balance_scale.add_mark(0, Gtk.PositionType.BOTTOM, tr("Chat"))
+        self.balance_scale.add_mark(50, Gtk.PositionType.BOTTOM, tr("Both"))
+        self.balance_scale.add_mark(100, Gtk.PositionType.BOTTOM, tr("Game"))
 
         self.mic_scale, self.mic_value = self._add_scale(
             root,
-            "Microphone volume",
-            "Input level sent to voice applications.",
+            tr("Microphone volume"),
+            tr("Input level sent to voice applications."),
             self._microphone_changed,
         )
 
-        self.defaults_button = Gtk.Button(label="Use Game output + INZONE microphone")
+        self.defaults_button = Gtk.Button(label=tr("Use Game output + INZONE microphone"))
         self.defaults_button.add_css_class("suggested-action")
         self.defaults_button.connect("clicked", self._select_defaults)
         root.append(self.defaults_button)
@@ -159,21 +162,21 @@ class MixerWindow(Gtk.ApplicationWindow):
         root.append(self.endpoint_status)
 
         login_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-        login_label = Gtk.Label(label="Start at login in the tray")
+        login_label = Gtk.Label(label=tr("Start at login in the tray"))
         login_label.set_xalign(0)
         login_label.set_hexpand(True)
         self.autostart_switch = Gtk.Switch()
         self.autostart_switch.set_valign(Gtk.Align.CENTER)
         self.autostart_switch.set_active(autostart.is_enabled())
         self.autostart_switch.update_property(
-            [Gtk.AccessibleProperty.LABEL], ["Start at login in the tray"]
+            [Gtk.AccessibleProperty.LABEL], [tr("Start at login in the tray")]
         )
         self.autostart_switch.connect("notify::active", self._autostart_toggled)
         login_row.append(login_label)
         login_row.append(self.autostart_switch)
         root.append(login_row)
 
-        self.tray_status = Gtk.Label(label="Tray integration: checking…")
+        self.tray_status = Gtk.Label(label=tr("Tray integration: checking…"))
         self.tray_status.set_xalign(0)
         self.tray_status.add_css_class("dim-label")
         root.append(self.tray_status)
@@ -213,10 +216,12 @@ class MixerWindow(Gtk.ApplicationWindow):
 
     def set_tray_available(self, available: bool) -> None:
         if available:
-            self.tray_status.set_label("Tray integration active — closing hides this window.")
+            self.tray_status.set_label(
+                tr("Tray integration active — closing hides this window.")
+            )
         else:
             self.tray_status.set_label(
-                "Tray icon unavailable — install/enable AppIndicator support in GNOME."
+                tr("Tray icon unavailable — install/enable AppIndicator support in GNOME.")
             )
 
     def show_error(self, message: str) -> None:
@@ -228,12 +233,14 @@ class MixerWindow(Gtk.ApplicationWindow):
         self._updating = True
         self.status.remove_css_class("error")
         if snapshot.connected:
-            self.status.set_label("● INZONE Buds connected in PC mode")
+            self.status.set_label(tr("● INZONE Buds connected in PC mode"))
             self.status.add_css_class("success")
         else:
             self.status.set_label(
-                "INZONE Buds PC-mode endpoints are unavailable. Connect the dongle "
-                "with its switch set to PC."
+                tr(
+                    "INZONE Buds PC-mode endpoints are unavailable. Connect the dongle "
+                    "with its switch set to PC."
+                )
             )
             self.status.remove_css_class("success")
 

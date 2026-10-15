@@ -83,3 +83,12 @@ features or behavior changes, a patch release for fixes only.
    `tools/release-notes.sh X.Y.Z` and `tools/bump-pkgbuild.sh X.Y.Z`.
 7. Merge the PKGBUILD bump PR, then update the AUR (see
    `packaging/arch/README.md`).
+
+## Translations
+
+User-visible strings go through `tr()` from `src/inzone_buds_mixer/i18n.py`.
+After adding or changing one, run `tools/update-pot.sh` to refresh
+`po/inzone-buds-mixer.pot` (`tests/test_pot_current.sh` fails otherwise). To
+add a language: `msginit -i po/inzone-buds-mixer.pot -l LANG -o po/LANG.po`,
+translate it, and compile it with `msgfmt` into
+`~/.local/share/locale/LANG/LC_MESSAGES/inzone-buds-mixer.mo` to try it.

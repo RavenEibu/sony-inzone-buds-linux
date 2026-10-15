@@ -52,6 +52,7 @@ rm -f -- "$BASH_COMPLETION_FILE"
 rm -f -- "$APP_DATA_DIR/audio.py"
 rm -f -- "$APP_DATA_DIR/app.py"
 rm -f -- "$APP_DATA_DIR/autostart.py"
+rm -f -- "$APP_DATA_DIR/i18n.py"
 rm -f -- "$APP_DATA_DIR/tray.py"
 rmdir -- "$APP_DATA_DIR" 2>/dev/null || true
 
