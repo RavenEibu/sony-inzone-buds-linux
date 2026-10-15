@@ -1,0 +1,20 @@
+#compdef inzonectl
+local -a commands
+commands=(
+  'status:Show INZONE endpoints and defaults'
+  'doctor:Show diagnostic information'
+  'profile:Activate the Pro Audio profile'
+  'game:Make Game the default output'
+  'chat:Make Chat the default output'
+  'mic:Make INZONE the default input'
+  'default:Select Game output and INZONE microphone'
+  'volume:Set one endpoint volume'
+  'balance:Set the Game/Chat balance'
+  'version:Show the version'
+  'help:Show help'
+)
+if (( CURRENT == 2 )); then
+  _describe 'command' commands
+elif [[ $words[2] == volume && CURRENT -eq 3 ]]; then
+  _values 'endpoint' game chat mic
+fi
