@@ -1,0 +1,144 @@
+name: Older systems
+
+# What still works on the software of earlier years (see docs/compatibility.md):
+# - the shell scripts under the Bash releases of 2009-2019 (built from source);
+# - the Python side under Python 3.7-3.10 (2018-2021), without GTK;
+# - the whole suite, GUI included, on Ubuntu 20.04 (2020; no GTK4 packages, so
+#   the GUI tests skip) and Ubuntu 22.04 (2022; GTK 4.6, Python 3.10).
+# Bash 3.x (2006-2008) is deliberately absent: the scripts need Bash 4.0.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - bin/**
+      - src/**
+      - tests/**
+      - tools/**
+      - install.sh
+      - uninstall.sh
+      - .github/workflows/legacy.yml
+  schedule:
+    - cron: "29 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bash:
+    name: Bash ${{ matrix.bash }} (${{ matrix.year }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { bash: "4.0", year: 2009 }
+          - { bash: "4.2", year: 2011 }
+          - { bash: "4.3", year: 2014 }
+          - { bash: "4.4", year: 2016 }
+          - { bash: "5.0", year: 2019 }
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Restore the Bash build
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/bash-${{ matrix.bash }}
+          key: bash-${{ matrix.bash }}-gnu89-v1
+
+      - name: Build Bash ${{ matrix.bash }} from source
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL "https://ftp.gnu.org/gnu/bash/bash-${{ matrix.bash }}.tar.gz" | tar xz
+          cd "bash-${{ matrix.bash }}"
+          # Old C code: build it as C89 so a current compiler accepts it.
+          CC="gcc -std=gnu89 -w -O1" ./configure -q --prefix="$HOME/bash-${{ matrix.bash }}" \
+            --without-bash-malloc
+          make CC="gcc -std=gnu89 -w -O1" CC_FOR_BUILD="gcc -std=gnu89 -w" -j4
+          make install
+
+      - name: Shell tests under this Bash
+        run: |
+          export PATH="$HOME/bash-${{ matrix.bash }}/bin:$PATH"
+          bash --version | head -n 1
+          # `env bash` in every script's shebang now resolves to this build;
+          # the test files themselves run under the system Bash.
+          for script in bin/inzonectl bin/inzone-autoswitch bin/inzone-buds-mixer install.sh; do
+            bash -n "$script"
+          done
+          for test in test_inzonectl test_install_paths test_launcher_language test_autoswitch; do
+            echo "== $test"
+            INZONE_LANGUAGE=en /usr/bin/bash "tests/$test.sh"
+          done
+
+  python:
+    name: Python ${{ matrix.python }} (${{ matrix.year }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { python: "3.7", year: 2018 }
+          - { python: "3.8", year: 2019 }
+          - { python: "3.9", year: 2020 }
+          - { python: "3.10", year: 2021 }
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Non-GTK tests in python:${{ matrix.python }}
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src -e INZONE_LANGUAGE=en \
+            python:${{ matrix.python }}-slim bash -c '
+              python --version
+              for test in test_gui_backend test_autostart test_i18n test_translations test_desktop_integration; do
+                echo "== $test"
+                python -I "tests/$test.py"
+              done'
+
+  distro:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-24.04
+    container: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu 20.04 (2020, no GTK4)
+            image: ubuntu:20.04
+            display: "0"
+          - name: Ubuntu 22.04 (2022, GTK 4.6)
+            image: ubuntu:22.04
+            display: "1"
+    steps:
+      - name: Install dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends python3 gettext diffutils gawk \
+            ca-certificates git
+          if [ "${{ matrix.display }}" = 1 ]; then
+            apt-get install -y --no-install-recommends python3-gi gir1.2-gtk-4.0 xvfb \
+              xauth fonts-noto-core fonts-noto-cjk
+          fi
+
+      - uses: actions/checkout@v7
+
+      - name: Versions
+        run: |
+          bash --version | head -n 1
+          python3 --version
+
+      - name: Tests (shell and Python)
+        if: matrix.display == '0'
+        run: tests/run-all.sh
+
+      - name: Tests (with a virtual display)
+        if: matrix.display == '1'
+        env:
+          INZONE_REQUIRE_GTK_TESTS: "1"
+          INZONE_REQUIRE_DISPLAY_TESTS: "1"
+        run: xvfb-run -a tests/run-all.sh
