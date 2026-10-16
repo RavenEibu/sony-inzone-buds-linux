@@ -78,7 +78,10 @@ def is_enabled(path: Path | None = None) -> bool:
 def set_enabled(enabled: bool, path: Path | None = None, command: str | None = None) -> None:
     path = path or autostart_file()
     if not enabled:
-        path.unlink(missing_ok=True)
+        try:
+            path.unlink()  # missing_ok needs Python 3.8
+        except FileNotFoundError:
+            pass
         return
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")

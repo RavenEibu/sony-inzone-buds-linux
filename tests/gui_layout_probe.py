@@ -21,9 +21,13 @@ os.environ["INZONE_LANGUAGE"] = sys.argv[1]
 os.environ.setdefault("GSK_RENDERER", "cairo")
 os.environ["XDG_CONFIG_HOME"] = tempfile.mkdtemp()
 
-import app  # noqa: E402
-from audio import AudioSnapshot  # noqa: E402
-from gi.repository import Gdk, GLib, Gtk  # noqa: E402
+try:
+    import app  # noqa: E402
+    from audio import AudioSnapshot  # noqa: E402
+    from gi.repository import Gdk, GLib, Gtk  # noqa: E402
+except (ImportError, ValueError) as error:  # no PyGObject or no GTK 4 typelib
+    print(f"GTK 4 unavailable: {error}", file=sys.stderr)
+    raise SystemExit(3) from None
 
 
 class FakeApplication(Gtk.Application):
