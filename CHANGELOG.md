@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- GTK window tests with a fake backend (`tests/test_gui_window.py`), a layout
+  check of the mixer in every shipped language (size limits, right-to-left
+  direction; `tests/test_gui_layouts.py`) and dark/light detection tests. CI
+  runs them under Xvfb, uploads a per-language screenshot gallery as an
+  artifact, and the coverage threshold rises from 40 % to 55 % (63 % measured).
+
 ## 0.5.1 - 2026-10-15
 
 Fixes the layout of right-to-left languages and improves the release tooling.

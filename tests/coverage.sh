@@ -3,12 +3,15 @@
 # Usage: tests/coverage.sh [--html]
 # Needs `python3 -m coverage` (pip install coverage; with GTK tests the
 # interpreter must also see PyGObject, e.g. a venv --system-site-packages).
-# The threshold sits a little under the current figure: raise it with the tests.
+# The window tests need a display (xvfb-run in CI); without one the figure is
+# lower (about 44 %), so run with INZONE_COVERAGE_MIN=40 there. The threshold
+# sits a little under the current figure (63 % with a display): raise it with
+# the tests.
 set -euo pipefail
 
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.."
 
-THRESHOLD=${INZONE_COVERAGE_MIN:-40}
+THRESHOLD=${INZONE_COVERAGE_MIN:-55}
 export INZONE_LANGUAGE=en
 export COVERAGE_FILE=${COVERAGE_FILE:-$(mktemp -d)/.coverage}
 

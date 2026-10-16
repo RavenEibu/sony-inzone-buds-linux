@@ -33,6 +33,13 @@ git config core.hooksPath .githooks
 GitHub Actions runs both scripts on Ubuntu 24.04 for every push and pull
 request, so they are the same commands locally and in CI.
 
+The window tests (`test_gui_window.py`, `test_gui_layouts.py`) need a display;
+CI runs everything under `xvfb-run`, requires them with
+`INZONE_REQUIRE_DISPLAY_TESTS=1`, and uploads one PNG per language as the
+`mixer-window-gallery` artifact for visual review. Locally they use your
+session and are skipped when there is no display. Set `INZONE_GALLERY_DIR` to
+write the PNGs yourself.
+
 `tests/coverage.sh` runs the Python tests under coverage.py (needs `pip install
 coverage`, in a venv that can also see PyGObject) and fails below a minimum set
 inside the script; CI runs it and prints the table in the job summary. Raise
