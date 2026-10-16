@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Turning off launch-at-login crashed on Python 3.7 (`Path.unlink(missing_ok=)`
+  needs 3.8).
 - The mixer backend (`audio.py`) crashed at import on Python 3.8 because it
   subscripted `subprocess.CompletedProcess` at runtime; it now works on Python
   3.7 and newer.
