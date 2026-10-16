@@ -27,7 +27,7 @@ try:
     from gi.repository import Gdk, GLib, Gtk  # noqa: E402
 except (ImportError, ValueError) as error:  # no PyGObject or no GTK 4 typelib
     print(f"GTK 4 unavailable: {error}", file=sys.stderr)
-    raise SystemExit(3)
+    raise SystemExit(3) from None
 
 
 class FakeApplication(Gtk.Application):
