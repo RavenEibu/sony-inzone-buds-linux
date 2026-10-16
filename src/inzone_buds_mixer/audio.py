@@ -111,7 +111,8 @@ def derive_balance(game: int | None, chat: int | None) -> int:
     return round((game / chat) * 50)
 
 
-Runner = Callable[[Sequence[str]], subprocess.CompletedProcess[str]]
+# Quoted: subscripting CompletedProcess at runtime needs Python 3.9.
+Runner = Callable[[Sequence[str]], "subprocess.CompletedProcess[str]"]
 
 
 def _run_command(command: Sequence[str]) -> subprocess.CompletedProcess[str]:

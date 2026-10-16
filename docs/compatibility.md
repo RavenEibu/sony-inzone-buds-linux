@@ -11,7 +11,7 @@ and older software stacks driving it.
 | --- | --- | --- |
 | `inzonectl`, `inzone-autoswitch`, `install.sh` | Bash 4.0, `pactl`, `awk`, `sed` | `${var,,}` (Bash 4.0) in the dongle check; Bash 3.x fails with "bad substitution" |
 | WirePlumber rules (`51-inzone-buds.conf`) | WirePlumber 0.5 | the `wireplumber.conf.d` SPA-JSON format; older versions ignore the file |
-| Mixer and tray | Python 3.7 syntax or newer (README states 3.10 as the tested floor), PyGObject, GTK 4 | no code newer than Python 3.7 (checked with `vermin`); GTK 4 exists since December 2020 |
+| Mixer and tray | Python 3.7 or newer (README states 3.10 as the tested floor), PyGObject, GTK 4 | no syntax or library call newer than Python 3.7 (`vermin`, plus the Python 3.7-3.10 CI jobs); GTK 4 exists since December 2020 |
 | Audio | PipeWire with its PulseAudio layer (`pactl`) | the Pro Audio profile with separate Game/Chat endpoints |
 
 ## Typical PCs by year
@@ -33,6 +33,12 @@ The Ubuntu 20.04 job (Python 3.8, 2020) caught a real bug: `install.sh` and the
 Debian build failed on Python older than 3.9 because `tools/localize-metainfo.py`
 used `ElementTree.indent`. It now indents by hand and the whole tool needs only
 Python 3.7 (`vermin`).
+
+The same job found a second one: `audio.py` subscripted
+`subprocess.CompletedProcess[str]` at runtime, which needs Python 3.9, so the
+mixer backend crashed at import on Python 3.8. It is now a quoted annotation.
+The first version of the Python CI jobs did not stop on failing tests (the
+loop lacked `set -e`), which hid this on 3.7 and 3.8; that is fixed too.
 
 ## Measured: older Bash
 

@@ -92,6 +92,7 @@ jobs:
         run: |
           docker run --rm -v "$PWD:/src" -w /src -e INZONE_LANGUAGE=en \
             python:${{ matrix.python }}-slim bash -c '
+              set -e
               python --version
               for test in test_gui_backend test_autostart test_i18n test_translations test_desktop_integration; do
                 echo "== $test"

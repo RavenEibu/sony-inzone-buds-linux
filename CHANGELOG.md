@@ -4,6 +4,9 @@
 
 ### Fixed
 
+- The mixer backend (`audio.py`) crashed at import on Python 3.8 because it
+  subscripted `subprocess.CompletedProcess` at runtime; it now works on Python
+  3.7 and newer.
 - `install.sh` and the Debian build failed on Python older than 3.9 (for example
   Ubuntu 20.04) when `msgfmt` was present, because the AppStream localizer used
   `ElementTree.indent`. Found by the new older-systems CI.
