@@ -276,6 +276,7 @@ include personal data, account tokens or copyrighted Sony software.
 - [Verified hardware behavior](docs/hardware.md)
 - [Troubleshooting](docs/troubleshooting.md)
 - [Keyboard shortcut examples](docs/shortcuts.md)
+- [Compatibility with older systems](docs/compatibility.md)
 - [Roadmap](docs/roadmap.md)
 - [Graphical mixer](docs/gui.md)
 

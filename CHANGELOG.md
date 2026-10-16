@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Fixed
+
+- `install.sh` and the Debian build failed on Python older than 3.9 (for example
+  Ubuntu 20.04) when `msgfmt` was present, because the AppStream localizer used
+  `ElementTree.indent`. Found by the new older-systems CI.
+
+### Added
+
+- `docs/compatibility.md`: what runs on PCs and software stacks from 2006,
+  2011, 2016 and 2021, separating measured, estimated and unverified claims.
+- `tools/emulate-pc.sh` and `tools/measure-startup.py`: memory-capped runs and
+  projected timings for older CPUs, and an `Older systems` CI workflow (Bash
+  4.0-5.0 built from source, Python 3.7-3.10 without GTK, Ubuntu 20.04 and
+  22.04).
+
 ### Added
 
 - GTK window tests with a fake backend (`tests/test_gui_window.py`), a layout

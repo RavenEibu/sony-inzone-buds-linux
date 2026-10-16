@@ -52,6 +52,23 @@ def add_translations(parent: ET.Element, element: ET.Element, catalogs) -> None:
         parent.insert(position, clone)
 
 
+def indent(element: ET.Element, level: int = 0) -> None:
+    """Pretty-print in place (ElementTree.indent needs Python 3.9; this runs on 3.7)."""
+    pad = "\n" + "  " * level
+    children = list(element)
+    if children:
+        if not (element.text or "").strip():
+            element.text = pad + "  "
+        for child in children:
+            indent(child, level + 1)
+            if not (child.tail or "").strip():
+                child.tail = pad + "  "
+        if not (children[-1].tail or "").strip():
+            children[-1].tail = pad
+    elif level and not (element.tail or "").strip():
+        element.tail = pad
+
+
 def main() -> int:
     po_dir, source, destination = (Path(arg) for arg in sys.argv[1:4])
     parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
@@ -67,7 +84,7 @@ def main() -> int:
     if description is not None:
         for paragraph in list(description.findall("p")):
             add_translations(description, paragraph, catalogs)
-    ET.indent(tree, space="  ")
+    indent(root)
     tree.write(destination, encoding="utf-8", xml_declaration=True)
     return 0
 
